@@ -1,0 +1,22 @@
+{extends file="mails/base_mail.html"}
+{block name="title"}Your ArtistFan registration has been approved!{$DOMAIN}{/block}
+{block name="content"}
+<table width="650" border="0" align="center" cellpadding="20" cellspacing="0">
+  <tr>
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><h1 {$headerStyle}>Hi {$FirstName} {$LastName}!</h1></td>
+      </tr>
+      <tr>
+        <td><p {$paraHeadStyle} >Thank you for your interest in joining the ArtistFan family!</p></td>
+      </tr>      
+      <tr><td><p {$paraStyle}>ArtistFan is all about artistic integrity.  We want to make sure all the artists that use the ArtistFan platform share our same values.  We receive a lot of applications and just want to make sure artists who apply for membership are who they say they are and intend to use to platform the right way! Approval usually takes 3-5 business days.</p></td></tr>      
+
+      <tr><td><p {$paraStyle}>If your submission is approved, you will receive an email confirming your approval along with an info pack that will help you get well on your way to independent freedom. </p></td></tr>      
+
+      
+    </table>
+    </td>
+  </tr>  
+</table>
+{/block}

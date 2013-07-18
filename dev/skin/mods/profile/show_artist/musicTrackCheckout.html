@@ -1,0 +1,27 @@
+<table width="100%" border="0" align="left" cellpadding="8" cellspacing="0">
+    <tbody>
+      <tr>
+        <td width="104" rowspan="2" align="left" valign="top"><a href="javascript:void(0);" class="shList">
+        <img src="{if $album.Image}/{$smarty.const.TRACK_IMG_PATH}/{$album.UserId}/m_{$album.Image}{else}/i/ph/album-96x96.png{/if}" width="150" height="150">
+        </a></td>
+        <td align="left" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tbody><tr>
+              <td align="left" valign="top"><h4 class="M2"><a title="Click to view tracks" href="javascript:void(0);">{$album.Title}</a></h4>
+              <p class="M2"><a href="javascript:void(0);" class="black font14">{$album.Title}</a></p>
+              <p class="font14 M2"></p>              </td>
+              <td width="1%" align="right" valign="top" nowrap="nowrap">
+              <a href="javascript:void(0);" class="button wblue RT" style="padding-top:7px;">              
+              {if $smarty.session.payMore}$ {$smarty.session.payMore|string_format:'%.2f'}{else}$ {$payMore|string_format:'%.2f'}{/if}</a>                          
+                                                                                                                	               </td>
+            </tr>
+            <tr>
+              <td colspan="2" align="right" valign="bottom">&nbsp;                  </td>
+            </tr>
+        </tbody></table></td>
+      </tr>
+      <tr>
+        <td align="left" valign="bottom" nowrap="nowrap">
+           </td>
+      </tr>
+    </tbody>
+</table>

@@ -1,0 +1,20 @@
+
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" id="fanList">
+      
+      <tr>
+        <td bgcolor="#FFFFFF">
+        <ul class="fGrid">
+        {foreach key=k item=i from=$artists_follow}
+          <li><a href="/u/{$i['u.Name']}"><img src="{if $i['u.Avatar']}/files/images/avatars/s_{$i['u.Avatar']}{else}/si/pic-100x100.jpg{/if}" /> {if $i['u.IsOnline'] == 1}<span class="online"></span> {/if} <p>{$i['u.FirstName']|cat:$i['u.LastName']|truncate:8:''}</p>
+          </a>
+ <a href="javascript:void(0);" onclick="oProfile.UserFollowArtistFanRemove('{$i['Id']}');"> <span style="color:#CC0000;font-size:small;font-weight:bolder;text-align:center"> Remove </span></a>           
+          </li> 
+          {foreachelse}            
+             <p class="alert alert_error">No Artist Found</p>      
+          {/foreach}
+        </ul>
+       </td>
+      </tr>
+    </table>
+    <div class="clear"></div>
+    <div align="center">&nbsp;</div>

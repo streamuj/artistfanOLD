@@ -1,0 +1,221 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"} 
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitEventActions();
+        oPopup.InitPurchase();			
+	
+// Remove Start
+	$('#delDialog').dialog({ autoOpen: false });
+	$('#delConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+		'Close': {
+				"text":'Close', "class":'button bgrey',  "click":function(){
+				$(this).dialog('close');				
+				}
+			},						
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button wblue', "click": function() {
+					$('body').addClass('loading');
+					cancelEvents();				 
+			 		$(this).dialog('close');
+			 	}
+			 }
+		
+		
+		/*
+			'Cancel The Event' : function(){
+				$('body').addClass('loading');
+				cancelEvents();
+				$(this).dialog('close');
+			}, 
+			'Close': function(){
+				$(this).dialog('close');
+			}
+		*/	
+		}
+	});
+	$('body').on('click', '.Dialogcancel_event', function(){
+			var Mid  = $(this).attr('mid');
+			if(Mid){
+			$('#mid').val(Mid);									
+			$('#delConfirm').dialog('open');
+				}
+			
+	});
+function cancelEvents()
+	{
+	var Mid  =	$('#mid').val();		
+		if(Mid) {					  	
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    data:{ 'id': Mid },
+                    url:'/base/artist/EventCancel',
+                    success:function (data)
+                    {
+                        doLoadP = 0;
+                        if (data.q == 'ok')
+                        {
+							$('body').removeClass('loading');													
+                            document.location = '/artist/events/' + Mid;
+                        }
+                    }
+                });
+			}
+	}	
+// Remove End		
+		
+    });
+function mailToViewers(id)
+{
+	$.ajax({
+		type:'POST',
+		dataType:'json',
+		data:'id='+id,
+		url:'/artist/mailtoviewers',
+		success:function(data)
+		{
+			//checkResponseRedirect(data);																			   		
+			if(data.q=='ok')
+			{
+				$('#mailSend').html('<span class="good">Email Sent Successfully</span>');
+			}
+		}
+	});
+}
+function ViewersReportCsv(id)
+{
+//	$.ajax({
+//		type:'POST',
+//		dataType:'json',
+//		data:'id='+id,
+//		url:'/artist/ExportViewersReport'
+		window.open('/artist/ExportViewersReport?id='+id);
+//	});
+}
+	
+</script>
+{/block}
+
+{block name="my_cabinet"}
+
+<div class="P15">
+  <h2> <a href="/artist/events">My Events</a> </h2>
+<div class="clear">&nbsp;</div>
+
+              <table cellpadding="10" cellspacing="0" width="100%">
+<tr>
+	<td colspan="2"><img src="{$SUB_DOMAIN}photo/slide/{$event.UserId}/{$event.EventPhoto}" width="100%" /></td>
+</tr>                     
+<tr>
+                            <td width="119" align="left" valign="top" nowrap="nowrap">Title </td>
+      <td width="373" align="left" valign="middle">{$event.Title}</td>
+                </tr>
+<tr>
+                            <td width="119" align="left" valign="middle" nowrap="nowrap">Location</td>
+      <td width="373" align="left" valign="middle">{$event.Location}</td>
+                </tr>
+                        <tr>
+                            <td align="left" valign="middle" nowrap="nowrap">Date/Time</td>
+                          <td align="left" valign="middle">{$event.EventDate|date_format} {$event.EventDate|date_format:'%l:%M  %p'} EST </td>
+                </tr>
+                        {if $event.EventType>1}
+                        <tr>
+                            <td align="left" valign="middle" nowrap="nowrap">Access price</td>
+                          <td align="left" valign="middle">{if $event.Price}$ {$event.Price|string_format:'%.2f'} {else}free{/if}</td>
+                </tr>
+                        {/if}
+                        
+                        {if $event.Duration}
+                        <tr>
+                            <td align="left" valign="middle" nowrap="nowrap">Duration</td>
+<td align="left" valign="middle">
+                                {$event.Duration} mins                            </td>
+                </tr>
+                        {/if}
+                        {if $event.Descr}
+                        <tr>
+                            <td align="left" valign="top" nowrap="nowrap">Description </td>
+<td align="left" valign="top">
+                                {$event.Descr|hyperlink}                            </td>
+                </tr>
+                        {/if}           
+                    </table>
+              <table>	
+                        <tr>
+
+                            {if !$event.EventDate|ispast}
+                            
+                                {if $event.Status<3}        
+	                        	<td><a href="/artist/EventEdit?id={$event.Id}" class="button">Edit event</a></td>                            
+                                <td><a href="javascript:void(0);" class="button bgrey Dialogcancel_event" mid="{$event.Id}" style="margin:0;"> Cancel event </a></td>
+                            
+                                {elseif $event.Status==3}
+                            
+                                <td><div class="good">Event cancelled</div></td>
+                            
+                                {elseif $event.Status==4}
+                                <td> <a href="javascript:void(0);" class="MailToViewers button LF"  mid="{$event.Id}">Send Mail To Viewers</a><span class="M10 good block LF">Event finished </span></td>
+                                {/if}
+                                <td><div class="wait pull-right" style="display: none;">&nbsp;</div></td>
+                                
+                                
+                                {if $event.Status<3}
+                                
+                                    {if $event.EventType>1 && $event.EventApp==1}
+                                    
+                                    <td><a href="/artist/StartBroadcasting/{$event.Id}" class="button yellow_button">Start online broadcast</a> </td>
+                                    &nbsp; 
+                                    {/if}
+                                
+                                    {if $event.Status==1}
+                                    
+                                    <td><a href="javascript:void(0);" class="button announce_event" mid="{$event.Id}">Announce to fans</a></td>
+                                    
+                                    {elseif $event.Status==2}
+                                    
+                                    <td><div class="good">Event announced</div></td>
+                                    {/if}
+                                {/if}
+                            {else}
+                            <td><a href="javascript:void(0);" class="MailToViewers button LF" mid="{$event.Id}" >Send Mail To Viewers</a><span class="M10 good block LF">Event finished </span></td>
+                            {/if}
+                        </tr>        
+  </table>
+
+     <div id="mailSend"></div>
+    
+    {if $event_finished}
+    <div class="font12 M5" style="color:#cccccc;">
+        <p><strong>Your event is finished!</strong></p>
+        <p>You will be able to review broadcast recoding on this page after 3 to 4 hours</p>
+    </div>
+    {/if}
+         
+     {if $event.EventType != 1 && $event.Status == 4}
+<br />     
+   <div id="eventBroadcast">
+   		{include file="mods/profile/edit_artist/ajax/event_broadcast.html"}
+   </div>
+
+   {/if}
+    
+</div>
+{include file="mods/profile/blocks/_buy_block.html"}
+<div id="delDialog" title="Delete Tracks">
+<p>Please select tracks to delete</p>
+</div>
+<div id="delConfirm" title="Confirm Cancel The Events">
+<p>Are you sure you want to cancel the event ?</p>
+<input type="hidden" id="mid">
+</div>
+<div class="loadingdiv"></div>
+{/block}

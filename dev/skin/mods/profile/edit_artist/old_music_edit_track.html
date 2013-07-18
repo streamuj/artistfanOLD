@@ -1,0 +1,216 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/jquery-ui-1.8.16.custom.css" />
+
+<script type="text/javascript" src="/dev/templates/js/fileuploader.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/fileuploader.css" />
+
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+<script type="text/javascript" src="/dev/templates/js/cls/Player.js"></script>
+
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+
+        $("#DateRelease").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+
+
+         var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/artist/UploadTrack',
+            params: { 'rand_id': $('#rand_id').val() },
+            // validation
+            allowedExtensions: ['mp3'],
+            // each file size limit in bytes
+            sizeLimit: 15360000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('track');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('track');
+                if (responseJSON.success==true) {
+                    var track = '/'+responseJSON['track'];
+                    $('#track').html( track );
+                    oErrors.SetOkFld('track', 'File uploaded!');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('track');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('track', message);
+            }
+        });
+
+        var uploader1 = new qq.FileUploader({
+            element: $('#file-uploader1')[0],
+            action: '/artist/UploadTrack',
+            params: { 'rand_id': $('#rand_id').val(), 'preview': 1 },
+            // validation
+            allowedExtensions: ['mp3'],
+            // each file size limit in bytes
+            sizeLimit: 15360000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('track_preview');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('track_preview');
+                if (responseJSON.success==true) {
+                    var track = '/'+responseJSON['track'];
+                    $('#track_preview').html( track );
+                    oErrors.SetOkFld('track_preview', 'File uploaded!');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('track_preview');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('track_preview', message);
+            }
+        });
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/music">My Music store</a>
+    </div>
+    <h1>{if $id}Edit track{else}New track{/if}</h1>
+</div>
+<div class="content_block wide">
+
+<form class="ttable big_form" method="post" id="track_form" action="/artist/edittrack">
+    <input type="hidden" name="id" value="{$id}"/>
+    <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+    <fieldset>
+
+    <table class="form_table">
+        <tr>
+            <td class="label_td"><label>Title<span style="color:red;">*</span></label></td>
+            <td width="289"><input type="text" class="tx text_input" id="Title" name="fm[Title]" value="{$fm.Title}" /></td>
+            <td id="err_Title" class="err"></td>
+        </tr>
+        <tr>
+            <td class="label_td"><label>Album</label></td>
+            <td>
+                <select id="AlbumId" name="fm[AlbumId]">
+                    <option value="0">not in album</option>
+                    {foreach key=k item=i from=$albums}
+                     <option value="{$i.Id}"{if $fm.AlbumId==$i.Id || (!$fm.AlbumId && $album==$i.Id)} selected="selected"{/if}>{$i.Title}</option>
+                    {/foreach}
+                </select> 
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="label_td"><label>Track<span style="color:red;">*</span></label></td>
+            <td>
+
+                <div id="file-uploader" style="float: left;">
+                <noscript>
+                   <p>Please enable JavaScript to use file uploader.</p>
+                </noscript>
+                </div>
+
+                <div style="float: left;padding-left: 15px; font-size: 11px;">
+                    <div id="track">{if $fm.Track}/{$fm.Track}{else}No file{/if}</div>
+                </div>
+                <div class="clear"><!-- --></div>
+            </td>
+            <td class="err" id="err_track"></td>
+        </tr>
+        <tr>
+            <td class="label_td"><label>Track preview</label></td>
+            <td>
+
+                <div id="file-uploader1" style="float: left;">
+                <noscript>
+                   <p>Please enable JavaScript to use file uploader.</p>
+                </noscript>
+                </div>
+
+                <div style="float: left;padding-left: 15px; font-size: 11px;">
+                    <div id="track_preview">{if $fm.TrackPreview}/{$fm.TrackPreview}{else}No file{/if}</div>
+                </div>
+                <div class="clear"><!-- --></div>
+                <span id="err_Title" class="err"></span>
+            </td>
+            <td class="err" id="err_track_preview"></td>
+        </tr>
+
+        <tr>
+            <td class="label_td"><label>Genre</label></td>
+            <td>
+                <select name="fm[Genre]">
+                    <option value="">Select genre</option>
+                    {foreach key=k item=i from=$genres_list}
+                    <option value="{$i}"{if $i==$fm.Genre} selected="selected"{/if}>{$i}</option>
+                    {/foreach}
+                </select>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="label_td"><label>Release date<span style="color:red;">*</span></label></td>
+            <td><input type="text" id="DateRelease" name="fm[DateRelease]" value="{$fm.DateRelease}" class="text_input" /></td>
+            <td id="err_DateRelease" class="err"></td>
+        </tr>
+        <tr>
+            <td class="label_td"><label>Label</label></td>
+            <td><input type="text" class="tx text_input" id="Label" name="fm[Label]" value="{$fm.Label}" /></td>
+            <td id="err_Label" class="err"></td>
+        </tr>
+        <tr>
+            <td class="label_td"><label>Price</label></td>
+            <td><input type="text" name="fm[Price]" value="{$fm.Price}" class="text_input small_input" />
+                <input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" value="1"{if $fm.PriceFree} checked="checked"{/if} /> <label for="PriceFree">Free</label>
+            </td>
+            <td id="err_Price" class="err"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="radio_td"><input type="checkbox" class="checkbox" id="Active" name="fm[Active]" value="1"{if $fm.Active} checked="checked"{/if} /> <label for="Active">Publish</label></td>
+            <td></td>
+        </tr>    
+    </table>
+
+    <div class="line"></div>
+    <table class="form_table">
+        <tr>
+            <td class="label_td"><input type="button" value="Cancel" onclick="Go('/artist/music{if $id && $fm.AlbumId}/{$fm.AlbumId}{/if}')" class="button" /></td>
+            <td><input type="button" onclick="oProfile.EditTrack();" value="{if $id}Update{else}Upload{/if}" class="button yellow_button" /></td>
+        </tr>
+    </table>
+
+    </fieldset>
+</form>
+</div>
+{/block}

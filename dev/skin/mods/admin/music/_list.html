@@ -1,0 +1,130 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/j/jquery.form.js"></script>
+<script type="text/javascript" src="/j/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/s/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="/j/cls/Admin.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oAdmin.MusicStartReload();
+        $("#dfrom, #dto").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+        $('#bsearch').click(function() {
+            oAdmin.MusicFilter();
+        });
+    });
+</script>
+{/block}
+
+{block name="content"}
+
+<h1>Music</h1>
+
+<ul class="tabs-panel">
+    <li{if !$tp} class="act"{/if}><a href="/base/admin/music">Tracks</a></li>
+    <li{if $tp==1} class="act"{/if}><a href="/base/admin/music?tp=1">Albums</a></li>
+</ul>
+<div class="clear"></div>
+
+<form action="/base/admin/MusicList" method="post" id="mlist">
+    <input type="hidden" id="flist" value="" />
+    <input type="hidden" name="tp" id="tp" value="{$tp}" />
+    <input type="hidden" name="page" id="page" value="1" />
+    
+<div class="blue_block">
+<table>
+    <tr>
+       <td colspan="2"><h6>Search music</h6></td>
+    </tr>
+    <tr>
+        <td>User e-mail</td>
+        <td><input type="text" name="s[email]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>User name</td>
+        <td><input type="text" name="s[name]" value="" class="text_input_small mid" /></td>
+    </tr>
+    {if !$tp}
+    <tr>
+        <td>Music Title</td>
+        <td><input type="text" name="s[track_title]" value="" class="text_input_small mid" /></td>
+    </tr>
+    {/if}
+    <tr>
+        <td>Album Title</td>
+        <td><input type="text" name="s[album_title]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Release date</td>
+        <td>
+            <input type="text" id="dfrom" name="s[dfrom]" value="" class="text_input_small short" />
+            &ndash;
+            <input type="text" id="dto" name="s[dto]" value="" class="text_input_small short" />
+        </td>
+    </tr>
+    {if $tp==1}
+    <tr>
+        <td>Featured only</td>
+        <td><input type="checkbox" name="s[featured]" value="1" /></td>
+    </tr>
+    {/if}
+    <tr>
+        <td></td>
+        <td><input type="button" id="bsearch" value="Search" /></td>
+    </tr>
+</table>
+<br />
+</div>
+
+<div style="position:absolute;z-index:100;left:550px;display:none;" id="wait"><img src="/i2/wait.gif" alt="Wait..."></div>
+<br /><br />
+<table class="style_table f13">
+    <colgroup>
+        <col width="30px" />
+        <col />
+        {if !$tp}<col width="150px" />{/if}
+        <col width="100px" />
+        <col width="80px" />
+        <col width="50px" />
+        <col width="50px" />
+        <col width="50px" />
+        {if $tp==1}<col width="70px" />{/if}
+        {if $tp==1}<col width="50px" />{/if}
+        <col width="100px" />
+    </colgroup>
+    <thead>
+        <tr style="color:#28B7F3;">
+            <th></th>
+            <th class="aleft">Title</th>
+            {if !$tp}<th class="aleft">Album</th>{/if}
+            <th class="aleft">Artist</th>
+            <th>Release date</th>
+            <th>Price</th>
+            <th>Published</th>
+            <th>Deleted</th>
+            {if $tp==1}<th>Featured</th>{/if}
+            {if $tp==1}<th>Count tracks</th>{/if}
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="list">
+    {include file="mods/admin/music/ajax/_list_ajax.html"}
+    </tbody>
+</table>
+<div id="pagging"></div>
+<br />
+<div style="float:left;">
+    <select name="pcnt" id="pcnt" onchange="oAdmin.MusicList(1);">
+        <option value="10"{if $pcnt==10} selected="selected"{/if}>10</option>
+        <option value="30"{if $pcnt==30} selected="selected"{/if}>30</option>
+        <option value="50"{if $pcnt==50} selected="selected"{/if}>50</option>
+        <option value="70"{if $pcnt==70} selected="selected"{/if}>70</option>
+        <option value="100"{if $pcnt==100} selected="selected"{/if}>100</option>
+        <option value="1000000000"{if $pcnt==1000000000} selected="selected"{/if}>all</option>
+    </select>
+</div>
+</form>
+{/block}

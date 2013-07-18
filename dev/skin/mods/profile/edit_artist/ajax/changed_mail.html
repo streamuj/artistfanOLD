@@ -1,0 +1,51 @@
+<table width="100%" border="0" cellpadding="5" cellspacing="0">
+
+      <tr>
+        <td colspan="2"><h4>Change Email </h4></td>
+      </tr>
+      <tr>
+    	<td>&nbsp;</td>
+    	</tr>{*alert_success good*}
+      <div class="alert_success good" style="display: none;">
+                <strong>Success!</strong> <span id="add_email"></span>      </div> 
+
+      <div class="error M15" style="display:none;">
+                <strong>Error!</strong> <span id="error_add_email"></span>
+      </div> 
+                
+      
+      {if $primary_email}{assign var="em" value=$primary_email}{else}{assign var="em" value=$UserInfo.Email}{/if}
+      
+      {foreach key=k item=i from=$altEmailArr}     
+      <tr>
+        <td width="11%" align="left" valign="middle" nowrap="nowrap">{if $i==$em}Current Email{/if} <input type="radio" name="fm[primary_email]" id="primary_email" value="{$i}" {if ($i == $em )} checked="checked" {/if} title="Click to Primary Email" />{$i}  {if !($i == $em )}
+        <a href="javascript:void(0);" onclick="oProfile.MakePrimary('{$i}');" style="color:#06F; font-size:9px;">Primary</a> &nbsp;
+        <a href="javascript:void(0);" onclick="oProfile.DelPrimary('{$i}');" style="color:#06F; font-size:9px;">Delete</a>
+        {/if}         </td>
+        
+        <td width="89%" align="left" valign="middle" >
+        </td>
+      </tr>
+      {/foreach} 
+      
+	  <tr>
+      	<td width="20%">
+			 <span id="test" class="button wblue" >Add another Email</span>       
+	    </td>
+        <td align="left"></td>
+      </tr>  
+    
+      <tr id="alt_email_div">
+        <td align="left" valign="middle" nowrap="nowrap">New email
+        <input type="text" class="txtBox_Another_Email txtBox"  name="fm[email]" id="email"  size="40" /></td>
+        <td align="left" valign="middle" ><span class="err" id="err_email"></span></td>
+      </tr>       
+      <tr id="alt_save_div"> 
+	    <td>
+			<input type="button" onclick="oProfile.AddEmail(1);" value="Save"  class="button wblue" />    
+    	</td>
+      	<td ></td>
+  </tr>      
+    </table> 
+
+<span class="wait button-wait"></span>    

@@ -1,0 +1,428 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.Jcrop.css" />
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'{$SUB_DOMAIN}ssi/' });
+	});
+	function imposeMaxLength(Event, Object, MaxLen)
+	{
+		return (Object.value.length <= MaxLen)||(Event.keyCode == 8 ||Event.keyCode==46||(Event.keyCode>=35&&Event.keyCode<=40))
+	}
+</script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+		var jcrop_api;
+		var orginalImage = '{if $fm.Image}/{$smarty.const.TRACK_IMG_PATH}/{$fm.UserId}/m_{$fm.Image}{else}/si/placeholder.gif{/if}';
+		
+		var today = new Date("{$smarty.now|date_format}");
+		var featureDate = new Date("{$smarty.now|date_format}");
+		featureDate.setDate(today.getDate()+{$smarty.const.ALLOWED_DATE});
+	    $("#DateRelease").datepicker({
+            dateFormat: 'mm/dd/yy',
+			minDate: today,
+			maxDate: featureDate
+        });
+
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/artist/UploadAlbumImage',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, 
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('image');
+				var loadImage = "/si/loading.gif";
+				$('#album_image').attr('src', loadImage);				
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){			
+            oErrors.SetClearFld('image');
+			if(responseJSON.success == 0){
+				    $('#album_image').attr('src', orginalImage).css({ width:'auto', height : 'auto'});
+					$('#album_image').show().css({ 'visibility': 'visible'});
+					$('.jcrop-holder').hide();
+					$('#cropedTxt').html('');
+					$('#cropImage').parents('tr').find('div').hide();
+					$('#err_Image').html('');
+					$('#image_err').addClass('error').html(responseJSON.message);
+					return;
+				}
+                if (responseJSON.success==1) {
+                    $('#image_err').removeClass('error').html( '' );
+					$('#album_image').hide();
+                    var img = '/'+responseJSON['image'];
+					imgWidth = responseJSON['width'];
+					imgHeight = responseJSON['height'];
+                    oErrors.SetOkFld('image', 'Image uploaded!');
+					if(jcrop_api){
+						jcrop_api.setImage(img);
+						jcrop_api.release();
+					}
+					$('#album_image').css({ width : imgWidth, height : imgHeight});
+					$('#album_image').load(function () {
+						$(this).Jcrop({
+							onChange: showPreview,
+							onSelect: showPreview,
+							aspectRatio: 200/200,
+							onSelect: updateCoords,
+							setSelect: [ 0, 0, 200/2, 200/2 ]
+							}, function(){
+							  jcrop_api = this;
+						});
+						
+					}).attr('src', img);
+					
+					$('.jcrop-holder').show();
+					$('#cropedTxt').html('Croped Image');
+					$('#cropImage').parents('tr').find('div').show();					
+					$('#cropImage').attr('src', img );
+                }
+            
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('image', message);
+            }
+        });
+		function updateCoords(c)
+		{
+			$('#x1').val(c.x);
+			$('#y1').val(c.y);
+			$('#x2').val(c.x+c.w);
+			$('#y2').val(c.y+c.h);
+			$('#w').val(c.w);
+			$('#h').val(c.h);
+		};
+		$imgpos = {
+			width	: 200,
+			height	: 200
+		};
+		function showPreview(coords)
+		{
+			if (parseInt(coords.w) > 0)
+			{
+				var rx = 200 / coords.w;
+				var ry = 200 / coords.h;
+				$('#cropImage').css({
+					width: Math.round(rx * imgWidth) + 'px', 
+					height: Math.round(ry * imgHeight) + 'px',
+					marginLeft: '-' + Math.round(rx * coords.x) + 'px', 
+					marginTop: '-' + Math.round(ry * coords.y) + 'px' 
+				});
+			}
+		};
+	  var uploader = new qq.FileUploader({
+            element: $('#file-uploader1')[0],
+            action: '/artist/UploadTrack',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: [{$validExt}],
+            sizeLimit: 15360000,
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('track');
+				 $('#progress').show();
+            },
+            onProgress: function(id, fileName, loaded, total){
+				 if(total > 0 && loaded <= total ){
+                    var width = Math.round(loaded / total * 100);
+                    $('#progress-percent').html(width);
+                    $('#progress-value').css('width', width + '%');
+                }
+			},
+            onComplete: function(id, fileName, responseJSON){
+				$('#progress').hide();
+                oErrors.SetClearFld('track');
+                if (responseJSON.success==true) {
+                    var track = '/'+responseJSON['track'];
+                    $('#track').html( track );
+                    oErrors.SetOkFld('track', 'File uploaded!');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('track');
+            },
+            multiple: false,
+            autoSubmit: true,
+            messages: {
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('track', message);
+            }
+        });
+		 var uploader1 = new qq.FileUploader({
+            element: $('#file-uploader2')[0],
+            action: '/artist/UploadTrack',
+            params: { 'rand_id': $('#rand_id').val(), 'preview': 1 },
+        	allowedExtensions: [{$validExt}],
+            sizeLimit: 15360000, 
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('track_preview');
+				$('#progress1').show();
+            },
+            onProgress: function(id, fileName, loaded, total){
+				 if(total > 0 && loaded <= total ){
+                    var width = Math.round(loaded / total * 100);
+                    $('#progress-percent1').html(width);
+                    $('#progress-value1').css('width', width + '%');
+                }
+			},
+            onComplete: function(id, fileName, responseJSON){
+				$('#progress1').hide();
+                oErrors.SetClearFld('track_preview');
+                if (responseJSON.success==true) {
+                    var track = '/'+responseJSON['track'];
+                    $('#track_preview').html( track );
+                    oErrors.SetOkFld('track_preview', 'File uploaded!');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('track_preview');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+            messages: {
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('track_preview', message);
+            }
+        });	
+    });
+</script>
+{/strip}
+{/block}
+{block name="my_cabinet"}
+{strip}
+  <h2 class="P15 ">Manage Music</h2>
+  
+  <ul class="stepsTab P15">
+  <li class="active"><a><span class="num">1</span><span>Setup your<br />Album or Single</span></a></li>
+  <li><a><span class="num">2</span> <span> Setup your <br /> Upload your track(s)</span></a></li>
+  <li><akj><span class="num">3</span> <span>Review & Publish<br />Upload your track(s)</span></a></li>
+  </ul>
+  
+<div class="clear">&nbsp;</div>
+
+<div class="P20">
+<form class="ttable big_form" id="album_form" method="post" action="/artist/editalbum">
+     <input type="hidden" name="id" value="{$id}"/>
+     <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+          <table width="100%" border="0" cellspacing="0" cellpadding="10">
+<tr>
+            	 <td colspan="2">
+                 	<table border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td>
+     <input type="radio" class="checkbox" name="fm[Type]" onClick="oProfile.CheckAlbumUpload()" id="Type_Album" value="0"  {if !$fm.IsSingle} checked="checked" {/if} />                        </td>
+                        <td>Album</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                         <td>
+  	<input type="radio" class="checkbox" name="fm[Type]" onClick="oProfile.CheckAlbumUpload()" id="Type_Single" value="1" {if $fm.IsSingle} checked="checked"{/if} />                        </td>
+                        <td>Single</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                      </tr>
+                    </table>                 </td>
+            </tr>
+            <tr>
+              <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;" class="albumTitle"> Album Title </span> <span class="MusicTitle" style="display:none; line-height:34px;"> Single Title </span> 
+              <span class="red">*</span></td>
+           <td align="left" valign="top">
+   	 <label><input type="text" class="txtBox" id="Title" name="fm[Title]" value="{$fm.Title}" size="72" /></label>
+                 <span id="err_Title" class="err"></span>              </td>
+            </tr>
+            <tr>
+              <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Release Date <span class="red">*</span></span>  </td>
+              <td align="left" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="150"><input type="text" class="txtBox" id="DateRelease" name="fm[DateRelease]" value="{$fm.DateRelease}" size="10" /> </td>
+                  <td width="57" nowrap="nowrap"> Genre <span class="red">*</span></td>
+                  <td width="10">&nbsp;</td>
+                  <td width="151" class="xform">
+                               <label>  <select name="fm[Genre]" id="Genre">
+                                        <option value="">Select genre</option>
+                                        {foreach key=k item=i from=$genres_list}
+                                        <option value="{$i}"{if $i==$fm.Genre} selected="selected"{/if}>{$i}</option>
+                                        {/foreach}
+                                </select> </label>                  </td>
+                </tr>
+                <tr>
+                	<td colspan="2"><span id="err_DateRelease" class="err"></span></td>
+                    <td colspan="2"> <span id="err_Genre" class="err block"  style="margin-left:8px;"></span></td>
+                </tr>
+                
+              </table></td>
+            </tr>
+            <tr>
+              <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Label</span></td>
+              <td align="left" valign="top"> 
+       	     <label>
+                 <input type="text"id="Label" name="fm[Label]" value="{$fm.Label}" class="txtBox" />
+                </label> 
+                <span id="err_Label" class="err"></span>              </td>
+            </tr>
+            <tr>
+              <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Description</span></td>
+              <td align="left" valign="top"><textarea rows="4" cols="55" class="txtBox" name="fm[Descr]" id="Descr" style="height:auto" onBlur="if (this.value.length > 200) { alert('The Description should be not more than 200 characters'); this.focus(); return false; }" onKeyPress="return imposeMaxLength(event, this, 200);">{$fm.Descr}</textarea>
+                <br /> <span id="err_Descr" class="err"></span> <span id="Note"> Note: The Description should be not more than 200 characters</span>        </td>
+            </tr>
+            <tr>
+              <td width="1%" nowrap="nowrap" valign="top"><span style="line-height:34px;">Album Art<span class="red"> *</span></span></td>
+              <td>
+              	<table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td nowrap="nowrap"><div id="file-uploader" style="float: left;"><noscript><p>Please enable JavaScript to use file uploader.</p></noscript></div></td>
+                    </tr>
+                    <tr><td><p class="font11 P5">We recommend upload an image that is no less than 200 pixels (width) x 200 pixels (height) for optimal resolution.  </p></td></tr>
+              	</table>
+                </td>
+            </tr>
+            <tr>
+            <td>&nbsp;</td>
+                 <td colspan="2" align="left" valign="top">
+                   <div>
+                       <img src="{if $fm.Image}/{$smarty.const.TRACK_IMG_PATH}/{$fm.UserId}/m_{$fm.Image}{else}{$SUB_DOMAIN}si/placeholder.gif{/if}" id="album_image"/>
+                         <input type="hidden" name="x1" value="" id="x1" />
+                         <input type="hidden" name="y1" value="" id="y1" />
+                         <input type="hidden" name="x2" value="" id="x2" />
+                         <input type="hidden" name="y2" value="" id="y2" />
+                         <input type="hidden" name="w" value="" id="w" />
+                         <input type="hidden" name="h" value="" id="h" />
+                   </div>
+                  <p> <span id="err_Image"  class="err"></span></p></td>
+         </tr>   
+            <tr>
+            	<td align="left" valign="top" id="cropedTxt"></td>
+  <td>
+                    <div style="float:left; margin-top:5px; position:relative; overflow:hidden; width:{$smarty.const.ALBUM_IMG_WIDTH}px; height:{$smarty.const.ALBUM_IMG_HEIGHT}px; display:none;">
+                    <img id="cropImage" src="{if $fm.Image}/{$smarty.const.TRACK_IMG_PATH}/{$fm.UserId}/m_{$fm.Image}{else}{$SUB_DOMAIN}si/placeholder.gif{/if}" style="position: relative;" alt="Crop Image Preview" />                    </div>				</td>
+            </tr>
+            <tr>
+                <td align="left" valign="top">&nbsp;</td>
+              <td colspan="2"><span id="image_err"></span>&nbsp;</td>
+            </tr>
+            
+            
+            <tr class="TrackUpload" {if $fm.Type_Single} disabled="disabled" {else} style="display:none" {/if} >
+            	<td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Track <span class="red"> *</span></span></td>
+<td> 
+                       <label>
+                                <div id="file-uploader1" style="float: left;">
+                                <noscript>
+                                   <p>Please enable JavaScript to use file uploader.</p>
+                                </noscript>
+                                </div>
+                        </label>
+                        <div style="float: left;padding-left: 15px; font-size: 11px;">
+                            <div id="track">{if $fm.Track}/{$fm.Track}{else}No file{/if}</div>
+                        </div>
+                         <div class="clear"></div>
+                         <div id="progress" style="display: none;">
+                            Progress <span id="progress-percent">0</span>%<br />
+                            <div style="border:#dedede solid 1px;"><div id="progress-value" style="height:15px; width:0; background-color: #fff6cc;"></div></div>
+               		     </div>
+                         <span id="err_track" class="err"></span>       			</td>
+            </tr> 
+            <tr class="TrackUpload" {if $fm.Type_Single} disabled="disabled" {else} style="display:none"{/if}>
+            	<td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Track preview</span> </td>
+<td> 
+                        <label>
+                             <div id="file-uploader2" style="float: left;">
+                             <noscript>
+                                   <p>Please enable JavaScript to use file uploader.</p>
+                                   </noscript>
+                             </div>
+                        </label>
+                        <div style="float: left;padding-left: 15px; font-size: 11px;">
+                        <div id="track_preview">{if $fm.TrackPreview}/{$fm.TrackPreview}{else}No file{/if}</div>
+                        </div>
+                        <div class="clear"><!-- --></div>
+                        <div id="progress1" style="display: none;">
+                        Progress <span id="progress-percent1">0</span>%<br />
+                         <div style="border:#dedede solid 1px;"><div id="progress-value1" style="height:15px; width:0; background-color: #fff6cc;"></div></div>
+                        </div>
+                        <span id="err_track_preview" class="err"></span>                    </td>
+            </tr>
+            <tr class="TrackUpload" {if $fm.Type_Single || $id}{else} style="display:none" {/if}>
+            	<td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Price <span style="color:red;">*</span></span></td>
+  <td>
+                	{if !$id}
+                    	<table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td>
+                            <table border="0" cellspacing="0" cellpadding="0">
+                             <tr>
+                             <td><input  type="text" id="Price" name="fm[Price]" value="{if $fm.Price}{$fm.Price|string_format:'%.2f'}{else}0.00{/if}" class="txtBox" size="15" {if $fm.PriceFree} disabled="disabled"{/if} /></td>
+    <td><input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" onClick="oProfile.CheckFree()" value="1"{if $fm.PriceFree} checked="checked"{/if} /></td>
+    <td><label for="PriceFree">Free</label></td>
+  </tr>
+</table>
+<span id="err_Price"  class="err"></span></td>
+                          </tr>
+                        </table>
+                    {else}
+                     <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                         {if $fm.Price}
+                            <td>
+                                $<input type="text" id="Price" name="fm[Price]" value="{if $fm.Price}{$fm.Price|string_format:'%.2f'}{else}0.00{/if}" class="txtBox" size="15" {if $fm.PriceFree} disabled="disabled"{/if}/>
+                                <span style="display:none">
+                               <input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" onClick="oProfile.CheckFree()" value="1"{if $fm.PriceFree} checked="checked"{/if} /> </span>  <span id="err_Price"  class="err"></span>                            </td>
+                         {else}
+                            <td>
+                            <span style="display:none">
+                               <input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" onClick="oProfile.CheckFree()" value="1"{if $fm.PriceFree} checked="checked"{/if} /> </span> <span id="err_Price"  class="err"></span>                            </td>
+                              <td>&nbsp;&nbsp;Free</td>
+                         {/if}                          </tr>
+                        </table>
+                    {/if}                </td>
+            </tr>
+            
+             <tr {if $fm.Type_Single || $id}{else} style="display:none" {/if} class="TrackUpload">
+                <td  width="1%" align="left" valign="top" nowrap="nowrap">&nbsp;</td>     			
+              </tr>
+            
+            <tr>
+              <td width="1%" align="left" valign="top" nowrap="nowrap">&nbsp;</td>
+              <td><table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td><input type="button" onClick="oProfile.EditAlbum();" value="{if $id}Update{else}Next{/if}" class="button wblue" /></td>
+                  <td>&nbsp;</td>
+                  <td><input type="button" value="Cancel" onClick="Go('/artist/music')" class="button bgrey" /></td>
+                </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td align="left" valign="top">&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>
+          </table>
+</form>
+</div>
+<div class="clear"></div>
+{/strip}
+{/block}

@@ -1,0 +1,203 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Music.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Player.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+		{if $redirectAlbumId}
+			oMusic.ShowArtistTrack({$redirectAlbumId});
+		{/if}
+        oPlay.InitPlayButtons();  
+		oPopup.InitPurchase();	
+	$('#delDialog').dialog({ autoOpen: false });
+	$('#delConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+			'Delete' : function(){
+				$('body').addClass('loading');
+				deleteMusicAlbum();
+				$(this).dialog('close');
+			}, 
+			'Cancel': function(){
+				$(this).dialog('close');
+			}
+		}
+	});
+	$('#TrackdelConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button bgrey', "click": function() {
+			 		$(this).dialog('close');
+			 	}
+			 },
+		'Delete': {
+				"text":'Delete', "class":'button wblue',  "click":function(){
+				$('body').addClass('loading');
+				deleteMusicTrack();
+				$(this).dialog('close');							
+				}
+			}				
+		}
+	});
+	
+	$('body').on('click', '.deleteInc', function(){
+			var id  = $(this).attr('id');
+			if(id){
+			$('#Id').val(id);									
+			$('#delConfirm').dialog('open');
+				}
+			
+	});
+	
+	$('body').on('click', '.TrackdeleteInc', function(){
+			var id  = $(this).attr('id');
+			if(id){
+			$('#Id').val(id);									
+			$('#TrackdelConfirm').dialog('open');
+				}
+			
+	});
+	
+function deleteMusicAlbum()
+	{
+	var Id  =	$('#Id').val();	
+		if(Id) {
+		  document.location = '/artist/removealbum?id='+Id;
+		  return true;
+			}
+	}	
+function deleteMusicTrack()
+	{
+	var Id  =	$('#Id').val();	
+		if(Id) {
+		  document.location = '/artist/removetrack?id='+Id;
+		  return true;
+			}
+	}		
+
+    });	
+</script>
+<script type="text/javascript">
+		$(document).ready(function(){
+		$('#sayBtn1').hide();
+		$("#normal").click(function() {
+				$("#sayBtn1").show();
+			});
+	 $('.musicList .shList') .click(function(){
+	 	var curTrackList = $(this).parents('.musicList').find('.trackList');
+		$('.trackList').removeClass('current');
+		curTrackList.addClass('current');
+		curTrackList.slideToggle();
+		$('.trackList').each(function(){
+			if(!$(this).hasClass('current')) $(this).slideUp();
+		});
+	 	
+
+	 });		
+	
+});
+</script>
+{/strip}
+
+{include file="mods/profile/fanfinder_map.html"}
+{/block}
+{block name="my_cabinet"}
+{strip}
+<div>
+       <div class="P15">
+            <h2 class="LF">Music</h2>     <a href="/artist/editalbum" class="RT button">Add New</a>
+       </div>
+  <div class="clear">&nbsp;</div>
+  <div class="subTab">
+     <ul>
+         <li> <a href="javascript:void(0);" class="active">My Store</a></li>
+         <li><a href="/artist/pricedtracks">My Playlist</a></li>
+    </ul>
+   </div>
+
+{if $albums}
+     {foreach key=k item=i from=$albums} 
+<div  class="musicList"><table width="100%" border="0" align="left"cellpadding="8" cellspacing="0">
+    <tbody>
+      <tr>
+        <td width="104" rowspan="2" align="left" valign="top"><a href="javascript:void(0);" class="shList tb"><img src="{if $i.Image}/{$smarty.const.TRACK_IMG_PATH}/{$i.UserId}/m_{$i.Image}{else}{$SUB_DOMAIN}si/ph/album-96x96.png{/if}" width="150" height="150" /></a></td>
+        <td align="left" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td align="left" valign="top">
+              <h4 class="M2 shList"><a title="Click to view tracks" href="javascript:void(0)">{$i.Title|truncate:40:'...'}</a></h4>
+              <p class="M2 decTxt">{$i.Descr|truncate:125}</p>
+              <p class="font14 M2">{if $i.Tracks > 1} {$i.Tracks} Tracks {else} {$i.Tracks} Track {/if}</p></td>
+               <td width="1%" align="center" valign="top" nowrap="nowrap">
+              <p class="P10" style="min-width:100px"> <strong>{if $i.Price} $ {$i.Price|string_format:'%.2f'}{else}FREE{/if}</strong></p>
+              </td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td align="right" valign="bottom" nowrap="nowrap">
+        		<ul class="icBox">
+                 <li><span class="LF"><a href="/artist/musicUploadStep3?AlbumId={$i.Id}">EDIT<img src="{$SUB_DOMAIN}si/edit_gray.png" width="18" hspace="3" align="baseline"/></a></li>
+                 <li><span class="LF"><a href="javascript:void(0);" class="share" mid="{$i.Id}"  albumtitle="{$i.Title}" >SHARE<img src="{$SUB_DOMAIN}si/share-ic-w.png" width="18" hspace="3"/></a></li>
+                </ul>
+           </td>
+      </tr>
+    </tbody>
+</table>
+<div class="clear"></div>
+<ul class="trackList none">
+{if $i.TrackList}
+     {foreach key=k item=track name=track from=$i.TrackList}
+        <li class="track">
+            <a href="javascript:void(0)"  class="floatL button play round play_track" mid="{$track.Id}"><img class="icon" src="{$SUB_DOMAIN}si/ic-playGrey.png"></a>
+            <span class="P10">{$smarty.foreach.track.iteration}</span>
+            
+            <a class="trackLink trackTitle play_track" href="javascript:void(0)" mid="{$track.Id}">{$track.Title|truncate:60:'...'} </a>
+            
+            <span  class="RT" style="min-width:80px; text-align:center">{if $track.Price>0} ${$track.Price|string_format:'%.2f'}{elseif $i.Price>0} Bonus {else} FREE {/if}</span>
+            <a href="javascript:void(0)" id="{$track.Id}" class="TrackdeleteInc iconSet RT"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a>
+            <a href="/artist/edittrack?id={$track.Id}" class="iconSet RT"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a>
+           <span class="RT trackLink">{if $track.TrackLength} {$track.TrackLength|date_format:"%M:%S"} {else} In process {/if}</span>
+
+        </li>
+        {/foreach}
+       
+        {if !$i.IsSingle}
+       		<li class="track addT"><a href="/artist/edittrack?albumId={$i.Id}" class="black"><img src="{$SUB_DOMAIN}si/addBtnBk.png" hspace="5" />Add New Track</a></li>
+        {/if}
+{else}
+           <li class="track track"><p align="center">No Track List</p></li>
+           <li class="track addT"><a href="/artist/edittrack?albumId={$i.Id}" class="black"><img src="{$SUB_DOMAIN}si/addBtnBk.png" hspace="5" />Add New Track</a></li>
+{/if}
+</ul>
+</div>
+  {/foreach}
+  
+   		{else}
+		<p class="noBar">No Albums</p>
+{/if}
+<div align="center" class="P15">{$pagging}</div>
+</div>
+<div class="clear"></div>
+{include file="mods/profile/blocks/_buy_block.html"}
+<div id="delDialog" title="Delete Tracks">
+<p>Please select tracks to delete</p>
+</div>
+<div id="delConfirm" title="Confirm Delete">
+<p>Are you sure you want to delete the selected Music Album?</p>
+<input type="hidden" id="Id">
+</div>
+<div id="TrackdelConfirm" title="Confirm Delete">
+<p>Are you sure you want to delete the selected Music Track?</p>
+<input type="hidden" id="Id">
+</div>
+<div class="loadingdiv"></div>
+{/strip}
+{/block}

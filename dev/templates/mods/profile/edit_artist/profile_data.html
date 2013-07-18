@@ -1,0 +1,265 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+<script type="text/javascript" src="/dev/templates/js/fileuploader.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/fileuploader.css" />
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oUsers.InitRecordLabelEdit();
+        oErrors.Show();
+
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/artist/UploadAvatar',
+            params: { },
+            // validation
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            // each file size limit in bytes
+            sizeLimit: 5120000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('image');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('image');
+                if (responseJSON.success==1) {
+                    var img = '/'+responseJSON['image'];
+                    console.log( img );
+                    $('#image, #image_edit').attr('src', img);
+                    $('#image').show();
+                    oErrors.SetOkFld('image', 'Image uploaded!');
+                    //$('#images').append('<div class="image" style="float:left;padding-left:5px;"><img src="'+img+'" alt="" /><br /><a href="javascript:void(0);" onclick="$(this).parents(\'.image\').remove();oTask.DeleteImage('+responseJSON['num']+', \'tmp\');">Удалить</a></div>');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                //alert(message);
+                oErrors.SetBadFld('image', message);
+            }
+        });
+
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+    </div>
+    <h1>My Artist Profile</h1>
+</div>
+
+<div class="content_block wide">
+
+    {if $confirm}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> Profile saved!
+    </div>
+    {/if}
+    {if $errs}
+    <div class="alert alert_error">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Error!</strong> Errors were found with your profile edit. Please correct the highlighted fields below.
+    </div>
+    {/if}
+    <form method="post" action="/artist/profile" class="big_form">
+        <fieldset>
+            <h3>Profile photo</h3>
+            <table class="form_table">
+                <tr>
+                    <td>
+                        <div id="file-uploader" style="float: left;">
+                            <noscript>
+                                <p>Please enable JavaScript to use file uploader.</p>
+                            </noscript>
+                        </div>
+                    </td>
+                    <td id="err_image" class="err" style="width:100px;"></td>
+                    <td>
+                        <img src="{if $UserInfo.Avatar}/files/images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}" id="image_edit" width="48" height="48" alt="" />
+                    </td>
+                    <td>{if $UserInfo.Avatar}<br /><input type="checkbox" name="fm[DeleteAvatar]" value="1" /> Delete avatar{/if}</td>
+                </tr>
+            </table>
+
+            <h3>Account info</h3>
+            <table class="form_table">
+                <tr>
+                    <td class="label_td"><label>First Name<span style="color:red;">*</span></label></td>
+                    <td width="289">
+                        <input type="text" name="fm[FirstName]" id="first_name" value="{$fm.FirstName}"
+                               class="text_input"/>
+                    </td>
+                    <td id="err_FirstName" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Last Name<span style="color:red;">*</span></label></td>
+                    <td>
+                        <input type="text" name="fm[LastName]" id="last_name" value="{$fm.LastName}"  class="text_input"/>
+                    </td>
+                    <td id="err_LastName" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Username<span style="color:red;">*</span></label></td>
+                    <td>
+                        <input type="text" name="fm[Name]" id="name" value="{$fm.Name}"  class="text_input"/><br /><small>Maximum 40 characters</small></td>
+                    <td id="err_Name" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Birth date</label></td>
+                    <td>
+                                <select name="fm[mm]" class="small_select">
+                                    <option value="">month</option>
+                                    {foreach key=k item=i from=$mm}
+                                    <option value="{$k}" {if $k==$fm.mm} selected="selected"{/if}>{$i}</option>
+                                    {/foreach}
+                                </select>
+
+                                <select name="fm[dd]" class="small_select">
+                                    <option value="">day</option>
+                                    {foreach key=k item=i from=$dd}
+                                    <option value="{$k}"{if $k==$fm.dd} selected="selected"{/if}>{$i}</option>
+                                    {/foreach}
+                                </select>
+
+                                <select name="fm[yy]" class="small_select">
+                                    <option value="">year</option>
+                                    {foreach key=k item=i from=$yy}
+                                    <option value="{$k}"
+                                            {if $k==$fm.yy} selected="selected"{/if}>{$i}</option>
+                                    {/foreach}
+                                </select>
+                            </td>
+                            <td id="err_dob" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Gender</label></td>
+                    <td class="radio_td"><input name="fm[Gender]" class="radio" id="male"{if $fm.Gender==1} checked="checked"{/if} value="1" type="radio"><label for="male">Male</label><input name="fm[Gender]" class="radio" id="female"{if $fm.Gender==2} checked="checked"{/if} value="2" type="radio"><label for="female">Female</label><input name="fm[Gender]" class="radio" id="disclose"{if !$fm.Gender} checked="checked"{/if} value="0" type="radio"><label for="disclose">Prefer not to disclose</label>
+                    </td>
+                    <td id="err_Gender" class="err"></td>
+                </tr>
+
+                <tr>
+                    <td class="label_td"><label>Likes</label></td>
+                    <td>
+                        <input type="text" class="text_input" name="fm[Likes]" id="likes" value="{$fm.Likes}"/></td>
+                    <td id="err_Likes" class="err"></td>
+                </tr>
+
+                <tr>
+                    <td class="label_td"><label>About me</label></td>
+                    <td colspan="2">
+                        <textarea name="fm[About]" id="about">{$fm.About}</textarea></td>
+                </tr>
+            </table>
+
+            <h3>Artist/band info</h3>
+            <table class="form_table">
+                <tr>
+                    <td class="label_td"><label>Artist/band name</label></td>
+                    <td><input type="text" name="fm[BandName]" id="band_name" value="{$fm.BandName}" class="text_input" /></td>
+                    <td id="err_band_name" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Years active</label></td>
+                    <td><input type="text" name="fm[YearsActive]" id="years_active" value="{$fm.YearsActive}" class="text_input small_input" /></td>
+                    <td id="err_years_active" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Location</label></td>
+                    <td><input type="text" name="fm[Location]" value="{$fm.Location}" class="text_input" /></td>
+                    <td id="err_location" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Genre(s)</label></td>
+                    <td>
+                        {assign var="maxv" value=$genres|@count/2}
+                        {assign var="maxv" value=$maxv|ceil}
+                        <table>
+                            <tr>
+                                {foreach name=n key=k item=i from=$genres}
+                                {if $smarty.foreach.n.index mod $maxv == 0}
+                                <td class="radio_td">
+                                    {/if}
+                                    <input type="checkbox" id="genres{$k}" name="fm[Genres][{$k}]" value="1"{if $fm.Genres.$k} checked="checked"{/if} /> <label for="genres{$k}">{$i}</label><br />
+                                    {assign var="nv" value=$smarty.foreach.n.index+1}
+                                    {if $nv mod $maxv == 0}
+                                </td>
+                                {/if}
+                                {/foreach}
+                            </tr>
+                        </table>
+                    </td>
+                    <td id="err_Genres" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Members</label></td>
+                    <td><input type="text" name="fm[Members]" value="{$fm.Members}" class="text_input" /></td>
+                    <td id="err_members" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Website</label></td>
+                    <td><span class="light">http://</span> <input type="text" name="fm[Website]" value="{$fm.Website}" class="text_input website_input" /></td>
+                    <td id="err_website" class="err"></td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Bio</label></td>
+                    <td colspan="2"><textarea name="fm[Bio]">{$fm.Bio}</textarea></td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="label_td"><label>Record label(s)</label></td>
+                    <td colspan="2">
+                        <div class="rlabel">
+                            {foreach name=n key=k item=i from=$fm.RecordLabel}
+                            <div class="pitem" style="padding-bottom:5px;">
+                                <span class="light">Record-Label:</span> <input class="text_input record_input" type="text" name="fm[RecordLabel][]" value="{$fm.RecordLabel.$k}" />
+                                &nbsp;<span class="light">Website:</span> <input class="text_input record_input" type="text" name="fm[RecordLabelLink][]" value="{$fm.RecordLabelLink.$k}" />&nbsp;
+                                <a href="javascript:void(0);" class="del_label">Delete</a>
+                            </div>
+                            {foreachelse}
+                            <div class="pitem" style="padding-bottom:5px;">
+                                <span class="light">Record-Label:</span> <input class="text_input record_input" type="text" name="fm[RecordLabel][]" value="" />
+                                &nbsp;<span class="light">Website:</span> <input class="text_input record_input" type="text" name="fm[RecordLabelLink][]" value="" />&nbsp;
+                                <a href="javascript:void(0);" class="del_label">Delete</a>
+                            </div>
+                            {/foreach}
+                        </div>
+                        <div>
+                            <a href="javascript:void(0);" id="add_label">Add record label</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="line"></div>
+            <table class="form_table">
+                <tr>
+                    <td class="label_td"></td>
+                    <td>
+                        <input class="button yellow_button" type="submit" value="Update profile" />
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+</div>
+{/block}

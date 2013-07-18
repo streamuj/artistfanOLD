@@ -1,0 +1,35 @@
+{foreach key=k item=i name=tracks from=$tracks}
+	{if $i.TrackLength}
+     <tr>
+     	<td style="display:none"><img width="22" height="22" alt="" src="{if $i.Image}/{$i.Image}{else}/si/ic-music-17x14.png{/if}" /></td>
+         <td width="5%" bgcolor="#161616"><a href="javascript:void(0);" class=" block P10 LF play_track" mid="{$i.Id}" fellow="{$IsFollow1}"><img src="/si/ic-playM.png" align="left" /></a></td>
+         <td width="5%" bgcolor="#161616"><span class="block P10 LF">{$smarty.foreach.tracks.iteration}</span></td>
+         <td width="60%" nowrap="nowrap" bgcolor="#161616"><span class="block P10 LF">{$i.Title|truncate:30:'...'} </span></td>
+         <td width="10%" bgcolor="#161616"><span class="block P10 RT">{if $i.TrackLength} {$i.TrackLength} {else} No Track Length {/if}</span></td>
+         <td width="20%" nowrap="nowrap" bgcolor="#161616">
+               <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+             	<tr>
+                	 <td style="border-bottom:none; border-top:none; box-shadow:none;" bgcolor="#161616">
+					   <div align="center"> 
+                      	<span class="pricetag showTrackStatus" title="Price: $ {$i.Price}">{if $i.Price>0} $ {$i.Price|string_format:'%.2f'} {else} Free {/if} </span>
+                      </div> 
+                    </td>
+                </tr>
+             </table>
+        </td>
+       
+    </tr>
+   {else}
+     <tr>
+    	 <td width="5%" bgcolor="#161616">&nbsp;</td>
+    	 <td width="5%" bgcolor="#161616"><span class="block P10 LF">{$smarty.foreach.tracks.iteration}</span></td>
+          <td width="30%" nowrap="nowrap" bgcolor="#161616"><span class="block P10 LF">{$i.Title|truncate:30:'...'} </span></td>
+      	 <td colspan="60"  bgcolor="#161616" > <strong>Please wait:</strong> Your music/video file is under the process on our server. This may take a while (10-15 minute to an hour depende on the file size). This page will reload once the process is completed and you and your fans will be able see your video/music.</td>
+    </tr>
+   {/if}
+{foreachelse}
+  	<tr>
+      		<td colspan="5"  bgcolor="#161616" align="center">No Track</td>
+    </tr>
+{/foreach}
+	 

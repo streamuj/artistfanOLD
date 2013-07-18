@@ -1,0 +1,99 @@
+<h1>Системный лог</h1>
+
+Показать:
+        По менеджеру:
+        <select name="uid" id="uid" onchange="Go('/base/Log?uid='+$('#uid').val()+'&flt='+$('#flt').val());">
+            <option value="">Все менеджеры</option>
+            {foreach key=k item=i from=$uq}
+            <option value="{$i.Id}"{if $i.Id==$uid} selected="selected"{/if}>{$i.FirstName} {$i.LastName}</option>
+            {/foreach}
+        </select>
+
+        По действию:
+        <select name="flt" id="flt" onchange="Go('/base/Log?uid='+$('#uid').val()+'&flt='+$('#flt').val());">
+            <option value="">Все действия</option>
+            {foreach key=k item=i from=$types}
+            <option value="{$k}"{if $k==$flt} selected="selected"{/if}>{$i}</option>
+            {/foreach}
+        </select>
+
+<div style="height:7px;"></div>
+
+<table class="style_table f13" style="width:100%;">
+<thead>
+    <tr style="color:#28B7F3">
+        <th style="width:20px;">ID</th>
+        <th style="width:20px;">Дата</th>
+        <th>Пользователь</th>
+        <th>Событие</th>
+        <th></th>
+    </tr>
+</thead>     
+<tbody>
+{foreach key=k item=i from=$list}
+<tr style="font-size:11px;" align="center">
+    <td>{$i.Id}</td>
+    <td>{$i.Pdate|mdate}</td>
+    <td>
+        {if $i.User}
+            {if $i.User.Status == 1}Клиент:{else}Менеджер:{/if} <a href="{if $i.User.Status == 1}/base/clientadmin/ShowClient?id={$i.User.Id}{else}/base/manageradmin/ShowManager?id={$i.User.Id}{/if}">{$i.User.FirstName} {$i.User.LastName}</a><br />
+        {/if}
+        
+        {if $i.Manager}
+            Менеджер: <a href="/base/manageradmin/ShowManager?id={$i.Manager.Id}">{$i.Manager.FirstName} {$i.Manager.LastName}</a><br />
+        {/if}
+        
+        {if $i.Order}
+        
+        {/if}
+    </td>
+    <td>{$types[$i.Action]}
+        {if $i.Comment}<div><a href="javascript:void(0);" onclick="if ($('#adi{$i.Id}').css('display') == 'none') $('#adi{$i.Id}').show(); else $('#adi{$i.Id}').hide();">Подробнее</a></div>{/if}
+    
+    </td>
+    <td></td>  
+</tr>
+<tbody id="adi{$i.Id}" style="display:none;">
+    <tr style="font-size:11px;border:none;"><td colspan="5">
+        {if $i.Action == 'block_user'}
+            <b>Причина блокировки:</b> {$i.Comment.reason}
+        {elseif $i.Action == 'add_amount'}
+            <b>Сумма:</b> {$i.Comment.amount}<br />
+            <b>Комментарий:</b> {$i.Comment.comment}<br />
+        {elseif $i.Action == 'add_comment'}
+            <b>Комментарий:</b> {$i.Comment.comment}<br />
+        {elseif $i.Action == 'del_comment'}
+            <b>Комментарий:</b> {$i.Comment.comment}<br />
+        {elseif $i.Action == 'change_status'}
+            <b>Изменен из статуса</b> {if $i.Comment.old==0}Новый{elseif $i.Comment.old==1}Проверенный{elseif $i.Comment.old==2}Постоянный{elseif $i.Comment.old==3}Золотой{elseif $i.Comment.old==4}Плохой клиент{/if}
+            <b>в статус</b> {if $i.Comment.new==0}Новый{elseif $i.Comment.new==1}Проверенный{elseif $i.Comment.new==2}Постоянный{elseif $i.Comment.new==3}Золотой{elseif $i.Comment.new==4}Плохой клиент{/if}
+        {elseif $i.Action == 'edit_user'}
+            {foreach key=k2 item=i2 from=$i.Comment}
+                {if $k2 == 'comment'}
+                    {$i2}
+                {else}
+                    <b>Поле:</b> {$k2}, <b>начальное значение:</b> {$i2.1}, <b>конечное значение:</b> {$i2.0}<br />
+                {/if}
+            {/foreach}
+        {elseif $i.Action == 'edit_user_address'}
+            {foreach key=k2 item=i2 from=$i.Comment}
+                {if $k2 == 'comment'}
+                    {$i2}
+                {else}
+                    <b>Поле:</b> {$k2}, <b>начальное значение:</b> {$i2.1}, <b>конечное значение:</b> {$i2.0}<br />
+                {/if}
+            {/foreach}
+        {elseif $i.Action=='edit_order'}
+            <a href="/base/orders/ShowAdmin?id={$i.OrderId}" target="_blank">Просмотреть лог заказа</a>
+        {/if}
+    
+    </td></tr>
+</tbody>
+{foreachelse}
+<tr>
+    <td colspan="12">Лог пуст</td>
+</tr>
+{/foreach}        
+</tbody>
+</table>    
+<div id="pagging">{$pagging}</div>

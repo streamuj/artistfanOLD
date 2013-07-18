@@ -1,0 +1,103 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+
+{block name="javascript"}
+<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
+
+{include file="mods/profile/fanfinder_map.html"} 
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+
+</script>
+
+
+{/block}
+
+{block name="my_cabinet"}
+<div class="P15">
+    <h2>My Broadcasting</h2>
+    
+    <div class="content_block wide">
+
+    {if $event_finished}
+    <div class="font12 M5" style="color:#cccccc;">
+        <p><strong>Your event is finished!</strong></p>
+        <p>You will be able to review broadcast recoding on this page after 3 to 4 hours</p>
+    </div>
+    {/if}
+    {if $timeOut}
+    <div class="alert alert_warning">
+        <p>Your event is already finished!</p>
+    </div>    
+    {/if}
+    
+    {*<h4>Announced events with streaming option</h4>*}
+    
+    <div class="clear"></div><br />
+    <div class="albums_container_ALT" style="width: 687px;">
+    <table>
+    	<tr>
+        	
+            <td><input type="button" onclick="Go('/artist/StartBroadcasting/' + $('#event_id').val());" value="Start broadcast" class="button" /><br /></td>	
+            <td>&nbsp;</td>	
+            <td class="xform">
+                <select name="fm[event]" id="event_id" style="width:400px;">
+                    {foreach key=k item=i from=$events}
+                    <option value="{$i.Id}">{$i.Title|truncate:40} ({$i.EventDate|mdate})</option>
+                    {/foreach}
+                </select>    
+            </td>	
+        </tr>
+    </table>
+    </div>
+</div>
+    <div class="clear"></div><br />
+  <div class="subTab">
+      <ul>
+         <li> <a href="/artist/broadcasting" class="active">Live Stream Recordings</a> </li>
+         <li> <a href="/artist/broadcastviewers" >Activity Reports</a></li>
+      </ul>
+  </div>
+  
+  {if $recordings}
+    <table class="style_table">
+        <col />
+        <col width="50%" />
+        <col />
+        <col />
+        {foreach key=k item=i from=$recordings}
+        <tr>
+            <td>
+                <span class="muted">{$i.Pdate|mdate:4}</span>
+            </td>
+            <td>
+            	{if $i.EventId}
+                <a href="/artist/events/{$i.EventId}">{$i['e.Title']}{if $i.Order > 1} - Part {$i.Order}{/if}</a>
+                {else}
+                <a href="/artist/broadcastvideo/{$i.Id}">{$UserInfo.Name|ucfirst} - {$i['Pdate']|date_format}</a>
+                {/if}
+            </td>
+            <td><a href="/base/download/broadcastvideo?id={$i.Id}" class="button"> Download </a></td>
+            <td>
+                <a href="/artist/broadcastvideo/{$i.Id}" class="button">Review</a>
+            </td>
+        </tr>
+        {/foreach}
+    </table>
+
+<div>{$pagging}</div>    
+{else}
+	<p class="noBar">No Recordings</p>
+{/if}
+
+</div>
+
+    
+    
+    
+    
+
+{/block}

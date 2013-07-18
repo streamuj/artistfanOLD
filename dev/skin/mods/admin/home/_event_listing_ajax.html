@@ -1,0 +1,44 @@
+{if $h_list}
+	<tr><td><strong>Selected Events links</strong></td></tr>
+
+	<tr>
+      <td  class="mngHometxt">
+       	<table class="style_table f13">     
+        <thead>
+            <tr style="color:#28B7F3;">
+                <th class="aleft">Title</th>
+                <th class="aleft">Event Date</th>
+                <th class="aleft">Order</th>               
+                <th class="aleft">Category</th>                
+                <th class="aleft">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach key=k item=i from=$h_list}          
+                <tr class="f11" id="artist_{$i.Id}">
+                	<td  width="30%">{$i.Title}</td>
+                    <td  width="20%">
+                 <div class="calend_date">
+    			  <div class="day">{$i.EventDate|cdate:dweek}</div><div class="month">{$i.EventDate|cdate:month}</div><div>{$i.EventDate|cdate:mday} </div>
+		         </div>
+                    </td>
+					<td  width="20%"><input type="text" id="{$i.Id}" value="{$i.HomeOrder}" onblur="oHome.SaveHomeOrder(this.id, this.value);" maxlength="5" size="3" /></td>  
+                    <td width="20%">{$i.CategoryName}</td>                  
+                    <td  width="10%"><a href="javascript:void(0);" onclick="oHome.DeleteLink({$i.Id},'{$status}')" title="Delete"><img src="/ssi2/icon_delete.gif" /></a></td>
+                </tr>
+
+            {/foreach}
+		</tbody>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+				<td ><a href="/base/home/event" class="str_submit"><span><b>Save Order</b></span></a></td>
+				<td >&nbsp;</td>
+            </tr>        
+        </table>
+	  </td>
+    </tr> 
+{else}    
+    <tr>
+       <td class="mngHometxt">No Event Links</td>
+     </tr>       
+{/if}

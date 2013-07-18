@@ -1,0 +1,103 @@
+<div>
+  <table cellspacing="0" cellpadding="8" border="0">
+          <tbody><tr width="100%">
+                <td width="104" valign="middle" align="left" class="P20" style="border-bottom:1px solid #eee;"><span class=" caps">Event </span ></td>                
+                <td width="750" valign="middle" align="left" class="P20" style="border-bottom:1px solid #eee;"><span class=" caps" style="width:450px; display:block">Details</span ></td>
+                <td width="166" valign="middle" align="center" class="P20" style="border-bottom:1px solid #eee;"><span class=" caps">Buy</span ></td>
+               </tr>
+       {foreach key=k item=i from=$events}       
+       {if $i.Status==4 || $i.EventDate|ispast}                
+       {else}
+       {if $i.Price}      
+	    <tr>
+    	<td style="border-bottom:1px solid #eee;">
+        {if $i.name || $i['u.Name']}         
+         {if $i.name}
+	    <a href="/u/{$i.name}/events/{$i.Id}">         
+         {else if $i['u.Name']}			
+	    <a href="/u/{$i['u.Name']}/events/{$i.Id}">                     
+         {/if}         
+         {if $i.EventPhoto}
+        <img src="/files/photo/thumbs/{$i.UserId}/{$i.EventPhoto}" width="200" height="115" />
+        {else}
+        <img src="/dev/templates/images/nophoto.jpg" width="200" height="115" />        
+        {/if}
+        </a> 
+		{/if}  
+        </td>        
+        <td valign="top"  align="left" style="border-bottom:1px solid #eee;" width="250" ><table cellspacing="0" cellpadding="5" border="0" width="300">
+          <tbody><tr>
+            <td width="100%" nowrap="nowrap"><span class="icDate LF font14">         {if $i.name}
+	    <a href="/u/{$i.name}/events/{$i.Id}">         
+         {else if $i['u.Name']}			
+	    <a href="/u/{$i['u.Name']}/events/{$i.Id}">                     
+         {/if}         
+<b>{$i.EventDate|date_format} | {$i.EventDate|date_format:"%A"}</b></a></span></td>
+            <td width="" nowrap="nowrap"><span class="icTime LF font14">            
+            <b>{$i.EventDate|date_format:'%I:%M  %p'}  </b>
+            </span></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+             {if $i.band_name || $i['u.BandName']}
+            <p class="font16 caps">         {if $i.band_name}
+	    <a href="/u/{$i.band_name}/events/{$i.Id}">         
+         {else if $i['u.BandName']}			
+	    <a href="/u/{$i['u.BandName']}/events/{$i.Id}">                     
+         {/if}
+             {if $i.band_name}         
+			{$i.band_name|capitalize}             
+             {else if $i['u.BandName']}
+			{$i['u.BandName']|capitalize}                          
+             {/if}
+</a>  </p>             
+             {else}
+            <p class="font16 caps">
+            {if $i.name}
+	    <a href="/u/{$i.name}/events/{$i.Id}">         
+         {else if $i['u.Name']}			        
+	    <a href="/u/{$i['u.Name']}/events/{$i.Id}">                             
+         {/if}  
+             {if $i.name}         
+			{$i.name|capitalize}             
+	         {else if $i['u.Name']}			
+			{$i['u.Name']|capitalize}                          
+             {/if}                
+</a> </p>             
+             {/if}
+              <p class="font16 caps">{if $i.name}
+	    <a href="/u/{$i.name}/events/{$i.Id}">         
+         {else if $i['u.Name']}			
+	    <a href="/u/{$i['u.Name']}/events/{$i.Id}">                     
+         {/if}         
+<b>{$i.Title}</b></a></p>
+              <p>            {if $i.name}
+	    <a href="/u/{$i.name}/events/{$i.Id}">         
+         {else if $i['u.Name']}			
+	    <a href="/u/{$i['u.Name']}/events/{$i.Id}">                     
+         {/if}         
+{$i.Descr|truncate:130:"..."}</a></p></td>
+            </tr>
+        </tbody></table></td>       
+        <td align="center" style="border-bottom:1px solid #eee;">$ {$i.Price|string_format:'%.2f'}
+ {if $i.EventType!=3}{if !$i['EventAttend.Id']}
+                       {*<a href="javascript:void(0);" class="btn-gray attend_event" mid="{$i.Id}">I will go!</a>{else}<div class="good status-good">You're going</div>*}{/if}{/if}
+                        {if $i.EventType>1}{if !$i['EventPurchase.Id']}
+                        <a href="javascript:void(0);" class="pricetag event freeEvents M2 IndexEvents" onclick="oPopup.IndexEvents('{$i.Id}','{$i.UserId}');" mid="{$i.Id}" price="{$i.Price}">
+                        {if $i.Price>0}Buy{else}Get{/if}</a>{else}
+						<div class="good status-good">Event Purchased</div>                                
+                        {*<a href="/fan/events/{$i.Id}" class="btn-gray">Access info</a>*}
+                        {/if}
+                        {/if}         
+        </td> 
+      </tr>
+      {/if}       
+       {/if}
+
+      {/foreach}
+    </tbody></table>
+  <div class="clear"></div>
+  <div align="center">&nbsp;</div>
+</div>
+</div>
+  <div class="clear"></div>

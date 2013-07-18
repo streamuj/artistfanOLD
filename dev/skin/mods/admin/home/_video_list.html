@@ -1,0 +1,46 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery.form.js"></script>
+<script type="text/javascript" src="/sj/cls/Home.js"></script>
+{/block}
+
+{block name="content"}	
+<h1>Manage Home Video </h1>
+
+<ul class="tabs-panel">
+    <li{if $status == 'artist'} class="act"{/if}><a href="/base/home/artist">Artists list</a></li>
+    <li{if $status == 'video'} class="act"{/if}><a href="/base/home/video">Video</a></li>
+    <li{if $status == 'events'} class="act"{/if}><a href="/base/home/event">Event</a></li>
+    <li{if $status == 'musicAlbum'} class="act"{/if}><a href="/base/home/musicAlbum">Music Album</a></li> 
+    <li{if $status == 'category'} class="act"{/if}><a href="/base/home/category">Category</a></li>         
+</ul>
+<div class="clear"></div>
+<ul class="tabs-panel">
+		<li> Select Category :
+            	<select name="Category" id="Category" onchange="oHome.VideoList()">
+                    <option value="">--All--</option>
+                    {foreach item=i key=k from=$homeCategory}
+                    <option value="{$i.CatId}">{$i.CatName}</option>
+                    {/foreach}
+                </select>
+		</li>
+</ul>
+<div class="clear"></div>
+{if $flashMessage}    
+    <div class="alert alert_success"> Manage Home Video Link Added Successfully </div>
+{/if}
+<div class="clear"></div>
+<table width="100%">
+    <tbody id="list">
+           {include file="mods/admin/home/_video_listing_ajax.html"}
+    </tbody>
+    <tr class="blue_block">
+            <td class="mngHometxt">
+                <a href="/base/home/addnewlink?status={$status}" class="str_submit"><span><b>Add New</b></span></a>           
+            </td>
+     </tr>
+</table>
+  <div class="clear"></div>    
+  <div style="padding-right:20px;" id="pagging">{$pagging}</div>
+{/block}

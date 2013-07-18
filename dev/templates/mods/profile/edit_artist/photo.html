@@ -1,0 +1,48 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+
+{/block}
+
+{block name="my_cabinet"}
+
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+    </div>
+    <h1>My Photo store</h1>
+</div>
+
+<div class="content_block wide">
+    {if $photo_added || $photo_updated || $photo_removed || $album_removed || $album_added || $album_updated}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> {if $photo_added}Photo added!{elseif $photo_updated}Photo updated!{elseif $photo_removed}Photo removed!{elseif $album_removed}Album removed!{elseif $album_added}Album added!{elseif $album_updated}Album updated!{/if}
+    </div>
+    {/if}
+
+    {if $albums}
+    <h2>Albums</h2>
+    <div class="photos-container">
+        {foreach name=ph key=k item=i from=$albums}
+        <div class="album">
+            <div class="cover">
+                <a href="/artist/editphotoalbum?id={$i.Id}"><span class="thumb" style="background-image: url('{if $i.Cover}/files/photo/thumbs/{$i.UserId}/{$i.Cover}{else}/dev/templates/images/nophoto.jpg{/if}');"></span></a>
+            </div>
+            <div class="title">
+                <a href="/artist/editphotoalbum?id={$i.Id}">{$i.Title}</a> ({$i.CountPhotos})
+            </div>            
+            <div class="tools">
+                <a href="/artist/editphotoalbum?id={$i.Id}" class="button">Edit album</a> &nbsp; <a href="/artist/editphoto?album={$i.Id}" class="button">Add photo</a>
+            </div>
+        </div>
+        {if ($smarty.foreach.ph.index+1) mod 3 == 0}<div class="cl"></div>{/if}
+        {/foreach}
+        {if $smarty.foreach.ph.total mod 3 != 0}<div class="cl"></div>{/if}
+    </div>
+    {/if}
+    <div class="tools">
+        <a href="/artist/editphotoalbum" class="button">New album</a> &nbsp; <a href="/artist/editphoto" class="button">Upload photos</a>
+    </div>
+</div>
+{/block}

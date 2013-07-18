@@ -1,0 +1,90 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+// Start Jquery Delete 
+	$('#delDialog').dialog({ autoOpen: false });
+	$('#delConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+		
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button bgrey', "click": function() {
+			 		$(this).dialog('close');
+			 	}
+			 },
+		'Delete': {
+				"text":'Delete', "class":'button wblue',  "click":function(){
+				$('body').addClass('loading');
+				deleteVideo();
+				$(this).dialog('close');				
+				}
+			}	
+		
+		
+		/*
+			'Delete' : function(){
+				$('body').addClass('loading');
+				deleteVideo();
+				$(this).dialog('close');
+			}, 
+			'Cancel': function(){
+				$(this).dialog('close');
+			}
+		*/	
+		}
+	});
+	$('body').on('click', '.DeleteVideo', function(){
+			
+			var VId  = $(this).attr('VId');
+			if(VId){
+			$('#vId').val(VId);									
+			$('#delConfirm').dialog('open');
+				}
+			
+	});
+function deleteVideo()
+	{
+		var VId  =	$('#vId').val();	
+		if(VId){
+		    $.ajax({
+            type:     'POST',
+            dataType: 'json',
+            data:     "delete_video_id="+VId,
+            url:      '/base/fan/Video',
+            success: function (data)
+            {
+                if (data.q == 'ok')
+                {
+					$('body').removeClass('loading');																	
+                    $('#video_list').html(data.data);
+					$('#video_'+VId).remove();					
+                }
+            }
+        });
+		}
+	}	
+//	End Jquery Delete	
+});
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="P15">
+	<h2 >My Videos</h2><br />
+  
+  <div id="list">{include file="mods/profile/edit_fan/ajax/filter_video.html"}</div>
+</div>
+<div id="delDialog" title="Delete Tracks">
+<p>Please select tracks to delete</p>
+</div>
+<div id="delConfirm" title="Confirm Delete">
+<p>Are you sure you want to delete the selected Video?</p>
+<input type="hidden" id="vId">
+</div>
+<div class="loadingdiv"></div>
+{/block}

@@ -1,0 +1,171 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/jquery-ui-1.8.16.custom.css" />
+
+<script type="text/javascript" src="/dev/templates/js/fileuploader.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/fileuploader.css" />
+
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+        $("#PhotoDate").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+        $('#AlbumId').change(function()
+        {
+            if($(this).val() == '0')
+            {
+                $('#new_album').show();
+            }
+            else
+            {
+                $('#new_album').hide();
+            }
+        });
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/artist/UploadPhoto',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('Image');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('Image');
+                if (responseJSON.success==true) {
+                    oErrors.SetClearFld('Image');
+                    var img = '/'+responseJSON['photo'];
+                    $('#photo_image').css('background-image', 'url(' + img + ')');
+                    $('#photo_image').parent('.thumb').attr('href', img);
+                    oErrors.SetOkFld('Image', 'Image uploaded!');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('Image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('Image', message);
+            }
+        });
+
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/photo">My Photo store</a>
+    </div>
+    <h1>{if $id}Edit photo{else}New photo{/if}</h1>
+</div>
+
+<div class="content_block wide">
+    <div class="photos-container">
+        <div class="photo">
+            <a href="{if $fm.ImageOrigin}{$fm.ImageOrigin}{elseif $fm.Image}{$fm.Image}{else}/dev/templates/images/nophoto.jpg{/if}" target="_blank" class="thumb">
+            <span id="photo_image" style="background-image: url('{if $fm.Image}{$fm.Image}{else}/dev/templates/images/nophoto.jpg{/if}');"></span>
+            </a>
+        </div>
+    </div>
+    <form class="big_form" id="photo_form" method="post" action="/artist/editphoto">
+        <input type="hidden" name="id" value="{$id}"/>
+        <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+        <br />
+        <table class="form_table">
+            <tr>
+                <td></td>
+                <td width="289">
+                    <div id="file-uploader" style="float:left;">
+                    <noscript>
+                       <p>Please enable JavaScript to use file uploader.</p>
+                    </noscript>
+                    </div>
+                </td>
+                <td class="err" id="err_Image"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Title / Description</label></td>
+                <td colspan="2"><textarea name="fm[Title]" style="height: 3em;">{$fm.Title}</textarea></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Photo date</label></td>
+                <td><input type="text" id="PhotoDate" name="fm[PhotoDate]" value="{$fm.PhotoDate}" class="text_input" /></td>
+                <td class="err" id="err_PhotoDate"></td>
+            </tr>
+            
+             <tr>
+            <td class="label_td"><label>Price</label></td>
+            <td>
+            	<input type="text" id="Price" name="fm[Price]" value="{$fm.Price}" class="text_input small_input" />
+                <input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" value="1"{if $fm.PriceFree} checked="checked"{/if} /> <label for="PriceFree">Free</label>
+            </td>
+            <td></td>
+        </tr>
+            
+            <tr>
+                <td class="label_td"><label>Album</label></td>
+                <td>
+                    <select id="AlbumId" name="fm[AlbumId]">
+                        <option value="0">New album...</option>
+                        {foreach key=k item=i from=$albums}
+                         <option value="{$i.Id}"{if $fm.AlbumId==$i.Id || (!$fm.AlbumId && $album==$i.Id)} selected="selected"{/if}>{$i.Title}</option>
+                        {/foreach}
+                    </select>
+                </td>
+                <td></td>
+            </tr>
+            
+            
+             <tr id="new_album" style="{if $fm.AlbumId || $album}display: none;{/if}">
+                <td class="label_td"></td>
+                <td>
+                    <div>
+                        <label>Name for new album</label>
+                    </div>
+                    <input type="text" name="fm[AlbumTitle]" id="AlbumTitle" value="{$fm.AlbumTitle}" class="text_input" />
+                </td>
+                <td id="err_AlbumTitle" class="err"></td>
+            </tr>
+            
+            <tr>
+                <td class="label_td"></td>
+                <td>
+                      <input type="checkbox" class="checkbox" id="Slide" name="fm[Slide]" value="1" {if $fm.Slide} checked="checked" {/if} /><label for="PriceFree"> Set as a slide image</label>
+                </td>
+                <td id="err_AlbumTitle" class="err"></td>
+            </tr>
+           
+            
+        </table>
+        <table class="form_table">
+            <tr>
+                <td class="label_td"></td>
+                <td>
+                <input type="button" onclick="oProfile.EditPhoto();" value="{if $id}Update{else}Publish{/if}" class="button" />
+                {if $id}
+                 &nbsp;<input type="button" onclick="CGo('/artist/removephoto?id={$id}', 'Do you realy want to remove this photo?');" class="button" value="Remove" />{/if}
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+{/block}

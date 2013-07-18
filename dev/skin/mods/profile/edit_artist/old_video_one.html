@@ -1,0 +1,99 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{if $video.Status < 2}
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+{/if}
+{if !$video.FromYt && $video.Status == 2}
+<script type="text/javascript" src="/j/mdetect.js"></script>
+<script type="text/javascript" src="/j/swfobject.js"></script>
+<script type="text/javascript" src="/j/smh.swobject.js"></script>
+{/if}
+<script type="text/javascript">
+  $(document).ready(function(){
+  	var uagent = navigator.userAgent.toLowerCase();
+	{if $video.Status < 2}
+        oProfile.GetVideoStatus(1, {$video.Id});
+	{/if}
+	
+	{if !$video.FromYt && $video.Status == 2}
+	var video = "mp4:u/{$video.UserId}/{$video.Video}";
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		var mobile = {};
+		mobile.account  = "artistfan";
+		mobile.media    = video;
+		mobile.poster   = "/files/video/thumbnail/{$video.UserId}/{$video.Video}.jpg";
+		mobile.autoplay = "false";
+		mobile.mimetype = "video/mp4";
+		mobile.width    = "640";
+		mobile.target   = "player";
+		mobile.maxwidth = "525";
+		bootStrap(mobile);
+	} else {
+		var flashvars = { account: "artistfan", media: video, autoplay: "false", poster: '/files/video/thumbnail/{$video.UserId}/{$video.Video}.jpg'};
+		var params = { };
+		params.quality = "high";
+		params.bgcolor = "#000000";
+		params.allowscriptaccess = "sameDomain";
+		params.allowfullscreen = "true";
+		var attributes = {};
+		attributes.id = "Player";
+		attributes.name = "Player";
+		attributes.align = "middle";
+		swfobject.embedSWF("/j/smh.player.swf","player", "640", "525", "10.1.0", false, flashvars, params, attributes);
+	}
+	{/if}
+  });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/video">My Video store</a>
+    </div>
+    <h1>{$video.Title}</h1>
+</div>
+
+<div class="content_block wide">
+    {if $video_updated || $video_added}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> {if $video_added}Video added!{elseif $video_updated}Video updated!{/if}
+    </div>
+    {/if}
+    
+    {if $video.Status == 1}
+    <div class="alert alert_note" style="width:721px;">
+        <strong>Please wait:</strong> Your music/video file is under the process on our server. This may take a while (10-15 minute to an hour depende on the file size). This page will reload once the process is completed and you and your fans will be able see your video/music.
+    </div>
+    {elseif !$video.FromYt && $video.Status == 0}
+    <div class="alert alert_warning">
+        <strong>Warning!</strong> Your music file / video is not send to processing. Back to edit video page and confirm it.
+    </div>
+    {/if}
+
+    <div class="video-holder">
+        {if $video.FromYt || $video.Status == 2}
+        <div class="video">
+            {if $video.FromYt}
+            <iframe width="480" height="360" src="http://www.youtube.com/embed/{$video.Video}" frameborder="0" allowfullscreen></iframe>
+            {elseif $video.Status == 2 && $video.EventId}
+            <a href="{$video.Video}" style="display:block;width:640px;height:360px" id="player"></a>
+            {elseif $video.Status == 2}
+            <a href="/files/video/u/{$video.UserId}/{$video.Video}" style="display:block;width:640px;height:360px" id="player"></a>
+            {/if}
+        </div>
+        {elseif $video.Status < 2}
+        <br /><br /><br />
+        <img src="/i/icon-wait.png" alt="" />
+        <br /><br /><br />
+        {/if}
+    </div>
+    {*<!--<p class="text">
+        {$video.Title} by {if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}
+    </p>-->*}
+</div>
+{/block}

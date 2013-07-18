@@ -1,0 +1,108 @@
+/* Tiny Carousel */
+#coverSlider { width:1025px; height:350px; margin:0 auto; overflow:hidden;  display:block; position:relative}
+#slider1 { overflow:hidden;  }
+#slider1 .viewport { float: left; width: 1025px; height: 350px; overflow: hidden; position: relative;}
+#slider1 .buttons { background:url("../si/UI/coverSlider/slider-btns-over.png") no-repeat scroll 0 0 transparent; display: block; background-position: 0 -42px; text-indent: -999em; float: left; width: 39px; height: 42px; overflow: hidden; position: absolute; top:45%; z-index:9; margin:0; }
+#slider1 .buttons:hover { background-image:url("../si/UI/coverSlider/slider-btns.png")}
+#slider1 .next { background-position: 0 0; right: 0; }
+#slider1 .prev { left:0}
+#slider1 .disable { visibility: hidden; }
+#slider1 .overview { list-style: none; position: absolute; padding: 0; margin: 0; width: 240px; left: 0 top: 0; }
+#slider1 .overview li{ float: left; height: 350px;  width: 1025px;}
+#slider1 .overview li img {width:1025px;} 
+
+
+#coverSlider .ic { z-index:9;  position:absolute; }
+#coverSlider .ic-upload { background:url("../si/UI/coverSlider/ic-upload.png") no-repeat scroll 0 0 transparent; display: block; width:16px; height:13px; left:10px; bottom:12px; }
+#coverSlider .ic-camera { background:url("../si/UI/coverSlider/ic-camera.png") no-repeat scroll 0 0 transparent; display: block; width:17px; height:14px; left:35px; bottom:12px; }
+
+
+#coverSlider .fansCount {  cursor:pointer; height:30px; font-size:14px; padding:0; line-height:30px; border-radius:3px; color:#53576c; display:block; float:left; top:15px; right:15px;
+
+}
+#coverSlider .fansCount .ic { background:#3b3e4d url(../si/ic-fans-w.png) no-repeat center center; height:30px; width:30px; border-radius:3px 0px 0px 3px; padding-left:0; }
+#coverSlider .fansCount span { display:block; float:left; }
+
+#coverSlider .fansCount .txt {  height:30px; display: inline-block; float:right;  border-radius:0px 3px 3px 0px; margin-left:30px; padding: 0 8px;
+background: #f4f4f4; /* Old browsers */
+background: -moz-linear-gradient(top,  #f4f4f4 0%, #d5d5d5 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(100%,#d5d5d5)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #f4f4f4 0%,#d5d5d5 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#d5d5d5',GradientType=0 ); /* IE6-9 */ }
+
+
+ .likeBa { right:10px; bottom:10px; width:25px; height:32px; background: url(../si/like-Ba.png) no-repeat; } 
+
+#coverSlider .addPic {  cursor:pointer; height:25px; font-size:14px; padding:0; line-height:25px; border-radius:3px; color:#53576c; display:block; float:left; bottom:15px; right:15px;
+
+}
+#coverSlider .addPic .ic { background:#3b3e4d url(../si/ic-plus-w.gif) no-repeat center center; height:25px; width:25px; border-radius:3px 0px 0px 3px; padding-left:0; }
+#coverSlider .addPic span { display:block; float:left; }
+
+#coverSlider .addPic .txt {  height:25px; display: inline-block; float:right;  border-radius:0px 3px 3px 0px; margin-left:25px; padding: 0 5px; font-size:12px;
+background: #f4f4f4; /* Old browsers */
+background: -moz-linear-gradient(top,  #f4f4f4 0%, #d5d5d5 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(100%,#d5d5d5)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #f4f4f4 0%,#d5d5d5 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#d5d5d5',GradientType=0 ); /* IE6-9 */ }
+
+
+
+
+
+/*-------MINI SLIDER-------*/
+.miniSlider { width:1025px; height:400px;  margin:0 auto;}
+.miniSlider #coverSlider { width:725px; height:400px; float:left; margin:0;}
+.miniSlider #slider1 .viewport { width:725px; height:400px;}
+.miniSlider #slider1 .overview li { width:725px; height:400px;}
+.miniSlider #slider1 .overview li img {width:800px;}
+
+
+
+/* tbSlider */
+.tbBox { border-top:1px solid #ddd; }
+.tbBox h2 { font-weight:normal;}
+.tbSlider {  overflow:hidden; position: relative; padding: 0px;   }
+.tbSlider .viewport { float: left; width: 910px; height: 215px; overflow: hidden; position: relative; margin-left: 55px; }
+.tbSlider .buttons { background:url("../si/UI/coverSlider/slider-btns-over.png") no-repeat scroll 0 0 transparent; display: block; background-position: 0 -42px; text-indent: -999em; float: left; width: 39px; height: 42px; overflow: hidden; position: absolute; top:30%; z-index:9; margin:0; border:1px solid #eee; border-radius:3px 0px 0 3px; }
+
+.tbSlider .buttons:hover { background-image:url("../si/UI/coverSlider/slider-btns.png")}
+.tbSlider .next { background-position: 0 0; right: -1px; }
+.tbSlider .prev { left:-1px; border-radius:0px 3px 3px 0px;}
+.tbSlider .disable { visibility: hidden; }
+.tbSlider .overview { list-style: none; position: absolute; width: 240px; left: 0 top: 0; }
+.tbSlider .overview li{ float: left; padding:0; height: 210px; width: 210px; border-bottom:5px solid #ffffff; margin:0 10px; }
+.tbSlider .overview li .titleTxt{ margin-top:10px; }
+.tbSlider .overview li .viewTxt { margin-top: 25px; font-size:10px;}
+.tbSlider .overview li:hover{ border-bottom:5px solid #eb273a; }
+
+.tbSlider .overview li .imgBox { position:relative; width:210px; height:118px; overflow:hidden;}
+.tbSlider .overview li:hover .imgBox a { position:absolute; width:210px; height:118px; background:#000; left:0; top:0; opacity:0.5; }
+
+/*Pagination Problem So added overview_One Start  */
+.tbSlider .overview_one { list-style: none; position: absolute; /* width: 240px; */ left: 0 top: 0; }
+.tbSlider .overview_one li{ float: left; padding:0; height: 210px; width: 210px; border-bottom:5px solid #ffffff; margin:0 10px; }
+.tbSlider .overview_one li .titleTxt{ margin-top:10px; }
+.tbSlider .overview_one li .viewTxt { margin-top: 25px; font-size:10px;}
+.tbSlider .overview_one li:hover{ border-bottom:5px solid #eb273a; }
+.tbSlider .overview_one li .imgBox { position:relative; width:210px; height:118px; overflow:hidden;}
+.tbSlider .overview_one li:hover .imgBox a { position:absolute; width:210px; height:118px; background:#000; left:0; top:0; opacity:0.5; }
+/*Pagination Problem So added overview_One End  */
+
+
+.tbList { padding:0 50px;}
+.tbList .overview { list-style: none; }
+.tbList .overview li{ float: left;  padding:0; height: 210px; width: 210px; border-bottom:5px solid #ffffff; margin:20px 10px; }
+.tbList .overview li .titleTxt{ margin-top:10px; }
+.tbList .overview li .viewTxt { margin-top: 25px; font-size:10px;}
+.tbList .overview li:hover{ border-bottom:5px solid #eb273a; }
+
+.tbList .overview li .imgBox { position:relative; width:210px; height:118px; overflow:hidden;}
+.tbList .overview li:hover .imgBox a { position:absolute; width:210px; height:118px; background:#000; left:0; top:0; opacity:0.5; }
+

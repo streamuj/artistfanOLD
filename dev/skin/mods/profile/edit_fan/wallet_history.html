@@ -1,0 +1,68 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+<div class="header_block">    
+<table width="100%" cellpadding="5">
+    <tr style="background-color:#f5f5f5">
+    	<td><h3 style="padding-left:20px;">Transaction history</h3></td>
+    </tr>
+    <tr>
+    	<td>
+            Current ballance: {if $UserInfo.Wallet}{$UserInfo.Wallet}{else}0{/if} point(s)
+         </td>
+    </tr>
+</table>    
+</div>
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td class="tblhead"><a href="/fan/WalletHistory?sort=dt{if $sort=='dta'}{else}a{/if}"{if !$sort || $sort=='dta' || $sort=='dt'} class="active"{/if}> Date/Time </a></td>
+        <td class="tblhead">Description</td>
+        <td class="tblhead"><a href="/fan/WalletHistory?sort=pd{if $sort=='pdd'}{else}d{/if}"{if $sort=='pd' || $sort=='pdd'} class="active"{/if}> Points</a></td>
+    	<td  class="tblhead"><a href="/fan/WalletHistory?sort=bd{if $sort=='bdd'}{else}d{/if}"{if $sort=='bd' || $sort=='bdd'} class="active"{/if}> Balance</a></td>
+        <td  class="tblhead">Status</td>
+    </tr>
+    {foreach key=k item=i from=$payments}
+    <tr>
+        <td class="datetime tbldata">{$i.Pdate|mdate:4}</td>
+        <td class="tbldata">
+            {if $i.Description.type=="points"}
+                Points purchase
+            {elseif $i.Description.type=="track"}
+                Track purchase:<br />
+                {$i.Description.title}
+            {elseif $i.Description.type=="album"}
+                Album purchase:<br />
+                {if $i.To.Name}<a href="/u/{$i.To.Name}/music/{$i.Description.id}">{$i.Description.title}</a>{else}{$i.Description.title}{/if}
+            {elseif $i.Description.type=="video"}
+                Video purchase:<br />
+                {if $i.To.Name}<a href="/u/{$i.To.Name}/video/{$i.Description.id}">{$i.Description.title}</a>{else}{$i.Description.title}{/if}
+            {elseif $i.Description.type=="event"}
+                {if $i.Ptype==0}
+                Online event access purchase:<br />
+                {elseif $i.Ptype==1}
+                Online event cancelled:<br />
+                {/if}
+                {if $i.To.Name}<a href="/u/{$i.To.Name}/events/{$i.Description.id}">{$i.Description.title}</a>{else}{$i.Description.title}{/if}
+            {/if}
+            {if $i.To.Name}by <a href="/u/{$i.To.Name}">{if $i.To.BandName}{$i.To.BandName}{else}{$i.To.FirstName} {$i.To.LastName}{/if}</a>{/if}
+        </td>
+        <td class="amount tbldata">{if $i.Money}<span class="{if $i.Ptype==1}plus{else}minus{/if}">{$i.Money}</span>{/if}</td>
+        <td class="amount tbldata">{$i.Balance}</td>
+        <td align="center" class="tbldata">
+            <span class="label label-{if $i.Status==1}ok{elseif $i.Status==2}error{else}info{/if}" title="">{$statuses[$i.Status]}</span>
+        </td>
+    </tr>
+    {foreachelse}
+    <tr>
+        <td colspan="3">No transactions</td>
+    </tr>
+{/foreach}
+</table>
+
+{$pagging}
+</div>
+{/block}

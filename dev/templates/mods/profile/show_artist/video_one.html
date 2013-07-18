@@ -1,0 +1,109 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+{if !$video.FromYt}
+<script type="text/javascript" src="/j/mdetect.js"></script>
+<script type="text/javascript" src="/j/swfobject.js"></script>
+<script type="text/javascript" src="/j/smh.swobject.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  	var uagent = navigator.userAgent.toLowerCase();
+	var video = "mp4:u/{$video.UserId}/{if $video.VideoPreview && $video.Price>0 && $IsOther && !$video.VideoPurchase}{$video.VideoPreview}{else}{$video.Video}{/if}";
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		var mobile = {};
+		mobile.account  = "artistfan";
+		mobile.media    = video;
+		mobile.poster   = "/files/video/thumbnail/{$video.UserId}/{$video.Video}.jpg";
+		mobile.autoplay = "false";
+		mobile.mimetype = "video/mp4";
+		mobile.width    = "640";
+		mobile.target   = "player";
+		mobile.maxwidth = "525";
+		bootStrap(mobile);
+	} else {
+		var flashvars = { account: "artistfan", media: video, autoplay: "false", poster: '/files/video/thumbnail/{$video.UserId}/{$video.Video}.jpg'};
+		var params = { };
+		params.quality = "high";
+		params.bgcolor = "#000000";
+		params.allowscriptaccess = "sameDomain";
+		params.allowfullscreen = "true";
+		var attributes = {};
+		attributes.id = "Player";
+		attributes.name = "Player";
+		attributes.align = "middle";
+		swfobject.embedSWF("/j/smh.player.swf","player", "640", "525", "10.1.0", false, flashvars, params, attributes);
+	}
+	{if !$UserInfo.Status}
+	oProfile.InitPurchaseForGuests();
+	{else}
+	oProfile.InitPurchase();
+	{/if}
+  });
+</script>
+{/if}
+
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+        <a href="/u/{$ui.Name}/video">Artist Video store</a>
+    </div>
+    <div class="social">
+        <iframe src="//www.facebook.com/plugins/like.php?locale=en_US&amp;href=http://{$DOMAIN}/u/{$ui.Name}/video/{$video.Id}&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px; text-align: right;" allowTransparency="true"></iframe>
+        <a href="https://twitter.com/share" data-text="{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} video" data-url="http://{$DOMAIN}/u/{$ui.Name}/video/{$video.Id}" data-size="medium" data-align="right" class="twitter-share-button">Tweet</a>
+        {literal}<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>{/literal}
+        <g:plusone href="http://{$DOMAIN}/u/{$ui.Name}/video/{$video.Id}" size="medium" align="right"></g:plusone>
+    </div>
+    <h1>{$video.Title}</h1>
+</div>
+
+<div class="content_block wide">
+    <div class="video-holder">
+        <div class="video">
+            {if $video.FromYt}
+            <iframe width="480" height="360" src="http://www.youtube.com/embed/{$video.Video}?wmode=transparent" frameborder="0" allowfullscreen></iframe>
+            {else}
+            <a href="/files/video/u/{$video.UserId}/{if $video.VideoPreview && $video.Price>0 && $IsOther && !$video.VideoPurchase}{$video.VideoPreview}{else}{$video.Video}{/if}" style="display:block;width:640px;height:360px" id="player">
+            </a>
+            {/if}
+        </div>
+    </div>
+    <p class="text">
+        <span class="ttl">{$video.Title}</span> by {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}
+    </p>
+    {if !$video.VideoPurchase && $IsOther && $video.VideoPreview && $video.Price > 0}
+        <div class="alert alert_warning">
+            <strong>Attention!</strong> Only 30-second preview of this video is available for free. To watch it in full and add to My videos on your artistsfan page, you have to purchase it.
+        </div>
+    {/if}
+
+    {if !$video.VideoPurchase && $IsOther && $video.Price > 0}
+        <p class="buy-controls">
+            Price: <span class="pricetag details">{$video.Price}</span>
+            {if $UserInfo.Status!=2}<a href="javascript: void(0);" class="button yellow_button button_big buy_video" price="{$video.Price}" mid="{$video.Id}">Buy video</a>{/if}
+        </p>
+    {elseif !$video.VideoPurchase && $IsOther && $video.Price==0}
+        <p class="buy-controls">
+            Price: <span class="pricetag free">Free</span>
+            {if $UserInfo.Status!=2}
+            <a href="javascript: void(0);" class="button yellow_button add_video" mid="{$video.Id}">Add to My videos</a>
+            {/if}
+            {if !$video.FromYt}<a href="/download/video/{$video.Id}" class="button yellow_button">Download</a>{/if}
+        </p>
+    {elseif !$video.FromYt && (!$video.Price || !$IsOther || $video.VideoPurchase)}
+        <p class="buy-controls">
+            Price: {if $video.Price>0}<span class="pricetag details">{$video.Price}</span>{else}<span class="pricetag free">Free</span>{/if}
+            <a href="/download/video/{$video.Id}" class="button yellow_button">Download</a>
+        </p>
+    {/if}
+</div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

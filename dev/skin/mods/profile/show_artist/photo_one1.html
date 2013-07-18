@@ -1,0 +1,46 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+
+{block name="javascript"}
+
+
+{/block}
+
+{block name="my_cabinet"}
+ 
+ <div style="padding:15px;">
+ <h2 style="background-color:#f5f5f5; padding-left:20px;"> {$album.Title} </h2>
+ 
+   <h2 style="text-align:center;">
+        <div class="btn-prev">
+            <a href="{if $links.prev}/u/{$ui.Name}/photo/{$album.Id}?ph={$links.prev}{else}javascript:void(0);{/if}" class="btn3{if !$links.prev} noactive{/if}">&laquo;</a> 
+            <a href="/artist/editphotoalbum?id={$album.Id}">All photos in this album</a>
+			<a href="{if $links.next}/u/{$ui.Name}/photo/{$album.Id}?ph={$links.next}{else}javascript:void(0);{/if}" class="btn3{if !$links.next} noactive{/if}">&raquo;</a>       </div>
+  </h2>
+
+    <div>
+        <img src="{$SUB_DOMAIN}photo/mid/{$photo.UserId}/{$photo.Image}" alt="" width="750"  height="500"/>
+    </div>
+<table align="right"> 
+    <tr><td><a style="display:none;" href="{$SUB_DOMAIN}photo/origin/{$photo.UserId}/{$photo.Image}" target="_blank">Download</a> 
+    <span class="muted" style="display:none;">({$photo.Sizes.0} &times; {$photo.Sizes.1})</span></td></tr></table>
+    
+    <table>
+    <tr><td>    
+      {if $photo.PhotoId && $IsAuth}
+      	<span class="good status-good">Photo Added</span>
+      {else}  
+        <a href="#" class="btn1 floatL btn1 " onclick="oBuyPhoto.BuyPhotos(this);" pId="{$photo.Id}"  photoAlbumName="{$album.Title}" artistName="{$ui.Name}" pUserId="{$photo.UserId}" url="/u/{$ui.Name}/buyphoto/{$photo.AlbumId}?ph={$photo.Id}" photoId="{$photo.Id}" photoPrice="{$photo.Price}" title="{$photo.Title}"  image="{$photo.Image}"  >Buy</a>
+      {/if}
+      
+     </td><td><div style="margin-top:10px;margin-right:5px;">Price: <span class="pricetag event free" title="Price: {$photo.Price} credits">{$photo.Price} credits</span></div></td></tr>
+    </table>
+
+    
+    <div class="body">
+            {if $photo.Title}<div class="title">{$photo.Title}</div>{/if}
+            <div class="date">{$photo.PhotoDate|mdate:5}</div>
+	</div>
+  {include file="mods/profile/blocks/_buy_block.html"}  
+    
+</div>
+{/block}

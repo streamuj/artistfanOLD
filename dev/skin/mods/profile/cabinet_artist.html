@@ -1,0 +1,70 @@
+{extends file="base.html"}
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery.slimscroll.js"></script>
+{/block}
+{block name="body_class"}
+<body class="" >
+{/block}
+{block name="content"}
+{strip}
+<div class="leftColContainer">
+  <div class="colSide">
+    <div class="profilePic"> <a href="/u/{$UserInfo.Name}"> <img src="{if !$UserInfo.Avatar}/i/ph/user-144x144.png{else}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{/if}" id="image" alt="" /> </a> </div>
+    <div>
+      <div class="proInfo">
+        <h2><a href="/artist/profile"> {if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName|cat:' '|cat:$UserInfo.LastName}{/if} </a></h2>
+       {* <p class="genreInfo floatL" style="width:100%"> <a href="/u/{$UserInfo.Name}/profile"> {$UserInfo.GenresList} </a></p>*}
+        {if $UserInfo.Country || $UserInfo.Location}
+        <p class="LF font11"> <a href="/u/{$UserInfo.Name}/profile">{if $UserInfo.Country} {$UserInfo.Country} , {/if} {$UserInfo.Location} </a></p>
+        {/if} </div>
+     {* <div class="walletBtn2"> <a href="/artist/wallet/" style="color:#FFFFFF">
+        <p class="ic caps">My Wallet <span class="RT">{if $UserInfo.Wallet} $ {$UserInfo.Wallet|string_format:'%.2f'}{else}0.00{/if}</span></p>
+        </a> </div> *}
+    </div>
+    <ul class="SideNav">
+      <li {if $module == 'feed'}class="active" {/if}> <a href="/artist/feed"><span class="newsIc"></span>News Feed</a></li>      
+     <li {if $module == 'wallet'}class="active" {/if}> <a href="/artist/wallet"><span class="walletIc"></span>My Wallet</a></li>
+      
+      <li {if $module == 'music'}class="active" {/if}> <a href="/artist/music"><span class="musicIc"></span>My Music</a></li>
+      <li {if $module == 'photo'}class="active" {/if}> <a href="/artist/showAllPhotosById"><span class="photosIc"></span>My Photos</a></li>
+      <li {if $module == 'video'}class="active" {/if}> <a href="/artist/video"><span class="videosIc"></span>My Videos</a></li>
+      <li {if $module == 'events'}class="active" {/if}> <a href="/artist/events"><span class="eventsIc"></span>Live Streams</a></li>
+      <li {if $module == 'artist'}class="active" {/if}> <a href="/artist/fellowartist"><span class="fansIc"></span>Fellow Artists</a></li>
+      <li {if $module == 'fans'}class="active" {/if}> <a href="/artist/fans"><span class="fansIc"></span>Fellow Fans</a></li>
+      <li {if $module == 'fanfinder'}class="active" {/if}> <a href="/artist/tools"><span class="fansfinderIc"></span>Fan Finder</a></li>
+      
+      {*<li> <a href="/artist/settings"><img src="/si/ic-settings-17x14.png" class="icon" /><span>Settings</span></a></li>*}
+      
+      <li {if $module == 'profile'}class="active" {/if}> <a href="/artist/profile"><span class="settingsIc"></span>My Profile</a></li>
+      <li {if $module == 'broadcasting'}class="active" {/if}> <a href="/artist/broadcasting"><span class="broadcastIc"></span>My Broadcasting</a></li>   
+      {if $smarty.session.facebook_id}         
+      <li {if $module == 'fbfriends'}class="active" {/if}> <a href="/base/invite/InviteFriends"><span class="fansIc"></span>Invite FB Friends</a></li>
+      {/if}
+      {if $smarty.session.twitter_id}         
+      <li {if $module == 'twfriends'}class="active" {/if}> <a href="/base/invite/InviteTwitterFriends"><span class="fansIc"></span>Invite Twitter Friends</a></li>
+      {/if}
+            
+    </ul>
+  {* 
+    {if $module!='fanfinder'}
+        
+    <div class="mod" style="margin:5px;">
+      <h3 class="friends ">Fan Finder {if $cities}<a href="/artist/tools" class="seeAll">See all</a>{/if} </h3>
+       
+       	<div class="clear">&nbsp;</div>  
+      	<div id="map_canvas" style="width: 230px; height: 300px"></div>
+                
+    </div>
+    {/if}
+  *}
+    <div class="clear"></div>
+  </div>
+</div>
+{/strip}
+<div class="contentCol">
+  {* if $module != 'videoOne'}
+  	<div style="height:10px;"></div> 
+  {/if *}  
+  {block name="my_cabinet"}
+  {/block} </div>
+{/block}

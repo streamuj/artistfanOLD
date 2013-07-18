@@ -1,0 +1,48 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery.tinycarousel.min.js"></script>
+<script type="text/javascript">
+		$(document).ready(function(){
+			$('.tbSlider').tinycarousel({ display: 4 });	
+		});
+</script>
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oPlay.InitPlayButtons();
+    });
+</script>
+
+{/block}
+{block name="content"}
+<!--COVER SLIDER-->
+<div class="clear"></div>
+<!--CONTENT-->
+  <div class="row1" style="border-left:1px solid #ccc; border-right:1px solid #ccc;">
+    <h3 style="padding:10px;">ARTISTS</h3>
+  {foreach key=ki item=ii from=$artistCat}  
+
+  <div class="tbBox">
+      <h2 class="P20">{$vCat->GetCategoryInfoById({$ki})} {*<a href="/base/index/artists?id={$ki}" class="seeAll">See all</a>*} </h2>
+      <div id="slider3" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+        <div class="viewport">
+          <ul class="overview">
+            {foreach key=k item=i from=$ii} 
+            
+          <li>
+            <div class="imgBox"><a href="/u/{$i.Name}"></a><img src="{if $i.Avatar}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{else}/si/pic-100x100.jpg{/if}" alt="pic" width="218" /></div>
+            <p class="titleTxt"><strong class="font16"><a href="/u/{$i.Name}">{$i.Name}</a></strong></p>
+          </li>
+          {/foreach}
+        </ul>
+        </div>
+        <a class="buttons next" href="#">right</a> </div>
+    </div>
+
+ {/foreach}   
+	
+  </div>
+<div class="clear"></div>
+{/block} 

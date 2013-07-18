@@ -1,0 +1,77 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/j/cls/Wall.js"></script>
+{if $artists}
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oWall.MainReload();
+    });
+</script>
+{/if}
+{/block}
+
+{block name="container_class"} home_page{/block}
+{block name="content"}
+            <div class="content_block home_content">
+		<div class="promo_block">
+			<div class="promo_block_text">
+				<h2>Connect directly with your favorite artists and their fans! </h2>
+				<p>Get exclusive access to new videos, singles, and updates from the artists you care about and share them with fellow fans. </p>
+				<a href="#" class="button">Learn more</a>
+			</div>
+			<div class="promo_block_img">
+				<img src="/i/promo_img.jpg" width="514" height="279" alt="" />
+			</div>
+		</div>
+                {if $artists}
+		<div class="block featured_artists">
+			<h3>Featured artists <a href="/base/index/artists">View all</a></h3>
+			<div class="featured_artists_list">
+                                {foreach key=k item=i from=$artists}
+                                <a href="/u/{$i.Name}"><img src="{if !$i.Avatar}/i/ph/user-96x96.png{else}/files/images/avatars/s_{$i.Avatar}{/if}" width="96" height="96" alt="" /> {if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a>
+                                {/foreach}
+				<div class="cl"></div>
+			</div>
+		</div>
+                {/if}
+                {if $albums}
+		<div class="block featured_albums">
+			<h3>Featured albums <a href="/base/index/hot">View all</a></h3>
+			<div class="featured_albums_list">
+                                {foreach key=k item=i from=$albums}
+				<div class="featured_albums_block">
+					<a href="/u/{$i.Name}/music/{$i.Id}"><img src="{if $i.Image}{$i.Image}{else}/i/ph/album-48x48.png{/if}" width="48" height="48" alt="" /></a>
+					<a href="/u/{$i.Name}/music/{$i.Id}">{$i.Title}</a><br />
+					<span>by <a href="/u/{$i.Name}">{if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a></span>
+				</div>
+                                {/foreach}
+			</div>
+		</div>
+                {/if}
+
+	</div>
+	<!--/content_block-->
+	<!--sitebar_02-->
+	<div class="sitebar sitebar_02">
+		<div class="first_time">
+			<b>First time here?</b><br />
+			<a href="/base/user/registration" class="button yellow_button">Sign up free!</a><br />
+			Already a member? <a href="/base/user/login">Sign in</a>
+			<div class="social_buttons">
+                            <a href="javascript:void(0);" onclick="oUsers.FBLoginCustom();"><img src="/i/facebook.gif"  alt="" /></a>
+                            <a href="javascript:void(0);" onclick="oUsers.TwtGetAuthUrl();"><img src="/i/twitter.gif"  alt="" /></a>
+			</div>
+		</div>
+                {if $artists}
+		<div class="happening">
+			<h3>Whats happening?</h3>
+                        <div class="wall_info">
+                        </div>
+			<a href="/base/index/hot">More updates</a>
+		</div>
+                {/if}
+	</div>
+	<!--/sitebar_02-->
+{/block}

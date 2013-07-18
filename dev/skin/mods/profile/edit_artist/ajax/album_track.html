@@ -1,0 +1,57 @@
+             {foreach key=k item=i name=tracks from=$tracks}
+             	 {if $i.TrackLength}
+                <tr>
+                  <td width="5%" bgcolor="#1B1B1B">
+                  	<a href="javascript:void(0)" class=" block P10 LF play_button play_track" mid="{$i.Id}"><img src="/si/ic-playM.png" align="left" /></a>
+                  </td>
+                  <td width="5%" bgcolor="#1B1B1B"><span class="block P10 LF">{$smarty.foreach.tracks.iteration}</span></td>
+                  <td width="30%" nowrap="nowrap" bgcolor="#1B1B1B"><span class="block P10 LF">{$i.Title|truncate:30:'...'}</span></td>
+                   <td width="60%" bgcolor="#1B1B1B">
+                   		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                               <td width="15%" align="center" style="border-bottom:none; border-top:none; box-shadow:none;" bgcolor="#1B1B1B">
+             <a href="/artist/edittrack?id={$i.Id}"> <span class="block P10 RT"><img src="/si/edit_white.png" width="24" height="24" />  </span></a> 
+                               </td>
+                               <td width="15%" align="center" style="border-bottom:none; border-top:none; box-shadow:none;" bgcolor="#1B1B1B">
+             <a href="javascript:void(0);" onclick="CGo('/artist/removetrack?id={$i.Id}', 'Do you want to remove this track?');"> <span class="block P10 RT"> <img src="/si/remove_white.png" width="24" height="24" />  </span></a> 
+                               </td>
+                              <td width="40%" align="center" style="border-bottom:none; border-top:none; box-shadow:none;" bgcolor="#1B1B1B"><span class="block P10 RT">{if $i.TrackLength} {$i.TrackLength} {else} No Track Length {/if}</span></td>
+
+                              <td width="30%" align="center" style="border-bottom:none; border-top:none; box-shadow:none;" bgcolor="#1B1B1B">
+                              		<span class="block P10 RT">
+                                    	<span class="pricetag event free M2" title="Price: $ {$i.Price}">  {if $i.Price>0 } ${$i.Price} {elseif $album.Price >0} Bonus {else} Free {/if} </span>
+                                    </span>                              	
+                               </td>
+                            </tr>
+                       </table>
+                    </td>
+                </tr>
+                {else}
+                <tr>
+                     <td width="5%" bgcolor="#1B1B1B">&nbsp;</td>
+                     <td width="5%" bgcolor="#1B1B1B"><span class="block P10 LF">{$smarty.foreach.tracks.iteration}</span></td>
+                     <td width="30%" nowrap="nowrap" bgcolor="#1B1B1B"><span class="block P10 LF">{$i.Title|truncate:30:'...'} </span></td>
+                     <td  width="60%"  bgcolor="#1B1B1B" align="left">Please wait: Your music/video file is under the process on our server. This may take a while (10-15 minute to an hour depende on the file size). This page will reload once the process is completed and you and your fans will be able see your video/music.</td>
+                </tr>
+               {/if}
+             {foreachelse}
+                <tr>
+            		
+                    <td width="5%" bgcolor="#1B1B1B"><span class="block P10 LF">&nbsp;</span></td>
+                    <td width="5%" nowrap="nowrap" bgcolor="#1B1B1B"><span class="block P10 LF">&nbsp;</span></td>
+                    <td width="30%" bgcolor="#1B1B1B"><span class="block P10 RT">No Track</span></td>
+                    <td width="60%" bgcolor="#1B1B1B"><span class="block P10 RT">&nbsp;</span></td>
+               </tr>
+              {/foreach} 
+              
+              {if $album.IsSingle == 0}
+                <tr>
+                          <td width="5%" bgcolor="#1B1B1B"><a class="addIc pink" href="/artist/edittrack?albumId={$aid.a_id}">UPLOAD</a></td>
+                           <td width="5%" bgcolor="#1B1B1B"><span class="block P10 LF">&nbsp;</span></td>
+                           <td width="30%" nowrap="nowrap" bgcolor="#1B1B1B"><span class="block P10 LF">&nbsp;</span></td>
+                          <td width="60%" bgcolor="#1B1B1B"><span class="block P10 RT">&nbsp;</span></td>
+                          
+                </tr>
+             {/if}
+           
+       

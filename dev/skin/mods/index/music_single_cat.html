@@ -1,0 +1,47 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oPlay.InitPlayButtons();
+        oProfile.InitPurchase();
+		oPopup.InitPurchase();		
+    });
+</script>
+{/block}
+{block name="content"}
+<!--COVER SLIDER-->
+<div class="clear"></div>
+<!--CONTENT-->
+
+  <div class="srcResult">
+	 <h2 class="P15 pink">MUSIC</h2>
+    <div class="titleBox P15">
+      <h4>{$title}</h4> 
+    </div>
+<div class="clear"></div>
+      <div class="listBox tbMus" style="padding-left:55px;">
+        <ul>
+          {foreach key=k item=i from=$music_album}
+          <li>
+                <div class="imgBox"><a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/music/{$i.AlbumId}" class="font16 caps" mid="{$i.AlbumId}"><img src="{if $i.Image}/{$smarty.const.TRACK_IMG_PATH}/{$i.UserId}/m_{$i.Image}{else}/i/ph/album-234x234.png{/if}" alt="pic" /></a></div>
+                {if $UserInfo.Id != $i.UserId}
+                {if !$i.Purchase}
+                {if $i.Price > 0} <a href="javascript:void(0);" class="btn1 {if $i.Fellow}buy_albumTXT{/if}"  {if $i.Fellow} onClick="{if $UserInfo.Status}oProfile.InitBuyAlbum(this);{else}oProfile.PurchaseRedirect('album', $(this).attr('mid'), 1);{/if}" mid="{$i.AlbumId}" savings="" tracks="" {else} onClick="oPopup.connectinplayer('{$i.UserId}');" mid="{$i.AlbumId}" {/if}  price="{$i.Price}"  >BUY</a> {else} <a href="javascript:void(0);" class="btn1 {if $i.Fellow} Freeadd_album {/if}"  {if $i.Fellow} mid="{$i.AlbumId}" tracks="{$i.Tracks}" image="{$i.Image}"  filename="{$i.Title}" userid="{$i.UserId}" {else} onClick="oPopup.connectinplayer('{$i.UserId}');" mid="{$i.AlbumId}" {/if}  price="{$i.Price}" > FREE </a> {/if} 
+                {/if}
+                {/if}
+                <a href="javascript:void(0);" class="titleTxt play_exp_album" UserId="{$i.UserId}"  fellow="{$i.Fellow}" mid="{$i.AlbumId}">{$i.Title|truncate:30:'...'} </a>
+                <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName}{else}{$i.FirstName|cat:' '|cat:$i.LastName}{/if}</a> </li>
+          {/foreach}
+        </ul>
+        <div class="clear"></div>
+      </div>
+
+  </div>
+<div class="clear"></div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block} 

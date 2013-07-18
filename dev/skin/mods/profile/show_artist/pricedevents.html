@@ -1,0 +1,136 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitEventActions();
+    });
+</script>
+
+<script language="javascript">
+	$(function(){
+				$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+</script>
+{/block}
+
+{block name="my_cabinet"}
+
+<div style="padding:15px;">
+
+<div class="content_block wide">
+    {if $event_added}
+        <div class="alert alert_success">
+            <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+            <p><strong>Event added!</strong> Your newly created event is now visible in your upcoming events list.</p>
+            <p>To announce your newly created event on your wall, use the button below<br />
+                <a href="/fan/EventAnnounce?id={$event_added}" class="button">Announce</a></p>
+            <p>Also, please use our <a href="#">Events FAQ</a> if you have questions.</p>
+        </div>
+    {/if}
+</div>  
+    
+
+<table width="100%" cellpadding="5">
+    <tr>
+    	<td><h3>My Events</h3></td>
+    </tr>
+     <tr><td style="line-height:20px;">&nbsp;</td></tr>
+</table>
+
+<div style="padding-bottom:20px; background-color:#f5f5f5;">
+                            <div class="tabC">
+                                <a href="/fan/eventcalendar" class="active"><strong>See calendar</strong></a>
+                                <a href="/fan/events"><strong>List</strong></a>
+                            </div>
+                            <div class="clear"></div>
+<table border="0" cellspacing="0" cellpadding="0" bgcolor="#FFF" align="center" width="95%">
+                <tr><td colspan="7" style="line-height:10px;">&nbsp;</td></tr>
+				<tr>
+                    <td align="left" valign="middle" colspan="2">&nbsp;&nbsp;<strong>Display Events</strong></td>
+                 	<td align="left" valign="middle" class="xform" colspan="5">
+                     <strong>  
+                        <select name="df" onchange="Go('/fan/events?df='+$(this).val());">
+        <option value="up" {if $df=="up"} selected="selected"{/if}>All</option>        
+        <option value="tw"{if $df=="tw"} selected="selected"{/if}>This week</option>
+        <option value="nw"{if $df=="nw"} selected="selected"{/if}>Next week</option>
+        <option value="tm"{if $df=="tm"} selected="selected"{/if}>This month</option>
+        <option value="nm"{if $df=="nm"} selected="selected"{/if}>Next month</option>
+        <option value="pa"{if $df=="pa"} selected="selected"{/if}>Pasted month</option>        
+    </select></strong>
+ 				</tr>
+               <tr><td colspan="7" style="line-height:10px;">&nbsp;</td></tr>
+                  <tr>
+                    <td   align="center" valign="middle" class="tblhead">No</td>                
+                    <td   align="center" valign="middle" class="tblhead">Date</td>
+                    <td  align="center" valign="middle" class="tblhead">Title</td>
+                    <td  align="center" valign="middle" class="tblhead">Description</td>
+                    <td  align="center" valign="middle" class="tblhead">Location</td>
+                    <td   align="center" valign="middle" class="tblhead">Type</td>
+                    <td  align="center" valign="middle" class="tblhead">Broadcast</td>        
+              </tr>           
+        {foreach key=k item=i from=$follower_events}
+         {if $df=='pa' && $i.Status==4}         
+         {else}
+         
+         {/if}
+        <tr>
+        <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;">{$i.siNo}</td>
+        <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;"><table border="0" align="center" cellpadding="2" cellspacing="0">
+            <tr>
+           <!--   <td>&nbsp;</td>-->
+              <td> <div class="calend_date">
+              			  <div class="day">{$i.EventDate|cdate:dweek}</div><div class="month">{$i.EventDate|cdate:month}</div><div>{$i.EventDate|cdate:mday} </div>
+                     </div>
+               </td>
+            </tr>
+        </table></td>
+        <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;" >{$i.Title}</td>
+        <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;">{$i.Descr|truncate:15:"..."}&nbsp;.</td>
+        <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;">{$i.Location}</td>
+        <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;">
+ {if $i.EventType==1}<span class="label live">live</span>{elseif $i.EventType==2}<span class="label stream">stream</span>{elseif $i.EventType==3}<span class="label online-events">online</span>{/if}{if $i.EventType!=1}{if $i.Price>0}<span class="pricetag event free">$ {$i.Price|string_format:'%.2f'}</span>{else}<span class="pricetag event free">Free</span>{/if}{/if}
+        </td>   
+ <td align="center" valign="middle" nowrap="nowrap" style="border-bottom:1px solid #eee;"> 
+
+ {if $i.Status<3}
+ 	 <a href="/u/{$i.Name}/events/{$i.Id}" class="btn-gray">Event details</a>
+ {/if}
+ 
+ {if $i.Status==3}<div class="good status-good">Cancelled</div>
+ 
+ {elseif $i.Status==4 || $i.EventDate|ispast}
+	<div class="good status-good">Event finished</div>
+ 
+ {elseif $i.EventType>1}
+ 	{if !$i.EventPurchase && !$i.EventAttend}<a href="/u/{$i.Name}/events/{$i.Id}" class="btn-yellow buy_access" mid="{$i.Id}" price="{$i.Price}">
+    	
+        {if $i.Price>0}
+        	Buy
+        {else}
+        	Get
+        {/if} access</a>
+     {/if}
+ {elseif $i.EventPurchase}
+ 		<a href="/fan/events/{$i.Id}" class="btn-megenta-announce">Access info</a>  
+ {elseif $i.EventAttend}
+    	<div class="good status-good">You're going</div>           
+  {/if}
+                </td>    
+      </tr>
+        {foreachelse}
+       <tr>
+             <td colspan="7" align="center" >No events</td>
+        </tr> 
+        {/foreach}
+   </table>
+    <div align="right">{$pagging}</div>
+</div>
+</div>
+
+{/block}

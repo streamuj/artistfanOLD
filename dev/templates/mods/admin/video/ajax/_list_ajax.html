@@ -1,0 +1,21 @@
+{foreach key=k item=i from=$list}
+    <tr class="f11">
+        <td><img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/default.jpg{elseif $i.Status == 2}/files/video/thumbnail/{$i.UserId}/x_{$i.Video}.jpg{else}/i/ph/video-22x22.png{/if}" width="22" height="22" alt="" /></td>
+        <td>{$i.Title}</td>
+        <td>{if $i['u.Name']}<a href="/base/user/AdminShowUser?id={$i.UserId}">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a>{/if}</td>
+        <td>{$i.Pdate|mdate:4}</td>
+        <td class="acent">{if $i.Price}{$i.Price}{else}Free{/if}</td>
+        <td class="acent">{if $i.FromYt==1}Yes{else}No{/if}</td>
+        <td class="acent">{if $i.Active==1}Yes{else}No{/if}</td>
+        <td class="acent">{if $i.Deleted==1}Yes{else}No{/if}</td>
+        <td class="acent">{if !$i.FromYt}{if $i.Status<2}processing{elseif $i.Status==2}processed{/if}{else}&mdash;{/if}</td>
+        <td class="aright">
+            {if !$i.FromYt && $i.Status==2}<a href="/download/video/{$i.Id}">Download</a><br />{/if}
+            {if $i.Deleted==0}<a href="javascript:void(0);" onclick="oAdmin.DeleteVideo('{$i.Id}');">Delete</a>{else}<a href="javascript:void(0);" onclick="oAdmin.RestoreVideo('{$i.Id}');">Restore</a>{/if}
+        </td>
+    </tr>
+{foreachelse}
+    <tr class="f11">
+        <td colspan="10">Video not found</td>
+    </tr>
+{/foreach}

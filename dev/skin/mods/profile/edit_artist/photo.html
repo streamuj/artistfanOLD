@@ -1,0 +1,297 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"}
+{strip}
+	<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/photoEdit.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/scrollpagination.js"></script>
+    <link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+    <script type="text/javascript">
+        var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+        function showAlbum(value)
+        {
+                if(value == '0')
+                {
+                    $('#AlbumTitle').show();
+                    $('.inn-p-ta').hide();											
+                }
+                else if(value == '')
+                {
+                    $('#AlbumTitle').hide();
+                    $('.inn-p-ta').show();															
+                }else{
+                    $('#AlbumTitle').hide();
+                    $('.inn-p-ta').show();	
+                }
+        };
+        function getAlbumName()
+        {
+            var AlbumLabel = $("#AlbumId option:selected").text();
+            $('.inn-p-ta').css("display","block");			
+            $('#AlbumRemove').css("display","block");					
+            $('.inn-p-ta').html(AlbumLabel);	
+            $(".inn-p-ta").slideDown("slow");	
+                                                                    
+        };	
+        $(document).ready(function()
+        {
+            oPopup.InitPurchase();	   			
+            oErrors.Show();
+            
+            var uploader = new qq.FileUploader({
+                element: $('#file-uploader')[0],
+                action: '/artist/UploadPhoto',
+                params: { 'rand_id': $('#rand_id').val() },
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+                sizeLimit: 5120000, 
+                debug: false,
+                onSubmit: function(id, fileName){
+                    oErrors.SetWaitFld('Image');
+                    $('#progress').show();
+                    var loadImage = "{$SUB_DOMAIN}si/circleImageLoading.gif";
+                    $('#photo_image').attr('src', loadImage);
+                    
+                },
+                
+                onProgress: function(id, fileName, loaded, total){
+                if(total > 0 && loaded <= total ){
+                        var width = Math.round(loaded / total * 100);
+                        $('#progress-percent').html(width);
+                        $('#progress-value').css('width', width + '%');
+                    }		
+                },
+                onComplete: function(id, fileName, responseJSON){
+                    oErrors.SetClearFld('Image');
+                    if (responseJSON.success==true) {
+                        $('#progress').hide();
+                        oErrors.SetClearFld('Image');
+                        var img = '/'+responseJSON['photo'];
+                        
+                        oPhotoEdit.ArtistAlbumEditShow();
+                        var AddAlbumId = $("#AddAlbumId").val();					
+                        var AddAlbumTitle = $("#AddAlbumTitle").val();	
+                        
+                        if(AddAlbumId)
+                        {									
+                            $(".riG-pa #AlbumId").val(AddAlbumId); 						
+                            $("#AlbumTitle").css('display','none');
+                        }
+                         else if(AddAlbumId == '')
+                        {
+                            $('#AlbumTitle').hide();
+                            $('.inn-p-ta').show();															
+                        }
+                        $('#photo_image').attr('src', img );
+                        $('#ThumbImage').attr('href', img );					
+                        oErrors.SetOkFld('Image', 'Image uploaded!');
+                        var editagain = $("#editagain").val();		
+                        if(editagain){
+                        $('#AlbumId').val('').trigger('liszt:updated');					
+                            }					
+                    }
+                    },
+                onCancel: function(id, fileName){
+                    oErrors.SetClearFld('Image');
+                },
+    
+                multiple: false,
+                autoSubmit: true,
+    
+                messages: {
+                },
+                showMessage: function(message){
+                    oErrors.SetBadFld('Image', message);
+                }
+            });
+            
+        $(window).scroll(function(){
+            if($(window).scrollTop() == $(document).height() - $(window).height()){ 
+                if($('.pagination').is(':visible')){
+                    if($('.pagination').find('.wait').is(':visible')) return;
+                    $('.pagination a').trigger('click');
+                }
+            }
+        });
+        $('#delDialog').dialog({ autoOpen: false });
+        $('#delConfirm').dialog({ 
+            autoOpen: false, 
+            modal: true,
+            buttons: {
+            'Cancel' : {
+                     "text":'Cancel', "class": 'button bgrey', "click": function() {
+                        $(this).dialog('close');
+                    }
+                 },
+            'Delete': {
+                    "text":'Delete', "class":'button wblue',  "click":function(){
+                    $('body').addClass('loading');
+                    deletePhotoAlbum();
+                    $(this).dialog('close');				
+                    }
+                }				
+            }
+        });
+        $('body').on('click', '.DeleteAlbum', function(){
+                var phId  = $(this).attr('PhId');
+                if(phId){
+                $('#phId').val(phId);									
+                $('#delConfirm').dialog('open');
+                    }
+                
+        });
+    function deletePhotoAlbum()
+        {
+        var phId  =	$('#phId').val();	
+            if(phId) {					  	
+                    $.ajax({
+                            type:'POST',
+                            dataType:'json',
+                            data:'id='+phId,
+                            url:'/artist/RemovePhotoAlbum?id='+phId,
+                            success:function(data)
+                            {
+                                $("#totAlb").html(data.totAlb);
+                                $("#totPhoto").html(data.totPhoto);
+                                if(data.q =='ok')
+                                {
+                                    $('body').removeClass('loading');													
+                                    $("#PhotoAlbums_"+phId).hide();
+                                    $("#PhotoAlbums_"+phId).slideUp();	
+                                }	
+                            }
+                        });
+                }
+        }	
+    
+    });
+        
+    </script>
+{/strip}
+{include file="mods/profile/fanfinder_map.html"}
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+    <div class="P15">
+    
+    <div>
+    <h2 class="LF">Albums</h2>
+          {if $IsAuth}  
+    <a class=" button black RT" href="javascript:void(0);" onclick="oPhotoEdit.photoShow();">Edit</a>
+          {/if}
+    </div>
+    <div class="clear"></div>
+    
+    <!--Photo uplaod start -->
+    <span class="err" id="err_Image"></span>      
+    <input type="hidden" name="AddAlbumId" id="AddAlbumId" value="" />
+    <input type="hidden" name="AddAlbumTitle" id="AddAlbumTitle" value="" />
+    
+    <div class="uplod-colu P10" style="display:none;">
+    <a href="javascript:void(0);" id="file-uploader" >Upload Photos</a>
+    
+    <div id="progress" class="font11" style="display:none"> <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <div class="clear">&nbsp;</div>
+      <tr>
+        <td align="left" width="1%" nowrap="nowrap"> Progress <span id="progress-percent">0</span>%&nbsp;&nbsp;</td>
+        <td align="left"><div style="border:#dedede solid 1px;">
+            <div id="progress-value"></div>
+          </div></td>
+      </tr>
+    </table>
+    </div>
+    
+    </div>
+    <!--Photo uplaod End -->
+    <div class="clear"></div>
+    <p id="Photoerror" align="center" style="display:none;color:#CC0000;font-weight:400;"></p>
+    
+    <p id="PhotoSuccess" align="center" style="display:none;color:#339966;font-weight:400;"></p>
+    <p id="PhotoLoading" align="center" style="display:none;color:#339966;font-weight:400;"></p>
+    
+    <!--Album uplaod start -->
+    <form id="photo_form" method="post" action="/artist/editphoto">
+            <input type="hidden" name="id" value="{$id}"/>
+            <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+            <input type="hidden" id="sourceImage" name="sourceImage" value="{$fm.Image}" /> 
+            <input type="hidden" id="editagain" />         
+    
+    <div class="uplod-colu-ANO" style="display:none;">
+    
+    <div class="leF-pa">
+    <img id="photo_image" src = "{if $fm.Image}{$fm.Image}{else}/i/nophoto.jpg{/if}" style="margin: 20px 0px 10px 20px;
+    padding: 0px;
+    width: 180px;
+    height: 129px;" />
+    <p class="inn-p-ta" style="display:none;">
+    <span id="AlbumRemove">
+    <a href="javascript:void(0);" onclick="oPhotoEdit.CloseAlbumEditAndPhoto();">remove</a>
+    </span>
+    </p>
+    </div>
+    <div class="riG-pa">
+    <textarea class="upl-tex-big" name="AlbumDesc" id="AlbumDesc" cols="55" rows="4" ></textarea>
+    <div class="clear"></div>
+                <select  class="upl-tex-sele" id="AlbumId" name="AlbumId" onchange="showAlbum($(this).val()),getAlbumName();">
+                 <option value="-1">No Album</option>
+                   <option value="0">jhfjhNew Album</option>
+                   {foreach key=k item=i from=$moreAlbums}                         
+                    {if $i.Title !=$smarty.const.BANNER_IMAGES && $i.Title !=$smarty.const.PROFILE_PICTURES}
+                  <option value="{$i.Id}"{if $fm.AlbumId==$i.Id || (!$fm.AlbumId && $album==$i.Id)} selected="selected"{/if}>{$i.Title|truncate:30}</option>              
+                    {/if}
+                  {/foreach}
+                </select>
+    
+    
+    <input class="upl-tex-ANO" name="AlbumTitle" id="AlbumTitle" value="{$fm.AlbumTitle}" />
+    <span id="err_AlbumTitle" class="err"></span>
+    <span class="butt-ANO">
+    <a class="uplo-phto-butt-ANO" href="javascript:void(0);" onclick="oPhotoEdit.PhotoAdd();" >Save</a>
+    <a class="canc-phto-butt-ANO" href="javascript:void(0);" onclick="oPhotoEdit.CloseAlbumEditAndPhoto();">Cancel</a>
+    </span>
+    
+    </div>
+    </div>
+    </form>
+    <!--Album uplaod end -->
+    <div class="clear">&nbsp;</div>
+    <div class="subTab">
+        <ul>	
+            <li>{if $TotalPhotos['CountAlbum']>=0}<a href="/artist/photo" class="active">Albums  <span id="totAlb">{$totalAlbum}</span> </a> {/if}</li>
+            <li>{if $TotalPhotos['CountPhoto']>=0}<a href="/artist/showAllPhotosById">Photos  <span id="totPhoto">{$totalPhotos}</span> </a> {/if}</li>
+       </ul>
+    </div>
+    
+    
+    <div class="clear"></div>
+    <br />
+    <div class="phot-sect">
+    <div class="clear"></div>
+    <ul class="phto-clu" id="content">
+       {include file="mods/profile/edit_artist/ajax/scrollPhotoPagination.html"}
+    </ul>
+    <div class="clear"></div>
+    {if $page && $totalAlbums|count>=$smarty.const.PHOTO_PER_PAGE }
+    <div class="pagination"> <a href="javascript:void(0);" onclick="oPhotoEdit.PaginationAlbum('{$ui.Id}','{$page}');">See More Photo Albums</a>
+    <span class="wait" style="display: none;"></span> </div>
+    
+    {/if}
+    </div>
+    
+    <div class="clear"></div>
+    <div  id="loading" style="display:none;">Wait a moment... it's loading!</div>
+      </div>
+    
+    {include file="mods/profile/blocks/_buy_block.html"}
+    <div id="delDialog" title="Delete Tracks">
+    <p>Please select tracks to delete</p>
+    </div>
+    <div id="delConfirm" title="Confirm Delete">
+    <p>Are you sure you want to delete the selected Album?</p>
+    <input type="hidden" id="phId">
+    </div>
+    <div class="loadingdiv"></div>
+{/strip}
+{/block}

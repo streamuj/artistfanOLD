@@ -1,0 +1,130 @@
+{strip}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('body').on('click', '.tracks', function(){
+		var isChecked = $(this).prop('checked');
+		if(!isChecked && $('#selectAllTrack').prop('checked')){
+			$('#selectAllTrack').prop('checked', false);
+		} else {
+			if($('.tracks:checked').length == $('.tracks').length){
+				$('#selectAllTrack').prop('checked', true);
+			}
+		}
+	});
+	$('#delDialog').dialog({ autoOpen: false });
+	$('#delConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button bgrey', "click": function() {
+			 		$(this).dialog('close');
+			 	}
+			 },
+		'Delete': {
+				"text":'Delete', "class":'button wblue',  "click":function(){
+				$('body').addClass('loading');
+				deleteTracks();
+				$(this).dialog('close');				
+				}
+			}
+											
+		}
+	});
+	
+	$('body').on('click', '.delTrack', function(){
+		if($('.tracks:checked').length == 0) {
+			$('#delDialog').dialog('open');
+		} else {
+			$('#delConfirm').dialog('open');
+		}
+	});
+});
+function deleteTracks(){
+	var delTrack = $('.tracks').serialize();
+	$.ajax({
+		url: '/artist/DeleteTrack',
+		data: delTrack,
+		type: 'post',
+		dataType: 'json',
+		success: function(response){
+			$('body').removeClass('loading');
+			if(response.success) {
+				$('.tracks:checked').each(function(){
+					var trckId = $(this).attr('id').split('_')[1];
+					$('#trackRow_'+trckId).remove();
+				});
+				$('#trackCount').html(response.trackCount);
+				$('#albumPrice').html(response.price);
+				$('.trackRow').each(function(index){
+					$('.siNo', this).html(index+1);
+				});
+			}
+		}
+	});
+	
+}
+</script>
+{/strip}
+{strip}
+<div id="uploadedTrack">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td bgcolor="#989898"><p  class="white bold font14" style="padding:5px 15px;"><span id="trackCount">{$albumInfo.Tracks} Track{if $albumInfo.Tracks > 1}s{/if}</span> adds to {$albumInfo.Title}</p></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td bgcolor="#E5E5E5"><table width="100%" border="0" cellspacing="1" cellpadding="3" id="trackTable">
+             
+            
+            <tr {if !$albumInfo.Tracks} style="display:none;"  {/if} class="hideTr">
+            
+              <td width="1%" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><label>
+                <input type="checkbox" name="selectAllTrack" id="selectAllTrack" onclick="oProfile.SelectMusicTrack();" />
+              </label></td>
+              <td width="1%" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:40px;"><strong>#</strong></p></td>
+              <td align="left" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><strong>Track Name</strong></td>
+              <td width="1%" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:50px;"><strong>Track Length</strong></p></td>
+              <td width="1%" align="left" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:50px;"><strong>Genre</strong></p></td>
+              <td width="1%" align="left" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:50px;"><strong>Price</strong></p>                </td>
+            </tr>
+             {if $albumInfo.Tracks > 0}
+                {foreach $trackList as $track}
+                {include file="mods/profile/edit_artist/ajax/edit_track.html" album = $albumInfo siNo=$track@iteration }
+                {/foreach}
+             {else}
+             	<p class="noBar">No Tracks </p>
+             {/if}
+           <tfoot>
+            <tr {if !$albumInfo.Tracks} style="display:none;"  {/if} class="hideTr">
+              <td colspan="4" align="left" valign="middle" style="border-right:none;" bgcolor="#EEEEEE"><span class="block"><a href="javascript:void(0)" class="black delTrack"><strong>Delete</strong></a></span></td>
+              <td align="right" valign="middle" style="border-left:none;" bgcolor="#EEEEEE" nowrap="nowrap"><strong style="padding:0 10px;">Total Price</strong></td>
+              <td align="center" valign="middle" bgcolor="#EEEEEE"><strong><span id="albumPrice">${$albumInfo.TracksPrice|string_format:'%.2f'}</span></strong></td>
+            </tr>
+           </tfoot>  
+
+          </table></td>
+        </tr>
+        <tr>
+          <td bgcolor="#FFFFFF">&nbsp;</td>
+        </tr>
+      </table></td>
+    </tr>
+  </table>
+
+</div>
+<div id="delDialog" title="Delete Tracks">
+<p>Please select tracks to delete</p>
+</div>
+<div id="delConfirm" title="Confirm Delete">
+<p>Are you sure you want to delete the selected tracks?</p>
+</div>
+<div class="loadingdiv"></div>
+{/strip}

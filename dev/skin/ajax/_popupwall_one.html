@@ -1,0 +1,10 @@
+{foreach $wall.commentList as $comment}
+<div class="commentsDis commentsDisplay" id="comment_{$comment.cmt_id}">
+  <div> {if ($UserInfo.Id == $ownerId) OR ($UserInfo.Id == $comment.cmt_user_id)} <a class="removeBtn" href="javascript:void(0);" onclick="oWall.DeleteComment({$comment.cmt_id})"></a> {/if}
+  <span class="uPhoto"> <a href="/u/{$comment.Name}"> <img class="profimg" src="{if $comment.Avatar}{$SUB_DOMAIN}images/avatars/x_{$comment.Avatar}{else}/si/ph/user300x300.jpg{/if}" alt=""/> </a> </span>
+  <div class="msgTxt"><p><a class="uName" href="/u/{$comment.Name}">{if $comment.BandName}{$comment.BandName}{else}{$comment.FirstName} {$comment.LastName}{/if}</a>{$comment.cmt_message|nl2br|wordwrap:30:"\n":true}</p>
+  <p><span class="gray P2"> {if  $comment.cdate} {$comment.cdate}{/if}</span></p></div>
+  </div>
+  <div class="clear"></div>
+</div>
+{/foreach}

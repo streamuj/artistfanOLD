@@ -1,0 +1,64 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/events">My Events</a>
+    </div>
+    <h1>Event calendar</h1>
+</div>
+
+<div class="content_block wide">
+    <form action="/artist/eventcalendar" method="get">
+    <h2 class="calendar">
+        <div class="btn-prev">
+            <a href="{if $prev_month}{$prev_month}{else}javascript:void(0);{/if}" class="button{if !$prev_month} noactive{/if}">&laquo;</a>
+        </div>
+        <select name="month" onchange="this.form.submit();">
+            {foreach key=k item=i from=$mm}
+            <option value="{$k}"{if $k==$month} selected="selected"{/if}>{$i}</option>
+            {/foreach}
+        </select>
+        <select name="year" style="width: 6em;" onchange="this.form.submit();">
+            {foreach key=k item=i from=$yy}
+            <option value="{$k}"{if $k==$year} selected="selected"{/if}>{$i}</option>
+            {/foreach}
+        </select>
+        <div class="btn-next">
+            <a href="{if $next_month}{$next_month}{else}javascript:void(0);{/if}" class="button{if !$next_month} noactive{/if}">&raquo;</a>
+        </div>
+    </h2>
+    </form>
+    
+<table class="table_calendar">
+    <tr>
+        <th class="weekend">Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th class="weekend">Saturday</th>
+    </tr>
+    {foreach key=k item=i from=$week}
+    <tr>
+        {section name=wk loop=7}
+        <td{if $smarty.section.wk.index==0 || $smarty.section.wk.index==6} class="weekend"{/if}><span class="date">
+        {if $i[$smarty.section.wk.index]}
+        {$i[$smarty.section.wk.index]}
+        {assign var="dd" value=$i[$smarty.section.wk.index]}
+        {if $events[$dd]}
+        {foreach key=kk item=ii from=$events[$dd]}
+        <div>
+            <a href="/artist/events/{$ii.Id}">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a><br />
+            {$ii.Location}<br />
+            {if $ii.EventType==1}<span class="label live">live</span>{elseif $ii.EventType==2}<span class="label stream">stream</span>{elseif $ii.EventType==3}<span class="label online-events">online</span>{/if}
+        </div>
+        {/foreach}
+        {/if}
+        {else}
+        &nbsp;
+        {/if}
+        </span></td>
+        {/section}
+    </tr>
+    {/foreach}
+</table>
+</div>
+{/block}

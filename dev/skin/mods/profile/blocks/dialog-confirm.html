@@ -1,0 +1,63 @@
+<div style="background-color:#FFFFFF;">
+    <input type="hidden" id="dialog_mid" value="{$Albumdetails.Id}" />
+    <input type="hidden" id="dialog_price" value="{$Albumdetails.Price}" />    
+    <div class="album_img">
+        <a href="/u/{$ui.Name}/music">
+        {if $Albumdetails.Cover}        
+            <img width="96" height="96" src="{$SUB_DOMAIN}photo/thumbs/{$Albumdetails.UserId}/{$Albumdetails.Cover}" alt="">
+            {else}
+            <img width="96" height="96" src="/i/ph/album-96x96.png" alt="">            
+            {/if}
+        </a>
+    </div>
+    <div class="track_block">
+        <div class="track_name">
+            {$Albumdetails.Title}
+        </div>
+        <div class="track_author">
+            by   <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+
+        </div>
+        <div class="track_album">
+            <span class="track_genres">
+			{$Albumdetails.Genres}
+            {assign var="numg" value=0}
+            	
+            {foreach name=n key=k item=i from=$genres}
+				{if $ui.Genres.$k}{$i}{assign var="numg" value=$numg+1}{if $numg < $ui.Genres|@count},{/if} {/if}
+			{/foreach}
+
+			</span>
+             <span class="track_count">{if $Albumdetails.Tracks} {$Albumdetails.Tracks} Songs{/if}</span>
+             <br/>
+
+        </div>
+    </div>
+    <div class="cl"></div>
+    <div class="line"></div> 
+    <span class="priceMusicShow"></span>
+    <span class="wait" style="display:none;"></span>
+    
+    <div style="clear:both"></div><br/>        
+  <input class="btn1 yellow_button dialogConfirmation" type="button" value="Remove" style="display: block;
+min-width: 80px;
+height: 1.8em;
+margin: 0px 5px 0px 0px;
+padding: 0 1.5em;
+border: none;
+border-radius: 4px;
+font-size: 110%;
+text-decoration: none;
+color: #fff;
+background: #4F8E25;" />&nbsp;&nbsp;
+    <input class="btn1 reset_button"  type="reset" value="Cancel" style="display: block;
+min-width: 80px;
+height: 1.8em;
+margin: 0px 5px 0px 0px;
+padding: 0 1.5em;
+border: none;
+border-radius: 4px;
+font-size: 110%;
+text-decoration: none;
+color: #fff;
+background: #990000;" /> </div>

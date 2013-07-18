@@ -1,0 +1,259 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="meta"}
+<meta property="og:url" content="http://{$smarty.const.DOMAIN}/broadcasting/{if $event}{$event.Id}{else}{$ui.Name}/live{/if}/" />
+<meta property="og:title" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} - Broadcasting"/>
+<meta property="og:description" content="Artist Broadcast {if $event}{$event.Title}{/if}"/>
+{if $event && $event.EventPhoto}
+<meta property="og:image" content="{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}"/>
+{else}
+<meta property="og:image" content="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+{/if}
+{/block}
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript" src="/sj/cls/chatRoom.js"></script>
+<link rel="stylesheet" href="/ss/chatRoom.css" />
+{if !$access}
+
+
+{/if}
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/swfobject.js"></script>
+{if $event_id}
+<script type="text/javascript" src="/sj/mdetect.js"></script>
+<script type="text/javascript" src="/sj/smh.swobject.js"></script>
+{/if}
+<script type="text/javascript">
+	var event = "{$event_id}";
+	var eventCode ="{if $event}{$event.Code}{else}u{$UserInfo.Name}{/if}";
+	var chat = new Chat(eventCode);
+	chat.init();
+	var name = '{$UserInfo.Name}';
+    $(document).ready(function()
+    {
+        {if $event_id && $access && $online}
+        oProfile.UpdateViewer('{$event_id}');
+        {/if}
+        {if !$access && !$UserInfo.Status}
+        oProfile.InitEventActionsForGuests();
+        {elseif !$access}
+        oProfile.InitEventActions();
+        oPopup.InitPurchase();
+        {/if}
+        {if $event_id && !$online}
+        oProfile.CheckEventOnline('{$event_id}');
+		{else}
+		oProfile.GetViewersCount('{if $event}{$event.Code}{else}{$ui.Name}{/if}', 1);
+		oProfile.CheckEventFinish('{$event_id}');
+        {/if}
+    });
+</script>
+{if $event_id && $access}
+<script type="text/javascript">
+window.onload=function ()
+{
+var uagent = navigator.userAgent.toLowerCase();
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		var mobile = { };
+		mobile.account  = "artistfan";
+		mobile.media = "{$smarty.const.STREAMING_MOBILE_CLIENT_SERVER}/{$flow}";
+		mobile.autoplay = "true";
+		mobile.mimetype = "video/mp4";
+		mobile.width    = "640";
+		mobile.target   = "broadcast";
+		mobile.maxwidth = "525";
+		bootStrap(mobile);
+	} else {
+		var flashvars = { account: "artistfan", media: "{$smarty.const.STREAMING_FLASH_CLIENT_SERVER}/{$flow}", autoplay: "true", };
+		var params = { };
+		params.quality = "high";
+		params.bgcolor = "#000000";
+		params.allowscriptaccess = "sameDomain";
+		params.allowfullscreen = "true";
+		var attributes = {};
+		attributes.id = "Player";
+		attributes.name = "Player";
+		attributes.align = "middle";
+		swfobject.embedSWF("/sj/smh.player.swf","broadcast", "640", "480", "10.1.0", false, flashvars, params, attributes);
+	}
+}
+</script>
+{/if}
+<script type="text/javascript">
+
+var eTime ={$eTime};
+
+	{if $reTime}
+		eTime = (eTime*60)-{$reTime};
+	{else}
+		eTime = '';
+	{/if};
+
+var wsCount = eTime; //MINUTES  CONVERTED AS SECONDS	
+var grace_time= 5*60; //SECONDS
+
+$(document).ready(function() {
+
+	{if $purchase}
+		var preventUnloadPrompt;
+		{if $online}
+		$(window).bind("beforeunload", function(e) { 
+			var rval;
+			if(preventUnloadPrompt) {
+				return;
+			} else {
+				//location.replace(redirectAfterPrompt);
+				if(wsCount) {
+					return "If you reload or close the window you lost data about this broadcast.";
+				}
+				return;
+			}
+			return rval;
+		})
+			if(wsCount) 
+			{	
+				setTimeout(startCountdown, 1000);
+			}
+			else
+			{
+				{if $cGraceTime}
+				setTimeout(finalCountdown, 1000);
+				{/if}
+			}
+		{/if}
+	{/if}
+});
+function startCountdown() 
+{
+	if((wsCount - 1) >= 0)
+	{
+	    wsCount = wsCount - 1;
+
+		var hours = Math.floor(wsCount / (60 * 60));
+	   
+		var divisor_for_minutes = wsCount % (60 * 60);
+		var minutes = Math.floor(divisor_for_minutes / 60);
+	 
+		var divisor_for_seconds = divisor_for_minutes % 60;
+		var seconds = Math.ceil(divisor_for_seconds);
+			
+
+		$("#ws_counter").html('<strong>Remaining Time :</strong>' + hours+':'+minutes+':'+seconds); 
+		setTimeout(startCountdown, 1000);
+	}
+	else
+	{			
+		$("#ws_counter").html('<strong>Event Will Close in :</strong>' + grace_time + ' minutes.'); 
+		setTimeout(finalCountdown, 1000);
+	} 
+}
+
+function finalCountdown() 
+{	
+	if((grace_time - 1) >= 0)
+	{
+		grace_time = grace_time - 1;
+		
+		var hours = Math.floor(grace_time / (60 * 60));
+	   
+		var divisor_for_minutes = grace_time % (60 * 60);
+		var minutes = Math.floor(divisor_for_minutes / 60);
+	 
+		var divisor_for_seconds = divisor_for_minutes % 60;
+		var seconds = Math.ceil(divisor_for_seconds);
+	
+		$("#ws_counter").html('<strong>Event Will Close in :</strong>' + hours+':'+minutes+':'+seconds); 
+		setTimeout(finalCountdown, 1000);
+	}
+	else
+	{
+		$("#ws_counter").html('<font color="#FF0000"><strong>Event Finished</strong></font>');
+	} 
+}
+
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+  <div class="content_block wide"> {if $event}
+    <h3>{if $event}{$event.Title}{else}Add-hoc broadcasting{/if}</h3>      
+    <div class="artist_profile">
+      <table class="profile_table" width="100%" cellpadding="5" cellspacing="0" border="0">
+        <tr>
+          <td class="light">Title</td>
+          <td class="ttl">{$event.Title}</td>
+        </tr>
+        <tr>
+          <td class="light">Location</td>
+          <td>{$event.Location}</td>
+        </tr>
+        <tr>
+          <td class="light">Date/Time</td>
+          <td>{$event.EventDate}</td>
+        </tr>
+        {if $event.Descr}
+        <tr>
+          <td class="light">Description</td>
+          <td> {$event.Descr|nl2br} </td>
+        </tr>
+        {/if}
+      </table>
+    </div>
+    {if $purchase}
+  	<div><span id="ws_counter"></span> </div>
+    {/if}
+    {/if}
+    
+    <div class="alert alert_success" id="eventFinish" style="display:none;">
+      <p><strong>The event is finished. Thank you for watching</strong></p>
+    </div>
+    
+    {if (!$event && $event_id) || ($event && $event.Status < 3)}
+    {if $event && !$access}
+    <div class="alert alert_success">
+      <p> {if $online}<strong>{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} is broadcasting online right now!</strong> {/if}
+        {* You need a password to access this broadcast.*} <br />
+        <a href="javascript:void(0);" class="btn-yellow BuyEvents" mid="{$event.Id}" price="{$event.Price}">{if $event.Price>0}Buy{else}Get{/if} access</a> </p>
+    </div>
+    {/if}
+    {if $access && !$online}
+    <div class="alert alert_warning">
+      <p> <strong>This broadcast is currently offline. </strong>Please wait a while and <a href="/broadcasting/{if $event}{$event.Id}{else}{$ui.Name}/live{/if}/">refresh this page</a>. </p>
+    </div>
+    {/if}
+    <div class="video-holder" id="broadcastHolder">
+      <div class="video" id="broadcast"> </div>
+    </div>
+    {* Chat Containers *}
+    <div class="viewers" style="margin-top:10px">
+      <div class="title"><span id="viewers_count">0</span> fans are watching this broadcast.</div>
+      <div class="list">
+        <ul class="viewers_list" pid="1">
+          {*
+          <li class="btn1" style="display: none;"> <a href="javascript:void(0);" onclick="oProfile.GetViewersCount('{if $event}{$event.Code}{else}{$UserInfo.Name}{/if}', 1);"></a></li>
+          *}
+        </ul>
+      </div>
+      <div id="chat-wrap">
+        <div id="chat-area"></div>
+        <form id="send-message-area" action="">
+          <textarea id="sendie" maxlength='100'></textarea>
+        </form>
+      </div>
+    </div>
+    {/if}
+    {if $event && $event.Status == 4}
+    <div class="alert alert_success">
+      <p><strong>This event has already finished!</strong></p>
+      {* if $access && $UserInfo.Status==1}
+      <p>Broadcast recording was added to your 'My videos' page as a part of your purchase. <br />
+        <a href="/fan/video">Review recording</a> </p>
+      {/if *} </div>
+    <div class="text">Don't miss these <a href="/u/{$ui.Name}/events">great upcoming events from {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>!</div>
+    {/if} </div>
+</div> 
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

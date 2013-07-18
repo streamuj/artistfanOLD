@@ -1,0 +1,172 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="meta"}
+	<meta property="og:title" content="ArtistFan Video"/>
+    <meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/video/{$video.Id}"/>
+    <meta property="og:type" content="movie"/>
+    <meta property="og:description" content="{$video.Title}"/>
+    <meta property="og:image" content="{if $video.FromYt}http://i.ytimg.com/vi/{$video.Video}/0.jpg{elseif $video.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/s_{$video.Video}.jpg{else}/i/ph/video-96x96.png{/if}"/>
+        {if $smarty.request.thanks}
+		<meta http-equiv="refresh" content="2;url=/download/video/{$video.Id}">            
+	    {/if}
+
+{/block}
+
+{block name="javascript"}
+<!--Related Video JS Start -->
+<script type="text/javascript" src="/sj/jquery.tinycarousel.min.js"></script>
+
+<script type="text/javascript">
+        jQuery(document).ready(function() {
+			$('.tbSliderMin').tinycarousel({ display: 3 });
+        })
+ </script>
+ 
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+{if $video.Status < 2}
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+{/if}
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oPlay.InitPlayButtons();
+        oProfile.InitPurchase();
+		oPopup.InitPurchase();						            		
+    });
+</script>
+<!--Related Video JS End -->
+{if !$video.FromYt && $video.Status == 2}
+<script type="text/javascript" src="/sj/mdetect.js"></script>
+<script src="/sj/jwplayer/jwplayer.js"></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+
+
+{include file="jwplayer.html"}
+{/if}
+
+
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript">
+	var uagent = navigator.userAgent.toLowerCase();
+	var fileRoot;
+	var suffix = '';
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		fileRoot = 'http://mobile.streamingmediahosting.com/artistfan/_definst_/';
+		suffix = '/playlist.m3u8';
+	} else {
+		fileRoot = 'rtmp://flash.streamingmediahosting.com/artistfan/';
+	}
+  $(document).ready(function(){
+	{if !$UserInfo.Status}
+	oProfile.InitPurchaseForGuests();
+	{else}
+	oProfile.InitPurchase();
+	{/if}
+  });
+</script>
+
+
+
+{/block}
+{block name="my_cabinet"}
+
+{if $video || $streamVideo || $Relatedvideo}
+
+    <div class="Vidlarge" style="width:100%">
+    	{if $smarty.request.thanks}
+    	<div class="clear"></div>
+    	<div>
+    	<h2>Thanks for purchasing {$video.Title|truncate:30}</h2>
+        </div>
+    	<div class="clear"></div> 
+        {/if}       
+    	{if $video.FromYt || $video.Status == 2}
+    	<div class="video" id="jwplayer"> 
+        {if $video.FromYt}
+    	<iframe width="100%" height="450" src="http://www.youtube.com/embed/{$video.Video}?autoplay=1&cc_load_policy=1&amp;wmode=opaque" frameborder="0" allowfullscreen></iframe>
+      {/if} 
+       </div>
+                {if !$video.FromYt && $video.Status == 2}
+                {strip}
+                <script type='text/javascript'>
+                            jwplayer('jwplayer').setup({
+                                controlbar: "bottom",
+                                file: fileRoot+"mp4:u/{$video.UserId}/{$video.Video}"+suffix,
+                                width: 768,
+                                height: 450,
+								image: "{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/{$video.Video}.jpg",
+                           });
+                           jwplayer().onReady(function(){ 
+                                jwplayer().play(); 
+                            });
+                            </script>
+                {/strip}
+                {/if}
+               
+                {/if}  
+                
+                <div class="desBox">
+<div class="LF">
+<p class="nameTxt"> <a href="/u/{$video.Name}">{if $video.BandName}{$video.BandName}{else}{$video.FirstName} {$video.LastName}{/if} </a></p>
+<p class="titleTxt">{$video.Title}</p>
+{if !$video.VideoPurchase && $IsOther && $video.Price > 0}
+<p class="des"><strong>Price: </strong> $ {$video.Price|string_format:'%.2f'} </p> 
+{else}
+{*<p class="des"><strong> Price: </strong> Free</p> *}
+<p class="des"><strong> Stream Only </strong> </p> 
+{/if}
+</div>
+<div class="clear"></div>
+<p class="viewTxt">{$video.VideoCount} Views</p>
+{if !$i['VideoPurchase.Id']}
+<span class="RT" style="margin:0 5px;">
+{if $UserInfo.Status && $IsOther}
+	{if $IsFollow1}
+    	{if $video.Price>0 }
+        <a href="javascript: void(0);" class="{if !$video.VideoPurchase['Id']}paymore_buy_videoAJAXPOPUP {/if}button wblue" mid="{$video.Id}" Myimage="{$video.Video}" Myprice="{$video.Price}" Userid="{$video.UserId}">$ {$video.Price|string_format:'%.2f'}</a>
+        {else}
+        <a href="javascript: void(0);" id="VFree_{$video.Id}" class="nCadd_video button wblue" mid="{$video.Id}" Myimage="{$video.Video}" Myprice="{$video.Price}" Userid="{$video.UserId}">FREE</a>
+        {/if}
+    {else}
+    	{if $video.Price>0 }
+        <a href="javascript: void(0);" class="button wblue" onclick="oPopup.connectinvideo('{$video.UserId}','{$UserInfo.Status}');" mid="{$video.Id}">$ {$video.Price|string_format:'%.2f'}</a>
+        {else}
+		<a href="javascript: void(0);" class="button wblue" onclick="oPopup.connectinvideo('{$video.UserId}','{$UserInfo.Status}');" mid="{$video.Id}">FREE</a>
+        {/if}  
+	{/if}
+{/if}
+</span>
+
+{/if}
+<ul class="RT icBox">
+    {if $video.Status == 2}
+    	<li><a href="javascript:void(0);" class="shareVideo" albumtitle="{$video.Title}" mid="{$video.Id}"><span class="LF">SHARE</span><img width="18" hspace="4" src="/si/share-ic-w.png" align="bottom"/></a>
+</li>
+    {/if}
+</ul>
+
+
+
+<div class=" clear"></div>  
+                        </div>
+        
+        
+    </div>
+  	<div id="list">
+	{include file="mods/profile/show_artist/ajax/video_one.html"}                 
+    </div>
+
+<div class="clear"></div>
+
+{else}
+<div class="P15">
+	<h3>Videos</h3>
+	<p class="noBar">No Videos</p>
+</div>
+
+{/if}
+
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

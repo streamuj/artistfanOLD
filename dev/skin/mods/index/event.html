@@ -1,0 +1,52 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitPurchase();
+		oPopup.InitPurchase();		
+    });
+</script>
+{/block}
+{block name="content"}
+<!--COVER SLIDER-->
+<div class="clear"></div>
+<!--CONTENT-->
+<div class="contentArea">
+  <div class="row1" style="border-left:1px solid #ccc; border-right:1px solid #ccc;">
+    <h3 style="padding:10px;">SHOWS</h3>
+  {foreach key=ki item=ii from=$eventCat}
+    <div class="tbBox">
+      <h2 class="P20">{$vCat->GetCategoryInfoById({$ki})} <a href="/base/index/event?id={$ki}" class="seeAll">See all</a></h2>    
+      <div class="tbList">
+        <ul class="overview">
+		{foreach key=k item=i from=$ii} 
+
+          <li>
+            <div class="imgBox"><a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/events/{$i.EventId}"></a>
+            {if $i.EventPhoto}
+            <img src="{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.EventPhoto}" alt="pic" width="218" />
+            {else}
+            <img src="/dev/templates/images/nophoto.jpg" alt="pic" width="218" />            
+            {/if}
+            </div>
+            <p class="titleTxt"><strong class="font16"><a href="/u/{$i.Name}/events/{$i.Id}">{$i.Title} </a></strong><br />
+              <span class="font14"><a href="/u/{$i.Name}/events/{$i.Id}">{if $i.EventDate}{$i.EventDate|date_format:"%d-%m-%Y"}{/if}</a></span></p>                            
+   <a href="javascript:void(0);" class="btn-yellow IndexEvents" userid="{$i.UserId}" mid="{$i.EventId}" price="{$i.Price}">{if $i.Price>0}Buy{else}Get{/if} access</a>              
+          </li>
+
+          {/foreach}
+        </ul>
+        <div class="clear"></div>
+      </div>
+    </div>
+ {/foreach}    
+
+  </div>
+</div>
+<div class="clear"></div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block} 

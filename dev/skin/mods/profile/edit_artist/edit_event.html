@@ -1,0 +1,318 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{strip}
+	<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.ui.timepicker.css" />
+    <link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+    <link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.Jcrop.css" />
+	<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+{/strip}
+{include file="mods/profile/fanfinder_map.html"}
+{strip}
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+</script>
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+	imgWidth = 1;
+	imgHeight = 1;	
+    $(document).ready(function()
+    {		
+        oErrors.Show();
+		$("#moreTimeMsg").hide();
+        {if $id}oProfile.InitEventActions();{/if}
+	    $("#EventDate").datepicker({
+            dateFormat: 'mm/dd/yy',
+			minDate: 0 	
+        });
+        $('#EventTime').timepicker({
+            showMinutes: true,
+            showPeriod: true,
+            showLeadingZero: false
+        });
+		
+		{if !$id}
+		oProfile.DurationSlide();
+		{else}
+		$('#durationTR').hide();
+		{/if}
+		  var jcrop_api;
+		  var orginalImage = '{if $fm.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$UserInfo.Id}/{$fm.EventPhoto}{else}{$SUB_DOMAIN}si/nophoto.jpg{/if}';
+		  oErrors.Show();
+	      $('#media_type').hide();
+           var uploader = new qq.FileUploader({
+            element: $('#file-uploaderN')[0],
+				action: '/base/Artist/EventCropOption',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, 
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('Image');
+				$('#event_image').attr('src', '{$SUB_DOMAIN}si/loading.gif');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('Image');
+				if(responseJSON.success == 0){
+					$('.jcrop-holder').hide();
+				    $('#event_image').attr('src', orginalImage).css({ 'visibility': 'visible', width:'auto', height : 'auto'}).show();					
+					$('#profilePic').removeClass('good').html('');
+					$('#saveAvatar').hide();
+					$('#cropedTxt').html('');
+					$('#cropImage').parent('div').hide();
+					$('#image_err').addClass('error').html(responseJSON.message);
+					return;
+				}
+                if (responseJSON.success==true) {
+                    oErrors.SetClearFld('Image');
+					$('#image_err').removeClass('error').html( '' );
+					$('#event_image').hide();
+					
+                    var img = '/'+responseJSON['photo'];
+                    $('#cropImage').attr('src', img );
+					imgWidth = responseJSON['width'];
+					imgHeight = responseJSON['height'];
+
+					if(jcrop_api){
+						jcrop_api.setImage(img);
+						jcrop_api.release();
+					}
+					$('#event_image').load(function () {
+						$(this).Jcrop({
+							onChange: showPreview,
+							onSelect: showPreview,
+							aspectRatio: {$tWidth}/{$tHeight},
+							onSelect: updateCoords,
+							setSelect: [ 0, 0, {$tWidth}/2, {$tHeight}/2 ]
+							}, function(){
+							  jcrop_api = this;
+						});
+					}).attr('src', img);
+					
+					$('.jcrop-holder').show();					
+					$('#cropedTxt').html('Croped Image');
+					$('#cropImage').parent('div').show();					
+					$('#cropImage').attr('src', img );
+					
+                    oErrors.SetOkFld('Image', 'Image uploaded!');
+                }
+			},
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('Image');
+            },
+            multiple: false,
+            autoSubmit: true,
+            messages: {
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('Image', message);
+            }
+        });
+    });
+	function updateCoords(c)
+	{
+		$('#x1').val(c.x);
+		$('#y1').val(c.y);
+		$('#x2').val(c.x+c.w);
+		$('#y2').val(c.y+c.h);
+		$('#w').val(c.w);
+		$('#h').val(c.h);
+	};
+	$imgpos = {
+		width	: {$tWidth},
+		height	: {$tHeight}
+	};
+	function showPreview(coords)
+	{
+		if (parseInt(coords.w) > 0)
+		{
+			var rx = {$tWidth} / coords.w;
+			var ry = {$tHeight} / coords.h;
+			$('#cropImage').css({
+				width: Math.round(rx * imgWidth) + 'px', 
+				height: Math.round(ry * imgHeight) + 'px',
+				marginLeft: '-' + Math.round(rx * coords.x) + 'px', 
+				marginTop: '-' + Math.round(ry * coords.y) + 'px' 
+			});
+		}
+	};
+	
+</script>
+{/strip}
+{/block}
+
+
+{block name="my_cabinet"}
+{strip}
+<div class="">
+
+<h2 style="padding-left:15px">{if !$id}Create a Live Stream{else}Edit a Live Stream{/if}</h2>
+
+
+<form class="ttable big_form" method="post" action="/artist/EventEdit" id="event_form" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="{$id}" />
+        <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />   
+		<table cellpadding="10" cellspacing="0">
+ 
+    <tr>
+    	<td colspan="3">&nbsp;</td>
+    </tr>
+    <tr id="durationTR">
+    	<td colspan="3">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            </table>		</td>
+    </tr>
+
+    {if $fm.Duration}
+    <tr>
+    	 <td><label>Duration</label></td>
+         <td><input type="text" value="{$fm.Duration} mins" readonly="readonly"  class="txtBox" /></td>
+    </tr>
+    {/if} 
+    {if !$id}
+                <tr>
+                        <td colspan="2"><strong>Set event duration</strong></td>
+                        <td>&nbsp;</td>
+                </tr>
+                <tr id="slideTr">
+                    <td colspan="3" style=" padding-left:30px;"><div id="slider" style=" background-color:#cccccc; border:#999999 1px solid;"></div><br/><span id="minutes" style="width:25px; display:inline-block"></span>&nbsp; minutes (Use the track ball to set event duration below 2 hours.) </td>
+                </tr>
+    <tr>
+         <td colspan="2"><strong>Do you want to set event duration more than 2 hours?</strong></td>
+         <td>&nbsp;</td>
+    </tr>    
+	<tr id="moreTr">
+                	<td><input type="radio" name="more" id="moreYes"  /> <strong>Yes</strong><input type="radio" name="more" checked="checked" id="moreNo" /> <strong>No</strong> </td>
+                    <td >
+                    <span id="moreTime" class="xform">
+                        <select name="fm[Duration]" id="Duration">
+                        <option value="">--Select--</option>
+                        {foreach key=k item=i from=$duration}
+                        <option value="{$k}" {if $fm.Duration==$k}selected{/if}>{$i}</option>
+                        {/foreach}
+                        </select>
+                        <span style="color:red;">*</span>                    </span>                    </td>
+                    <td id="err_Duration" class="err"></td>
+    </tr> 
+    <tr id="moreTimeMsg">
+         <td colspan="3"><span style="color:red;">Your event will not be ready to announce. ArtistFan's support team will contact you for event details.</span></td>
+    </tr> 
+    {/if}          
+    <tr>
+        <td align="left" valign="middle">Event Title<span style="color:red;">*</span></td>
+        <td align="left" valign="middle"><input type="text" id="Title" class="txtBox" name="fm[Title]" value="{$fm.Title}"  size="35"  /></td>
+        <td id="err_Title" class="err"></td>
+    </tr>           
+    <tr>
+        <td align="left" valign="middle">Location</td>
+        <td align="left" valign="middle"><input type="text" id="Location" class="txtBox" name="fm[Location]" value="{if $fm.Location}{$fm.Location}{/if}"{*if $fm.EventType==3} disabled="true"{/if*} size="35"  /></td>
+        <td id="err_Location" class="err"></td>
+    </tr>
+{if $id}
+    <tr>
+        <td align="left" valign="middle">Date : </td>
+        <td align="left" valign="middle"><label>{$fm.EventDate}</label><input type="hidden" id="EventDate" class="txtBox" name="fm[EventDate]" value="{$fm.EventDate}"  size="35"  /></td>
+        <td id="err_EventDate" class="err"></td>
+    </tr>
+
+{else}
+    <tr>
+        <td align="left" valign="middle">Date <span style="color:red;">*</span></td>
+        <td align="left" valign="middle"><input type="text" id="EventDate" class="txtBox" name="fm[EventDate]" value="{$fm.EventDate}"  size="35"  /></td>
+        <td id="err_EventDate" class="err"></td>
+    </tr>
+
+{/if}    
+{if $id}
+    <tr>
+        <td align="left" valign="middle">Time :</td>
+        <td align="left" valign="middle"><label>{$fm.EventTime}</label><input type="hidden" id="EventTime" class="txtBox" name="fm[EventTime]" value="{$fm.EventTime}" size="35"   /> </td>
+        <td id="err_EventTime" class="err"></td>
+    </tr>
+{else}
+    <tr>
+        <td align="left" valign="middle">Time<span style="color:red;">*</span></td>
+        <td align="left" valign="middle"><input type="text" id="EventTime" class="txtBox" name="fm[EventTime]" value="{$fm.EventTime}" size="35"   /></td>
+        <td id="err_EventTime" class="err"></td>
+    </tr>
+{/if}
+
+<!--Event Image Adding Start -->
+    <tr>
+        <td align="left" valign="top">Image<span style="color:red;">*</span></td>
+        <td align="left" valign="top">
+       <label>
+<div id="file-uploaderN" style="float:left;">
+                    <noscript>
+                       <p>Please enable JavaScript to use file uploader.</p>
+                    </noscript>
+                    </div>
+
+       </label>        </td>        
+        <td>&nbsp;</td>
+    </tr>
+</table>
+ 	<div align="center" style="border-top:1px solid #eeeeee; border-bottom:1px solid #eeeeee; padding-bottom:10px ">
+    
+    <p class="P10" style="color:#ccc;">We recommend upload an image that is no less than 769 pixels (width) x 442 pixels (height) for optimal resolution.  </p>
+    
+    <p class="err P5" id="err_Image" align="center"></p>
+          <img id="event_image" src = "{if $fm.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$UserInfo.Id}/{$fm.EventPhoto}{else}/i/nophoto.jpg{/if}" style="max-width:100%" />            
+				<input type="hidden" name="fm[x1]" value="" id="x1" /> 
+				<input type="hidden" name="fm[y1]" value="" id="y1" />
+				<input type="hidden" name="fm[x2]" value="" id="x2" /> 
+				<input type="hidden" name="fm[y2]" value="" id="y2" /> 
+				<input type="hidden" name="fm[w]" value="" id="w" />
+				<input type="hidden" name="fm[h]" value="" id="h" />
+                </a>
+           </div>
+         
+        <div style="float:left; margin-top:5px; position:relative; overflow:hidden; width:{$smarty.const.HOME_SLD_EVENTS_WIDTH}px; height:{$smarty.const.HOME_SLD_EVENTS_HEIGHT}px; display:none;" align="center">
+        <img id="cropImage" src="{if $fm.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$UserInfo.Id}/{$fm.EventPhoto}{else}/i/nophoto.jpg{/if}" style="position: relative;" alt="Crop Image Preview" />        </div>  
+       <span id="image_err"></span>&nbsp;
+
+
+
+<table cellpadding="10">
+    <tr id="tr_Price" {*{if !$fm.EventType || $fm.EventType==1} style="display: none;"{/if}*}>
+        <td><label>Event Price </label></td>
+        <td>$ <input type="text" id="Price" name="fm[Price]" value="{$fm.Price|string_format:'%.2f'}" class="txtBox"  size="35"  />        </td>
+        <td id="err_Price" class="err"></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:top;"><label>Event description </label></td>
+        <td colspan="2"><div style="margin-left:12px;"> <textarea name="fm[Descr]" style="width:480px;height:80px;" class="txtBox">{$fm.Descr}</textarea>  </div>      </td>
+    </tr>
+    <tr>
+         <td colspan="3">
+                {if !$id}
+                <p>
+                    You'll be able to send an announcement to all your fans after event will be created.
+                </p>
+                {/if}
+                <br/>
+                <input type="button" class="button wblue" onclick="oProfile.EditEvent();" value="{if !$id}Create{else}Update{/if}" />
+                <input type="button" value="Cancel{if $id} Edit{/if}" onclick="Go('/artist/events')" class="button  bgrey" />
+         </td>            
+      </tr>
+    </table>
+   
+<table class="form_table" cellpadding="10">
+
+    </table>
+
+    <input type="hidden" name="fm[EventApp]" value="{$fm.EventApp}" />
+</form>    
+  </div>
+{/strip}
+
+{/block}

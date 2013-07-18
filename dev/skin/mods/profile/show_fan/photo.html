@@ -1,0 +1,53 @@
+{extends file="mods/profile/cabinet_fan_public.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/photoEdit.js"></script>
+<script type="text/javascript" src="/sj/cls/scrollpagination.js"></script>
+
+<script type="text/javascript">
+		$(document).ready(function() {
+		 
+	$(window).scroll(function(){
+   		if($(window).scrollTop() == $(document).height() - $(window).height()){ 
+			if($('.pagination').is(':visible')){
+				if($('.pagination').find('.wait').is(':visible')) return;
+				$('.pagination a').trigger('click');
+			}
+		}
+	});		
+			
+		});
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="P15">
+  <div>
+<h2 class="LF">Albums </h2>
+</div>
+    <div class="clear">&nbsp;</div>
+    <div class="subTab">
+    <ul><li>
+   <a href="/u/{$ui.Name}/photo" class="active">Albums  <span id="totAlb">{$totalAlbums}</span> </a></li>
+   <li><a href="/u/{$ui.Name}/photo?allPhoto=1">Photos  <span id="totPhoto">{$totalPhotos}</span> </a></li>
+   </ul>
+</div>
+  <div class="clear"></div>
+  
+{if $albums}
+    <div class="phot-sect">
+        <div class="clear"></div>
+        <ul class="phto-clu" id="content">
+          {include file="mods/profile/show_fan/ajax/scrollPhotoPagination.html"}                
+        </ul>
+      </div>      
+{else}
+    <div class="noBar">No Albums</div>
+{/if}
+{if $page > 0}
+<div class="pagination"> <a href="javascript:void(0);" onclick="oPhotoEdit.PaginationShowFanAlbum('{$ui.Id}','{$ui.Name}','{$page}');">See More Photo Albums</a>
+<span class="wait" style="display: none;"></span> </div>
+{/if}
+</div>
+
+{/block}

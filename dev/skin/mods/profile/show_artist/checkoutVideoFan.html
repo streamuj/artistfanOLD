@@ -1,0 +1,14 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="5" style="border-bottom:1px solid #cccccc;">
+          
+          <tr>
+            <td width="1%">
+           <img src="{if $video.FromYt}http://i.ytimg.com/vi/{$video.Video}/0.jpg{elseif $video.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/s_{$video.Video}.jpg{else}/i/ph/video-96x96.png{/if}" alt="pic"  width="150"/></td>
+            <td align="left" valign="top">
+           <p style="padding:0px 0" class="font21">{$video.Title}</p>
+           <p> {if $payMore}
+            $ {$payMore|string_format:'%.2f'} USD
+            {else}            
+            $ {$video.Price} USD
+            {/if}  </p>          </td>
+          </tr>
+        </table>

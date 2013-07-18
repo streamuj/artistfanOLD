@@ -1,0 +1,39 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+{/block}
+
+
+{block name="my_cabinet"}
+
+
+<div style="padding:15px;">
+
+<div class="header_block">
+<table width="100%" cellpadding="5">
+    <tr style="background-color:#f5f5f5">
+    	<td><h3 style="padding-left:20px;">My Artist</h3></td>
+    </tr>
+</table>  
+</div>
+<div class="content_block wide"> 
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      
+      <tr>
+        <td bgcolor="#FFFFFF">
+        <ul class="fGrid">
+        {foreach key=k item=i from=$artists_follow}
+          <li><a href="/u/{$i['u.Name']}"><img src="{if $i['u.Avatar']}/files/images/avatars/x_{$i['u.Avatar']}{else}/si/pic-100x100.jpg{/if}" /> {if $i['u.IsOnline'] == 1}<span class="online"></span> {/if} <p>{$i['u.FirstName']|cat:$i['u.LastName']|truncate:8:''}</p>
+          </a></li> 
+          {foreachelse}            
+             <p>No Artist Found</p>      
+          {/foreach}
+        </ul>
+       </td>
+      </tr>
+    </table>
+    <div class="clear"></div>
+    <div align="center">&nbsp;</div>
+  </div>
+</div>    
+{/block}

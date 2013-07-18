@@ -1,0 +1,137 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/j/cls/Profile.js"></script>
+{if !$access}<script type="text/javascript" src="/dev/templates/js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/jquery-ui-1.8.16.custom.css" />{/if}
+<script type="text/javascript" src="/j/cls/Errors.js"></script>
+<script type="text/javascript" src="/j/swfobject.js"></script>
+{if $event_id}
+<script type="text/javascript" src="/j/mdetect.js"></script>
+<script type="text/javascript" src="/j/smh.swobject.js"></script>
+{/if}
+<script type="text/javascript">
+	var event = "{$event_id}";
+    $(document).ready(function()
+    {
+        {if $event_id && $access && $online}
+        oProfile.UpdateViewer('{$event_id}');
+        {/if}
+        {if !$access && !$UserInfo.Status}
+        oProfile.InitEventActionsForGuests();
+        {elseif !$access}
+        oProfile.InitEventActions();
+        {/if}
+        {if $event_id && !$online}
+        oProfile.CheckEventOnline('{$event_id}' , '{$ui.Id}');
+        {/if}
+    });
+</script>
+{if $event_id && $access}
+<script type="text/javascript">
+window.onload=function ()
+{
+var uagent = navigator.userAgent.toLowerCase();
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		var mobile = { };
+		mobile.account  = "artistfan";
+		mobile.media = "{$smarty.const.STREAMING_MOBILE_CLIENT_SERVER}/{$flow}";
+		mobile.autoplay = "true";
+		mobile.mimetype = "video/mp4";
+		mobile.width    = "640";
+		mobile.target   = "broadcast";
+		mobile.maxwidth = "525";
+		bootStrap(mobile);
+	} else {
+		var flashvars = { account: "artistfan", media: "{$smarty.const.STREAMING_FLASH_CLIENT_SERVER}/{$flow}", autoplay: "true", };
+		var params = { };
+		params.quality = "high";
+		params.bgcolor = "#000000";
+		params.allowscriptaccess = "sameDomain";
+		params.allowfullscreen = "true";
+		var attributes = {};
+		attributes.id = "Player";
+		attributes.name = "Player";
+		attributes.align = "middle";
+		swfobject.embedSWF("/j/smh.player.swf","broadcast", "640", "320", "10.1.0", false, flashvars, params, attributes);
+	}
+}
+</script>
+{/if}
+{/block}
+
+{block name="my_cabinet"}
+
+<div class="header_block">
+    <div class="path">
+        <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+        <a href="/u/{$ui.Name}/events">Artist Broadcasting</a>
+    </div>
+    <h1>{if $event}{$event.Title}{else}Add-hoc broadcasting{/if}</h1>
+</div>
+
+<div class="content_block wide">
+    {if $event}
+    <div class="artist_profile">
+        <table class="profile_table">
+            <tr>
+                <td class="light">Title</td>
+                <td class="ttl">{$event.Title}</td>
+            </tr>
+            <tr>
+                <td class="light">Location</td>
+                <td>{$event.Location}</td>
+            </tr>
+            <tr>
+                <td class="light">Date/Time</td>
+                <td>{$event.EventDate}</td>
+            </tr>
+            {if $event.Descr}
+            <tr>
+                <td class="light">Description</td>
+                <td>
+                    {$event.Descr|nl2br}
+                </td>
+            </tr>
+            {/if}
+        </table>
+    </div>
+    {/if}
+    
+    {if (!$event && $event_id) || ($event && $event.Status < 3)}
+    {if $event && !$access}
+    <div class="alert alert_success">
+        <p>
+            {if $online}<strong>{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} is broadcasting online right now!</strong> {/if}You need a password to access this broadcast. <br />
+            <a href="javascript:void(0);" class="button yellow_button buy_access" mid="{$event.Id}" price="{$event.Price}">{if $event.Price>0}Buy{else}Get{/if} access</a>
+        </p>
+    </div>
+    {/if}
+    {if $access && !$online}
+    <div class="alert alert_warning">
+        <p>
+            <strong>This broadcast is currently offline. </strong>Please wait a while and <a href="/broadcasting/{if $event}{$event.Id}{else}{$ui.Name}/live{/if}/">refresh this page</a>.
+        </p>
+    </div>
+    {/if}
+    <div class="video-holder">
+        <div class="video" id="broadcast">
+        
+        </div>
+    </div>  
+    {/if}
+    {if $event && $event.Status == 4}
+    <div class="alert alert_success">
+        <p><strong>This event has already finished!</strong></p>
+        {if $access && $UserInfo.Status==1}
+        <p>Broadcast recording was added to your 'My videos' page as a part of your purchase. <br />
+            <a href="/fan/video">Review recording</a>
+        </p>
+        {/if}
+    </div>
+    <div class="text">Don't miss these <a href="/u/{$ui.Name}/events">great upcoming events from {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>!</div>
+    {/if}
+</div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

@@ -1,0 +1,29 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+{/block}
+
+{block name="container_class"} home_page{/block}
+{block name="content"}
+        <div class="content_block big_content">
+            <h1>Search Results</h1>
+            <div class="hot">
+                <div class="alert alert_warning">
+                    Post Search Result showing  Artist/Fans :
+                </div>
+
+                <h3>Video Results<span class="see_all"><a href="/base/search/searchvideo?search_key={$search_key}" >see all</a></span></h3> 
+                {foreach key=k item=i from=$video}
+                 <div class="post_block">
+                    <div class="post_user_icon">
+                        <a href="/u/{$i.Name}/video/{$i.Id}"><img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/default.jpg{elseif $i.Status == 2}/files/video/thumbnail/{$i.UserId}/x_{$i.Video}.jpg{else}/i/ph/video-22x22.png{/if}" width="22" height="22" alt="" />&nbsp;&nbsp;<b>{$i.Title} </b></a>
+                    </div>
+                </div>
+                {/foreach}                
+            </div>
+	</div>
+	<!--/content_block-->
+	<!--sitebar_02-->
+		{include file="mods/search/search_side.html"}
+	<!--/sitebar_02-->
+{/block}

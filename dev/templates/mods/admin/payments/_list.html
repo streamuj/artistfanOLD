@@ -1,0 +1,155 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/j/jquery.form.js"></script>
+<script type="text/javascript" src="/j/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/s/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="/j/cls/Admin.js"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function()
+    {
+        oAdmin.PaymentsStartReload();
+        $("#dfrom, #dto").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+        //oUsers.UsersList(1);
+        $('#bsearch').click(function() {
+            oAdmin.PaymentsFilter();
+        });
+    });
+</script>
+{/block}
+
+{block name="content"}
+
+<h1>Transactions list</h1>
+
+<ul class="tabs-panel">
+    <li{if !$tp} class="act"{/if}><a href="/base/admin/payments">All</a></li>
+    <li{if $tp==1} class="act"{/if}><a href="/base/admin/payments?tp=1">Payout requests</a></li>
+    <li{if $tp==2} class="act"{/if}><a href="/base/admin/payments?tp=2">Admin Income</a></li>
+</ul>
+<div class="clear"></div>
+
+
+
+<form action="/base/admin/PaymentsList" method="post" id="plist">
+    <input type="hidden" id="flist" value="" />
+    <input type="hidden" name="tp" id="tp" value="{$tp}" />
+    <input type="hidden" name="page" id="page" value="1" />
+{if $tp != 2}     
+<div class="blue_block">
+
+<table>
+    <tr>
+       <td colspan="2"><h6>Search transactions</h6></td>
+    </tr>
+    <tr>
+        <td>User e-mail</td>
+        <td><input type="text" name="s[email]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>User name</td>
+        <td><input type="text" name="s[name]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Date</td>
+        <td>
+            <input type="text" id="dfrom" name="s[dfrom]" value="" class="text_input_small short" />
+            &ndash;
+            <input type="text" id="dto" name="s[dto]" value="" class="text_input_small short" />
+        </td>
+    </tr>
+    {if !$tp}
+    <tr>
+        <td>Transaction type</td>
+        <td>
+            <select name="s[ptype]">
+                <option value="-1">All</option>
+                <option value="1">In</option>
+                <option value="0">Out</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Transaction status</td>
+        <td>
+            <select name="s[status]">
+                <option value="-1">All</option>
+                {foreach key=k item=i from=$statuses}
+                <option value="{$k}">{$i}</option>
+                {/foreach}
+            </select>
+        </td>
+    </tr>
+    {/if}
+    <tr>
+        <td></td>
+        <td><input type="button" id="bsearch" value="Search" /></td>
+    </tr>
+</table>
+
+<br />
+</div>
+{/if}
+
+<div style="position:absolute;z-index:100;left:550px;display:none;" id="wait"><img src="/i2/wait.gif" alt="Wait..."></div>
+<br /><br />
+<table class="style_table f13">
+    <colgroup>
+        <col width="100px" />
+        {if !$tp}<col width="150px" />{/if}
+        <col width="80px" />
+        <col />
+        <col width="50px" />
+        <col width="50px" />
+        <col width="70px" />
+        {if $tp==1}<col width="70px" />{/if}
+    </colgroup>
+    {if $tp eq 2} 
+        <thead>
+        <tr style="color:#28B7F3;">
+            <th class="aleft">Artist Name</th>
+            <th style="display:none;">Fan Name</th> 
+            <th class="aleft">Description</th>
+            <th width="30%" class="aleft">Date / Time</th>          
+            <th>Price / Commision</th>
+            <th style="display:none;">Details </th>
+            <th></th>
+            {if $tp==1}<th></th>{/if}
+        </tr>
+    </thead>
+
+     {else} 
+        <thead>
+        <tr style="color:#28B7F3;">
+            <th>User</th>
+            {if !$tp}<th>From / To</th>{/if}
+            <th>Date / Time</th>
+            <th class="aleft">Description</th>
+            <th>Points</th>
+            <th>Balance</th>
+            <th>Status</th>
+            {if $tp==1}<th></th>{/if}
+        </tr>
+    </thead>
+
+      {/if}
+    <tbody id="list">
+    {include file="mods/admin/payments/ajax/_list_ajax.html"}
+    </tbody>
+</table>
+<div id="pagging"></div>
+<br />
+<div style="float:left;">
+    <select name="pcnt" id="pcnt" onchange="oAdmin.PaymentsList(1);">
+        <option value="10"{if $pcnt==10} selected="selected"{/if}>10</option>
+        <option value="30"{if $pcnt==30} selected="selected"{/if}>30</option>
+        <option value="50"{if $pcnt==50} selected="selected"{/if}>50</option>
+        <option value="70"{if $pcnt==70} selected="selected"{/if}>70</option>
+        <option value="100"{if $pcnt==100} selected="selected"{/if}>100</option>
+        <option value="1000000000"{if $pcnt==1000000000} selected="selected"{/if}>all</option>
+    </select>
+</div>
+</form>
+{/block}

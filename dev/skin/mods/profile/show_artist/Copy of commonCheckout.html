@@ -1,0 +1,150 @@
+<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+</script>
+{if $smarty.get.payMore}
+<input type="hidden" name="paywhatyoulike" id="paywhatyoulike" value="{$smarty.get.payMore}">
+{else}
+<input type="hidden" name="paywhatyoulike" id="paywhatyoulike" value="{if $album.Price}$album.Price{else}{$video.Price}{/if}">
+{/if}
+{if $musicAlbumSuccessMsg}    
+    <p align="center" style="color:#006600;font-weight:bolder;">{$musicAlbumSuccessMsg}</p>
+{/if}
+
+
+<h4 class="block" style="margin:15px 0;">Credit/Debit Card info</h4>
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td width="21%">Card Holder Name</td>
+              <td width="79%" align="left">
+                            {if $errorcardHolder}<span class="error">{$errorcardHolder}</span>{/if}
+              <input name="fm[cardHolder]"  type="text" class="txtBox"  size="72" />              </td>
+            </tr>
+            <tr>
+              <td>Card Number</td>
+              <td align="left">
+                            {if $errorcardNumber}<span class="error">{$errorcardNumber}</span>{/if}              
+              <input name="fm[cardNumber]" type="text" class="txtBox" id=""  size="72" /></td>
+            </tr>
+            <tr>
+            	<td>Card Type                </td>
+                <td align="left"><table border="0" cellspacing="0" cellpadding="5"  class="xform">
+                        <tr>
+				            <td align="left">
+                              <select name="fm[type]" id="fm[type]">                              
+                              <option value="Discover" {if $fm.Type == "Discover"}selected="selected" {/if}>Discover</option>
+                              <option value="MasterCard" {if $fm.Type == "MasterCard"}selected="selected" {/if}>MasterCard</option>  
+                              <option value="Visa" {if $fm.Type == "Visa"}selected="selected" {/if}>Visa</option>                
+                              </select> 
+                               {if $errortype}<span class="error">{$errortype}</span>{/if}                              </td>
+                              <td align="left" valign="">Date of Expiration</td>
+                              <td>                
+                                  <select name="fm[cardExpiryMonth]" id="fm[cardExpiryMonth]" class="small_select">
+		                            <option value="0">Month</option>                            
+                                    {foreach key=k item=i from=$mm}                                    
+                            		<option value="{$k}"{if $fm.cardExpiryMonth==$k} selected="selected"{/if}>{$i}</option>                            
+                                    {/foreach}                                
+        		                  </select>                          </td>
+                          <td> 
+                
+                                  <select name="fm[cardExpiryYear]" id="fm[cardExpiryYear]" class="small_select">
+                            <option value="0">Year</option>
+                            
+                                    {foreach key=k item=i from=$yy}
+                                    
+                            <option value="{$i}"{if $fm.cardExpiryYear==$i} selected="selected"{/if}>{$i}</option>
+                            
+                                    {/foreach}
+                                
+                          </select>
+                                            {if $cardExpiry}<span class="error"> Please Enter Expiry Month and Year</span>{/if}                          </td>
+                        </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td align="left">C V V</td>
+              <td align="left">
+                            {if $errorcvv}<span class="error">{$errorcvv}</span>{/if}                                
+              <input name="fm[cvv]" type="password" class="txtBox" id="fm[cvv]" size="3"  value=""  maxlength="3"  />
+			<a href="javascript:void(0);" onclick="" style="cursor:help;">What is CVV ?</a><a href="javascript:void(0);" onclick="oPopup.whatiscvv();">&nbsp;&nbsp;Help&nbsp;&nbsp;</a>              </td>
+            </tr>
+            <tr>
+              <td align="left">&nbsp;</td>
+              <td align="left">&nbsp;</td>
+            </tr>
+        </table>
+        
+
+<h4 class="block" style="margin:15px 0;">Billing address</h4>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+            <tr>
+              <td width="21%">Name</td>
+              <td width="79%" align="left">
+                            {if $erroruserName}<span class="error">{$erroruserName}</span>{/if}                                
+              <input name="fm[userName]" type="text" class="txtBox" id="fm[userName]" size="72" value="{$fm.userName}" /></td>
+            </tr>
+            <tr>
+              <td>Address</td>
+              <td align="left">
+                            {if $erroraddress}<span class="error">{$erroraddress}</span>{/if}                                
+              <input name="fm[address]" type="text" class="txtBox" id="fm[address]" size="72" value="{$fm.address}" /></td>
+            </tr>
+            <tr>
+              <td align="left">City</td>
+              <td align="left">
+                            {if $errorcity}<span class="error">{$errorcity}</span><br/>{/if}                                
+              <input name="fm[city]" type="text" class="txtBox" id="fm[city]" size="30" value="{$fm.city}" /></td>
+            </tr>
+           
+            <tr>
+              <td align="left">Country</td>
+              <td width="89%" align="left" valign="middle"  class="xform"><label>
+                            {if $errorcountry}<span class="error">{$errorcountry}</span><br/>{/if}                                
+                <select name="fm[country]" id="fm[country]">
+                   {foreach key=k item=i from=$countries}                    
+            <option value="{$i.Name}"{if $fm.countryId==$i.Iso3} selected="selected"{/if}>{$i.Name}</option>            
+                    {/foreach}
+                 
+                </select>
+              </label></td>
+            </tr>
+            <tr>
+              <td align="left">State</td>
+              <td width="89%" align="left" valign="middle"  class=""><label>
+                            {if $errorstate}<span class="error">{$errorstate}</span><br/>{/if}  
+                            <div style="clear:both;"></div>
+               <input type="text" name="fm[state]" id="fm[state]" class="txtBox" value="{$fm.state}">
+              </label></td>
+            </tr>
+            <tr>
+              <td align="left">Zipcode</td>
+              <td align="left">
+                            {if $errorzipcode}<span class="error">{$errorzipcode}</span><br/>{/if}                                
+              <input name="fm[zipcode]" type="text" class="txtBox" id="fm[zipcode]" size="30" value="{$fm.zipcode}" /></td>
+            </tr>
+            <tr>
+              <td align="left">Phone no.</td>
+              <td align="left">
+                            {if $errorphone}<span class="error">{$errorphone}</span><br/>{/if}                                
+              <input name="fm[phone]" type="text" class="txtBox" id="fm[phone]" size="30" value="{$fm.phone}" /></td>
+            </tr>
+            <tr>
+              <td align="left">&nbsp;</td>
+              <td align="left"><table border="0" align="left" cellpadding="5" cellspacing="0">
+                <tr>
+                  <td><spab class="black">I have read the terms of services</spab></td>
+                  <td>
+				<input class="button wblue" type="submit"  name="submit" value="Accept&nbsp;and&nbsp;Buy" >                  
+                 
+                  </td>
+                </tr>
+              </table></td>
+            </tr>
+</table>        
+        
+    

@@ -1,0 +1,56 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="meta"}
+	<meta property="og:title" content="ArtistFan Photo"/>
+    <meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/viewphotoalbum?id={$photo.Id}"/>
+    <meta property="og:type" content="movie"/>
+    <meta property="og:image" content="{if $photo.Image}{$SUB_DOMAIN}photo/mid/{$photo.UserId}/{$photo.Image}{/if}"/>
+{/block}
+
+{block name="javascript"}
+<!--social plugin -->
+<script type="text/javascript">var addthis_config = { "data_track_addressbar":true };</script>
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-51278606310b20c0"></script>
+<!--social plugin End-->
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+{/block}
+
+{block name="my_cabinet"}
+
+<div style="padding:15px;">
+    <div class="clear"></div>
+ 	 <div class="Lpic"><img src="{$SUB_DOMAIN}photo/mid/{$photo.UserId}/{$photo.Image}" alt="{$photo.Title}"/></div>
+      <div class="clear"></div>
+    	<div class="comContain">
+          <div class="storyContent">
+            <div class="photoCommentsnShare">
+            	 
+                <div class="artistInfo">
+                        <div class="aName">
+                                    <table>
+                                        <tr>
+                                            <td><a class="addthis_button_facebook_like" fb:like:layout="button_count"></a> </td>
+                                            <td><a class="addthis_button_tweet"></a></td>
+                                            <td><a class="addthis_counter addthis_pill_style"></a> </td>
+                                        </tr>
+                                    </table>
+                         </div>
+                         <div class="aName">Title: {if $photo.Title}{$photo.Title}{/if}</div>
+                         <div class="comments_date">{$photo.PhotoDate|mdate:5}</div>
+                      </div>
+                   
+           <div class="profSetOptions">
+             <ul>
+              <li><span class="muted">Image Size: ({$photo.Sizes.0} &times; {$photo.Sizes.1})</span></li>
+              <li><a href="/download/photo/{$photo.Id}/" target="_blank">download</a></li>
+              <li><a href="/artist/editphoto?id={$photo.Id}">Edit this photo</a></li>
+              <li><a href="javascript:void(0);" onclick="CGo('/artist/removephoto?id={$photo.Id}', 'Do you realy want to remove this photo?')">Remove photo</a></li>
+             </ul>
+         </div>
+              <div class="clear"></div>
+            </div>
+          </div>
+    </div>
+</div>       
+{/block}

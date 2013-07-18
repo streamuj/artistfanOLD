@@ -1,0 +1,35 @@
+{extends file="mods/profile/cabinet_fan_public.html"}
+
+{block name="my_cabinet"}
+<div class="P15">
+    <h2>My Friends </h2><br />
+        
+	<div class="phot-sect">
+        <div class="clear"></div>
+    
+        <ul class="phto-clu">
+          {foreach key=k item=i from=$fellow_fans}       
+               <li class="belw editTool " id="delUser_{$i.FollowId}" >
+               <a href="/u/{$i.Name}"><img class="phto-clu-img" src="{if $i.Avatar}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{else}/si/user500x500.jpg{/if}" width="234" height="234"> </a>
+               	  <ul class="font12 block">
+                  <li class="font14"><span class="LF" style="overflow:hidden; white-space:nowrap; width:208px; text-overflow:ellipsis; display:block;">{$i.FirstName|cat:' '|cat:$i.LastName}
+                  </span>
+                  {if $i.IsOnline}
+                  <img src="/si/ic-online-14x14.png" hspace="0" vspace="2" class="RT"/>
+                  {/if}<br />                  
+                  </li>
+                  </ul>
+               </li>
+          {foreachelse}            
+                  <p class="noBar">No Friends Followed Yet </p>      
+          {/foreach}
+          
+           
+        </ul>
+        <div class="clear"></div>
+    
+    </div>
+    
+</div>
+<div class="loadingdiv"></div>
+{/block}

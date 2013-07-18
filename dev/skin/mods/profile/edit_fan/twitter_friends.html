@@ -1,0 +1,84 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+
+
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>    
+
+<script type="text/javascript">
+
+$(document).ready(function() {	
+  
+	oUsers.InitTwFriends(1);
+	{if !$msg}
+	setTimeout(oUsers.TwInviteFriend('{$UserInfo.Email}'), 1000);
+	{/if}
+	$('#openListTw').click(function() {
+		var openListSearch = $.trim($('#openListSearch').val());
+
+		if(openListSearch == '' || openListSearch=='Search Contacts') 
+		{
+			$('#search_err').addClass('error').html('Enter Contact');
+			return false;
+		}
+		else
+		{
+			oUsers.InitTwFriends(1);
+			return true;
+		}
+	});
+	$('#resetTw').click( function(){
+		$('#search_err').removeClass('error').html('');	
+		$('#openListSearch').val('');	
+		oUsers.InitTwFriends(1);
+	});
+});
+</script>
+
+{/block}
+
+{block name="my_cabinet"}
+  <div class="P15">
+{if $twFriends}
+      <table width="100%" border="0" style="border-radius:5px; margin:0px auto; padding:20px 50px; margin-bottom:20px; background:#fff;" cellspacing="0" cellpadding="10">
+          <tr>
+	            <td align="left" width="40%">
+                	<div class="button tw has_icon" style="width:280px;"><a  href="javascript:void(0);" onclick="oUsers.TwInviteFriend('{$UserInfo.Email}');" {*class="TWITTERConfirmbtn" emailId="{$UserInfo.Email}" *}><img class="icon" src="/si/fs-ic3.png" width="24">Invite Twitter Friends</a></div>
+                    <span id="search_err"></span>
+                </td>
+                <td width="30%">
+                	<input type="text" name="openListSearch" id="openListSearch" value="{if $openListSearch}{$openListSearch}{else}Search Contacts{/if}" class="txtBox floatL" onBlur="javascript:if(this.value=='')this.value='Search Contacts'" onFocus="javascript:if(this.value=='Search Contacts')this.value=''" maxlength="410" />	
+                </td>
+                <td width="15%"><input type="submit" name="openListTw" id="openListTw" value="Search" class="button" /></td>
+                <td width="15%"><input type="submit" name="resetTw" id="resetTw" value="Reset" class="button" /></td>                                
+          </tr>
+  </table>
+  {if $msg}
+  <span class="good"> {$msg}</span>
+  {/if}  
+  <div class="clear"></div>    
+
+     <span id="msg"></span>
+        <table class="style_table">        
+        <col />
+        <col width="50%" />
+        <col />
+         <tr>
+            <td class="tblhead fontB">Image&nbsp;</td>
+            <td class="tblhead fontB">Name&nbsp;</td>
+            <td class="tblhead fontB">Request&nbsp;</td>
+         </tr>   
+         <tbody id="twFriends">
+            {include file="mods/profile/edit_fan/ajax/tw_friends.html"}
+         </tbody> 
+     </table>
+
+  {else}
+  <div id="notInvited">
+                <div class="button tw has_icon" style="width:280px;"><a  href="javascript:void(0);" onclick="oUsers.TwInviteFriend('{$UserInfo.Email}');" {*class="TWITTERConfirmbtn" emailId="{$UserInfo.Email}" *}><img class="icon" src="/si/fs-ic3.png" width="24">Invite Twitter Friends</a></div>
+  </div>
+  {/if}
+  
+</div>
+
+{/block}

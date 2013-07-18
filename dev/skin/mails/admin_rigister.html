@@ -1,0 +1,19 @@
+{extends file="mails/base_mail.html"}
+{block name="title"}Registration approval request {$DOMAIN}{/block}
+{block name="content"}
+<table width="650" border="0" align="center" cellpadding="20" cellspacing="0">
+  <tr>
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><h1 {$headerStyle}>Hello ArtistFan Admin,</h1></td>
+      </tr>
+      <tr>
+        <td>
+			<p {$paraHeadStyle}>I have created a new artist page as {$name} and am awaiting for approval and confirmation!  </p><br/>            
+			<a {$anchorStyle} href="http://{$DOMAIN}/base/user/login">click here</a>                    
+        </td>
+      </tr>            
+    </table></td>
+  </tr>
+</table> 
+{/block}

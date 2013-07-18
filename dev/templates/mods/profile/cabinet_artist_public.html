@@ -1,0 +1,47 @@
+{extends file="base.html"}
+
+{block name="content"}
+    <div class="sitebar sitebar_01">
+        <div class="big_user_icon">
+            <a href="/u/{$ui.Name}"><img src="{if !$ui.Avatar}/i/ph/user-144x144.png{else}/files/images/avatars/s_{$ui.Avatar}{/if}" id="image" width="144" height="144" alt="" /></a>
+            <a href="/u/{$ui.Name}"><big>{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</big></a>
+        </div>
+
+        <ul class="sitebar_menu">
+            <li{if $module=='wall'} class="active"{/if}><a href="/u/{$ui.Name}">Wall</a></li>
+            <li{if $module=='profile'} class="active"{/if}><a href="/u/{$ui.Name}/profile">Profile</a></li>
+            <li{if $module=='music'} class="active"{/if}><a href="/u/{$ui.Name}/music">Music</a></li>
+            <li{if $module=='video'} class="active"{/if}><a href="/u/{$ui.Name}/video">Videos</a></li>
+            <li{if $module=='photo'} class="active"{/if}><a href="/u/{$ui.Name}/photo">Photos</a></li>
+            <li{if $module=='events'} class="active"{/if}><a href="/u/{$ui.Name}/events">Events</a></li>
+        </ul>
+    </div>
+    <!--/sitebar_01-->
+    
+    {block name="my_cabinet"}
+
+    {/block}
+    {if $submodule == '' || ($submodule!='EventCalendar' && $submodule!='VideoOne' && $submodule!='PhotoOne')}
+    <!--sitebar_02-->
+    <div class="sitebar sitebar_02">
+        <h3><a href="#">Sponsored</a></h3>
+        <div class="banners">
+            <a href="#"><img src="/i/banner_01.png" alt="" /></a>
+            <a href="#"><img src="/i/banner_02.png" alt="" /></a>
+        </div>
+        {if $module!='events' && $events|@count}
+        <div class="user_content_block">
+            <h3><a href="/u/{$ui.Name}/events">Events</a> <a href="/u/{$ui.Name}/events" class="see_all">see all</a></h3>
+            <ul class="calend_list">
+                {foreach key=k item=i from=$events}
+                <li><div class="date">{$i.EventDate|mdate:2}<br /> {$i.EventDate|mdate:3}</div> <strong><a href="/u/{$ui.Name}/events/{$i.Id}">{$i.Title}</a></strong> <br />{$i.Location}</li>
+                {/foreach}
+            </ul>
+        </div>
+        {if !$IsOther}
+        <a href="/artist/events" class="button yellow_button">Edit my events</a>
+        {/if}
+        {/if}
+    </div>
+    {/if}
+{/block}

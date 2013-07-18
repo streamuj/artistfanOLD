@@ -1,0 +1,37 @@
+/* Tiny Carousel */
+#coverSlider { width:1025px; height:350px; margin:0 auto; overflow:hidden;  display:block; position:relative}
+#slider1 { overflow:hidden;  }
+#slider1 .viewport { float: left; width: 1025px; height: 350px; overflow: hidden; position: relative;}
+#slider1 .buttons { background:url("../si/UI/coverSlider/slider-btns.png") no-repeat scroll 0 0 transparent; display: block; background-position: 0 -38px; text-indent: -999em; float: left; width: 36px; height: 36px; overflow: hidden; position: absolute; top:45%; z-index:9; margin:0 10px; }
+#slider1 .next { background-position: 0 0; right: 0; }
+#slider1 .prev { left:0}
+#slider1 .disable { visibility: hidden; }
+#slider1 .overview { list-style: none; position: absolute; padding: 0; margin: 0; width: 240px; left: 0 top: 0; }
+#slider1 .overview li{ float: left; height: 350px;  width: 1025px;}
+#slider1 .overview li img {width:1025px;} 
+
+
+#coverSlider .ic { z-index:9;  position:absolute; }
+#coverSlider .ic-upload { background:url("../si/UI/coverSlider/ic-upload.png") no-repeat scroll 0 0 transparent; display: block; width:16px; height:13px; left:10px; bottom:20px; }
+#coverSlider .ic-camera { background:url("../si/UI/coverSlider/ic-camera.png") no-repeat scroll 0 0 transparent; display: block; width:17px; height:14px; left:35px; bottom:20px; }
+.line {border-top:1px solid #e0e0e0; margin:10px 0 25px 0;}
+
+
+#coverSlider .fansCount {  cursor:pointer; height:30px; font-size:14px; padding:0; line-height:30px; border-radius:3px; color:#53576c; display:block; float:left; top:15px; right:15px;
+
+}
+#coverSlider .fansCount .ic { background:#3b3e4d url("../si/UI/coverSlider/ic-fans-w.png") no-repeat center center; height:30px; width:30px; border-radius:3px 0px 0px 3px; padding-left:0; }
+#coverSlider .fansCount span { display:block; float:left; }
+
+#coverSlider .fansCount .txt {  height:30px; display: inline-block; float:right;  border-radius:0px 3px 3px 0px; margin-left:30px; padding: 0 8px;
+background: #f4f4f4; /* Old browsers */
+background: -moz-linear-gradient(top,  #f4f4f4 0%, #d5d5d5 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(100%,#d5d5d5)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #f4f4f4 0%,#d5d5d5 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #f4f4f4 0%,#d5d5d5 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#d5d5d5',GradientType=0 ); /* IE6-9 */ }
+
+
+.likeBa { right:10px; bottom:10px; width:25px; height:32px; background: url(../si/UI/coverSlider/like-Ba.png) no-repeat; }

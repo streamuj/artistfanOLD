@@ -1,0 +1,147 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+
+ 
+
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/fileuploader.js"></script>
+<link rel="stylesheet" href="/ss/fileuploader.css" />
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+
+    $(document).ready(function()
+    {
+		oErrors.Show();
+	
+//		$('#err_Image').addClass('error_link');
+			      
+           var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/base/Adbanner/UploadPhoto',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('Image');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('Image');
+                if (responseJSON.success==true) {
+                    oErrors.SetClearFld('Image');
+                    var img = '/'+responseJSON['photo'];
+                    //$('#photo_image').css('background-image', 'url("' + img + '")');					
+					$('#photo_image').attr('src', img );
+                    //$('#photo_image').parent('.thumb').attr('href', img);
+                    oErrors.SetOkFld('Image', 'Image uploaded!');
+                }
+				},
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('Image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('Image', message);
+            }
+        });
+
+    });
+</script>
+{/block}
+
+{block name="content"}
+<h1>Add New Advertisement </h1>
+{if $added}
+<span class="good">Advertisement Added Successfully</span>
+{/if}
+
+{if $bannerType}
+<div class="blue_block">
+
+<form class="big_form" id="photo_form" method="post" action="/base/Adbanner/addBanner" enctype="multipart/form-data">
+         <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+    <table class="style_table no_border">
+     <colgroup>
+                <col width="55">
+                <col />
+            </colgroup>
+        <tbody>
+     
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap"><strong>Advertisement Image</strong></td>
+        <td align="left" valign="middle">
+                <label>
+                  <div id="file-uploader" style="float:left;">
+                    <noscript>
+                       <p>Please enable JavaScript to use file uploader.</p>
+                    </noscript>
+                    </div>
+
+       </label>
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">&nbsp;</td>
+        
+        <td align="left" valign="middle" >
+         <a href="{if $fm.ImageOrigin}{$fm.ImageOrigin}{elseif $fm.Image}{$fm.Image}{else}/dev/templates/images/nophoto.jpg{/if}" target="_blank" class="thumb">       
+            <img id="photo_image" src = "{if $fm.Image}{$fm.Image}{/if}" width="100" />
+            </a><span id="err_Image"></span>  
+        </td>
+      </tr>
+
+      <tr>
+        <td><strong>Banner Type</strong></td>
+        <td>
+            <select name="BannerType">
+                {foreach key=k item=i from=$bannerType}
+                <option value="{$i.adbt_id}">{$i.adbt_name}</option>
+                {/foreach}
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td align="left" valign="middle" nowrap="nowrap"><strong>Advertisement Link</strong></td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><input type="text" id="Link" name="Link" value="" class="txtBox" size="50px;" /></td>
+          </tr>
+        </table></td>
+      </tr>
+      
+      <!--Album List Start -->
+           
+      
+      <tr>
+        <td>&nbsp;</td>
+        <td align="left" valign="middle">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td align="left" valign="middle"><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;<input type="submit" value="ADD" class="submit_01"/></td>
+          </tr>
+        </table></td>
+      </tr>
+       </tbody>
+    </table>
+    </form>
+</div>  
+{else}  
+<div class="blue_block">
+<p align="center">You Can Edit Your Banner</p>
+</div>
+
+{/if}
+{/block}

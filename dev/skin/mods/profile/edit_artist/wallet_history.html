@@ -1,0 +1,90 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitPayout();
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="P15">
+
+  <div>
+  	<h2 class="LF">My Wallet</h2> <br />
+  </div>
+  <div class="clear"></div>   
+  
+{*  <span class="font16 bold">  You have {if $UserInfo.Wallet} $ {$UserInfo.Wallet|string_format:'%.2f'}{else}0.00{/if} in your wallet</span>*} <br /><br />
+  
+  <div class="subTab">
+      <ul>
+         <li> <a href="/artist/wallet" >Payout Summary</a></li>
+         <li> <a href="/artist/WalletHistory" class="active">Transaction History</a></li>
+         <li> <a href="/artist/payout"  >Payout Request</a></li>
+      </ul>
+  </div><br /><br />
+  {if $payments}
+  <table width="100%" border="0" cellspacing="0" cellpadding="10">
+  
+    <tr>
+      <td width="23%" class="tblhead" style="padding:0 15px;"><strong> Date/Time</strong></td>
+      <td width="45%" class="tblhead" style="padding:0 10px;" ><strong>Description</strong></td>
+      <td width="16%" class="tblhead" style="padding:0 10px;" ><strong>Amount </td>
+      <td width="16%" class="tblhead" style="padding:0 10px;" ><strong>Balance</td>
+      <td width="16%" class="tblhead" style="padding:0 10px;" ><strong>Status</strong></td>
+      <td width="16%" class="tblhead" style="padding:0 10px;" ><strong></strong></td>
+    </tr>
+    {foreach key=k item=i from=$payments}
+    <tr class="{cycle values="tbldata,tbldata1"}">
+      <td align="center" valign="middle" nowrap="nowrap" >{$i.Pdate|mdate:4}</td>
+      <td align="left" valign="middle" nowrap="nowrap" > {if $i.Description.id!=''}
+        
+        {if $i.Description.type=="points"}
+        {if $i.Ptype==1}
+        Points payout cancelled
+        {elseif $i.Ptype==0}
+        Points payout{* by {$methods[$i.Method]}*}
+        {/if}
+        {elseif $i.Description.type=="track"}
+        Track purchase:<br />
+        {$i.Description.title|wordwrap:30:"<br />
+        \n"}
+        {elseif $i.Description.type=="album"}
+        Album purchase:<br />
+        <a href="/artist/music/{$i.Description.id}"  style="color:#31B6FD;">{$i.Description.title|wordwrap:30:"<br />
+        \n"}</a> {elseif $i.Description.type=="video"}
+        Video purchase:<br />
+        <a href="/artist/video/{$i.Description.id}" style="color:#31B6FD;">{$i.Description.title|wordwrap:30:"<br />
+        \n"}</a> {elseif $i.Description.type=="photo"}
+        Photo purchase:<br />
+        <a href="/artist/photo/{$i.Description.id}" style="color:#31B6FD;">{$i.Description.title|wordwrap:30:"<br />
+        \n"}</a> {elseif $i.Description.type=="event"}
+        {if $i.Ptype==1}
+        Online event access purchase:<br />
+        {elseif $i.Ptype==0}
+        Online event cancelled:<br />
+        {/if} <a href="/artist/events/{$i.Description.id}"  style="color:#31B6FD">{$i.Description.title|wordwrap:30:"<br />
+        \n"}</a> {/if}
+        {if $i.UserFrom && $i.UserFrom != $UserInfo.Id}by {if $i.From.Name}<a href="/u/{$i.From.Name}">{$i.From.FirstName|cat:''|cat:$i.From.LastName|truncate:15:'...'}</a>{else}{$i.UserFrom}{/if}
+        {elseif $i.UserFrom && $i.UserFrom == $UserInfo.Id && $i.To.Name}to <a href="/u/{$i.To.Name}">{$i.To.FirstName|cat:''|cat:$i.To.LastName|truncate:15:'...'}</a>{/if}
+        {/if} </td>
+      <td align="left" valign="middle" nowrap="nowrap" ><span class="{if $i.Ptype==1}plus{else}minus{/if}">$ {$i.Money|string_format:'%.2f'}</span></td>
+      <td align="left" valign="middle" nowrap="nowrap" >$ {$i.Balance}</td>
+      <td align="left" valign="middle" nowrap="nowrap" ><span class="label label-{if $i.Status==1}ok{elseif $i.Status==2}error{else}info{/if}" title="">{$statuses[$i.Status]}</span></td>
+      <td align="left" valign="middle" nowrap="nowrap" > {if !$i.Status && !$i.UserFrom && $i.Ptype==0} <a href="javascript:void(0);" aid="{$i.Id}" class="cancel_payout">Cancel</a> {/if}</td>
+    </tr>
+    {/foreach}
+  </table>
+  {else}
+    <p class="noBar">{{$smarty.const.NO_TRANSACTION_HISTORY_FOUND}}</p>
+  {/if}
+    
+  <div class="clear"></div>
+  <div align="right">{$pagging}</div>
+</div>
+{/block}

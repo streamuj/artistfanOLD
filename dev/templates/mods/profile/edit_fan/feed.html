@@ -1,0 +1,59 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<link rel="stylesheet" href="/s/jquery-ui-1.8.16.custom.css" />
+<link rel="stylesheet" href="/s/fileuploader.css" />
+<script type="text/javascript" src="/j/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="/j/jquery.autoellipsis-1.0.3.js"></script>
+<script type="text/javascript" src="/j/cls/Profile.js"></script>
+<script type="text/javascript" src="/j/cls/Play.js"></script>
+<script type="text/javascript" src="/j/cls/Player.js"></script>
+<script type="text/javascript" src="/dev/templates/js/cls/Wall.js"></script>
+<script type="text/javascript" src="/j/fileuploader.js"></script>
+<script type="text/javascript" src="/j/cls/Errors.js"></script>
+<script type="text/javascript">
+
+   var user_id = {$ui.Id};
+    $(document).ready(function()
+    {
+        oWall.FeedReload();
+      //  oWall.Reload();
+        oProfile.InitPurchase();
+        oPlay.InitPlayButtons();
+        $(".ttl a").ellipsis();
+		$('#file-uploader').hide();		
+		$('#video-uploader').hide();
+		$('#tabPhoto').click(function(){
+			$('#file-uploader').show();
+			$('#video-uploader').hide();
+		});
+		$('#tabVideo').click(function(){
+			$('#file-uploader').hide();
+			$('#video-uploader').show();
+					
+		});		
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{$UserInfo.FirstName} {$UserInfo.LastName}</a>
+    </div>
+    <h1>News feed</h1>
+</div>
+
+    
+<div class="content_block wide">
+    <div class="sort_block feed">
+        <div class="see_calend"></div>
+        Display updates from
+    	<span class="switch">
+            <a href="javascript:void(0);" onclick="oWall.FeedFilter(0, this);" class="button active">Everyone</a><a href="javascript:void(0);" onclick="oWall.FeedFilter(2, this);" class="button">Artists only</a><a href="javascript:void(0);" onclick="oWall.FeedFilter(1, this);" class="button">Fans only</a><input type="hidden" id="from" value="0" />
+    	</span>
+    </div>
+{include file="mods/profile/say_form.html"}    
+</div>
+
+{/block}

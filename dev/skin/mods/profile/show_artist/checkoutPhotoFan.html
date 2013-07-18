@@ -1,0 +1,105 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="javascript"}
+    {if $musicAlbumMsg['success']}    
+  <meta http-equiv="refresh" content="2;url=/download/photo/{$musicAlbumMsg['photo_datas'].Id}/"> 
+    {/if}
+
+
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+<script type="text/javascript" src="/sj/cls/Player.js"></script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        {if !$UserInfo.Status}
+        oProfile.InitPurchaseForGuests();
+        {else}
+        oProfile.InitPurchase();
+        {/if}
+        oPlay.InitPlayButtons();
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<!--content_block-->
+<div style="padding:15px; border-top:1px solid #cccccc;">
+{if $smarty.get.payMore}
+	<form action="/payment/photopayment/{$id}?payMore={$smarty.get.payMore}" method="post">   
+{/if}    
+    <input type="hidden" name="id" value="{$id}" id="id" > 
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="100%" bgcolor="#F4F4F4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><strong class="font16">CheckOut</strong></td>
+            <td align="right"><strong class="font16">&nbsp;</strong></td>
+          </tr>
+        </table>
+          <label></label></td>
+      </tr>
+      <tr>
+        <td><table width="100%" border="0" cellspacing="0" cellpadding="5">
+          <tr>
+            <td>&nbsp;</td>
+            <td align="center">Price</td>
+          </tr>
+          <tr>
+            <td>
+           <img src="{$SUB_DOMAIN}photo/thumbs/{$photo.UserId}/{$photo.Image}" width="182" height="160" />
+           <br/>
+            <strong>{$photo.Title}</strong><br />
+              </td>
+            <td align="center">
+            {if $smarty.get.payMore}
+            $ {$smarty.get.payMore} USD
+            {else}            
+            $ {$photo.Price} USD
+            {/if}
+            </td>
+          </tr>
+          {*<tr>
+            <td align="right"><strong>Tax</strong></td>
+            <td align="center"><strong>$ 0.00 USD</strong></td>
+          </tr>*}
+          <tr>
+            <td align="right"><strong>Total</strong></td>
+            {if $smarty.get.payMore}
+			<td align="center"><strong>$ {$smarty.get.payMore} USD</strong></td>                        
+            {else}
+            <td align="center"><strong>$ {$photo.Price} USD</strong></td>
+            {/if}
+          </tr>
+          <tr>
+            <td align="right">&nbsp;</td>
+            <td align="center">&nbsp;</td>
+          </tr>
+        </table></td>
+      </tr>
+    </table>
+
+    {if $musicAlbumMsgadded}
+
+    <p align="center" class="alert alert_error">{$musicAlbumMsgadded}</p>    
+	<br/>
+    {/if}
+    {if $musicAlbumMsg['success']}
+    <p align="center" class="alert alert_success">{$musicAlbumMsg['success'][0]}</p>        
+    {/if}
+    
+	{if $musicAlbumMsg['q']}
+		{foreach from=$musicAlbumMsg['errs'] item=eMsg}        
+    <p align="center" style="color:#990000;font-weight:bolder;">{$eMsg}</p>
+
+    	{/foreach}
+    {/if}
+
+    {include file="mods/profile/show_artist/commonCheckout.html"}
+    </form>
+  </div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

@@ -1,0 +1,81 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+
+
+
+<link rel="stylesheet" href="/ss/fileuploader.css" />
+<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
+
+<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript" src="/sj/jquery.form.js"></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/fileuploader.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+
+<script language="javascript">
+$(document).ready(function(){
+	$('#alt_email_div').hide();
+    $('#test').click(function(){
+		$('#alt_email_div').show();
+	});
+});
+</script>
+{/block}
+
+
+{block name="my_cabinet"}
+
+
+<form method="post" action="/artist/settings" id="settings_form">
+ <input type="hidden" name="do" value="pass" />
+  <div style="padding:15px;">
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+    <tr><td>&nbsp;</td></tr>
+      <tr>
+          <td colspan="2"> <h3>Change password</h3></td>
+      </tr>
+       <tr><td>&nbsp;</td></tr>
+      <div class="alert alert_success" style="display: none;">
+                <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+                <strong>Success!</strong> <span id="pass_change"></span>
+      </div>         
+      <tr>
+        <td width="11%" align="left" valign="middle" nowrap="nowrap">Old password</td>
+        <td width="89%" align="left" valign="middle" ><label>
+        <input type="password" class="txtBox" name="fm[old_pass]" value="" size="40" />
+        </label><span class="err" id="err_old_pass"></span></td>
+        
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">New password</td>
+        <td align="left" valign="middle" ><input class="txtBox" type="password" name="fm[new_pass]" size="40" /><span class="err" id="err_new_pass"></span></td>
+        
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">Repeat new password</td>
+        <td align="left" valign="top" ><label> <input type="password" name="fm[new_pass2]" class="txtBox" size="40" /><span class="err" id="err_new_pass2"></span></label></td>
+        
+      </tr>
+           
+      <tr>
+      <td>&nbsp;</td>
+        <td colspan="2" align="center"> <input type="button" onclick="oProfile.ChangePassword(2);" class="btn2" value="Save Changes" /><span class="wait button-wait"></span> </td>
+     </tr>
+    </table>
+  </div>
+  </form>
+  
+  
+  <form method="post" action="/artist/settings" id="add_email_form">
+   <input type="hidden" name="do" value="do_email" />
+          
+  <div style="padding:15px; border-top:1px solid #cccccc;">
+      <div  id="changed_email">
+        {include file="mods/profile/edit_fan/ajax/changed_mail.html"}
+      </div>  
+  </div>
+  </form>
+ 
+ <div id="errorEmail"></div>
+{/block}

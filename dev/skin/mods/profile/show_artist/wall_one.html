@@ -1,0 +1,31 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+
+{block name="javascript"}
+
+
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript" src="/sj/cls/Wall.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+
+{if $fans}    
+{include file="mods/profile/fanfinder_map.html"}
+{/if}
+
+<script language="javascript">
+    var user_id = {$ui.Id};
+    $(document).ready(function()
+    {
+        oWall.Reload();
+        oProfile.InitPurchase();
+        oPlay.InitPlayButtons();
+		oPopup.InitPurchase();		
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+  {$content}
+</div>
+{/block}

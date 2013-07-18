@@ -1,0 +1,93 @@
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+// Remove Start
+	$('#delWallCmtIdDialog').dialog({ autoOpen: false });
+	$('#delWallCmtIdConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+		/*
+			'Delete' : function(){
+				$('body').addClass('loading');
+				deleteSingleComments();
+				$(this).dialog('close');
+			}, 
+			'Cancel': function(){
+				$(this).dialog('close');
+			}
+		*/
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button bgrey', "click": function() {
+			 		$(this).dialog('close');
+			 	}
+			 },
+		'Delete': {
+				"text":'Delete', "class":'button wblue',  "click":function(){
+				$('body').addClass('loading');
+				deleteSingleComments();
+				$(this).dialog('close');				
+				}
+			}				
+			
+		}
+	});
+	$('body').on('click', '.DeleteWallCmtId', function(){
+			var cmtId  = $(this).attr('cmtId');
+			if(true){
+			$('#cmtid').val(cmtId);									
+			$('#delWallCmtIdConfirm').dialog('open');
+				}
+			
+	});
+function deleteSingleComments()
+	{	
+	var cmtid  =	$('#cmtid').val();	
+		if(cmtid){		
+			$.ajax({
+				type:     'POST',
+				dataType: 'json',
+				data:     { 'id': cmtid },
+				url:      '/base/profile/commentDelete',
+				success: function (data)
+				{
+					if (data.q == 'ok')
+					{
+						$('body').removeClass('loading');																		
+						$('#comment_'+cmtid).remove();
+					}
+				}
+			});		
+		}
+		
+	}	
+	
+// Remove End	
+	});
+
+</script>
+{if $wall.totalComments>=5 && $wall.totalComments-5}
+{* {if $wall.totalComments>=5 }  {assign var="start" value="{$wall.totalComments-5}"} {else} {assign var="start" value="0"}  {/if}  *}
+<p style="margin:13px 69px 0px;" id="viewAll_{$wall.Id}"> <a href="javascript:void(0);" class="commentAppend"   fancyBox="0"    start="0" commentTotals="{$wall.totalComments}" wallId="{$wall.Id}" wallreferId="{$smarty.const.WALL}"   style="color:#3063CF;"> View all {$wall.totalComments-5} Comments </a> </p>
+{/if}
+{foreach $commentList as $comment}
+<div class="commentsDisplay" id="comment_{$comment.cmt_id}">
+<span class="uPhoto"> <a href="/u/{$comment.Name}"> <img src="{if $comment.Avatar}{$SUB_DOMAIN}images/avatars/x_{$comment.Avatar}{else}/si/ph/user300x300.jpg{/if}" /> </a> </span> 
+  <div class="msgTxt"> 
+  {if ($UserInfo.Id == $ownerId) OR ($UserInfo.Id == $comment.cmt_user_id)}
+   <a class="DeleteWallCmtId removeBtn" cmtId="{$comment.cmt_id}" href="javascript:void(0);" style=" position:relative; float:right;"></a> {/if}
+    <p>
+    <span class="uName"><a href="/u/{$comment.Name}">
+    {if $comment.BandName}{$comment.BandName}{else}{$comment.FirstName} {$comment.LastName}{/if}</a></span>
+    {$comment.cmt_message|nl2br|wordwrap:30:"\n":true}</span>
+    </p>
+    <p class="font11"><span class="gray P2"> {if  $comment.cdate} {$comment.cdate}{/if}</span></p>
+  </div>
+  <div class="clear"></div>
+</div>
+{/foreach}
+<div id="delWallCmtIdConfirm" title="Confirm Delete">
+<p>Are you sure you want to delete this Comment ?</p>
+<input type="hidden" id="cmtid">
+</div>
+<div class="loadingdiv"></div>

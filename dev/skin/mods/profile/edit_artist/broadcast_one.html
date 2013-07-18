@@ -1,0 +1,71 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="/sj/swfobject.js"></script>
+<script type="text/javascript" src="/sj/mdetect.js"></script>
+<script type="text/javascript" src="/sj/smh.swobject.js"></script>
+<script type="text/javascript">
+window.onload=function ()
+{
+var uagent = navigator.userAgent.toLowerCase();
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		var mobile = { };
+		mobile.account  = "artistfan";
+		mobile.media = "{$smarty.const.STREAMING_MOBILE_VOD}/{$video.Video}";
+		mobile.autoplay = "true";
+		mobile.mimetype = "video/mp4";
+		mobile.width    = "640";
+		mobile.target   = "jwplayer";
+		mobile.maxwidth = "360";
+		bootStrap(mobile);
+	} else {
+		var flashvars = { account: "artistfan", media: "{$smarty.const.STREAMING_FLASH_VOD}/{$video.Video}", autoplay: "true", };
+		var params = { };
+		params.quality = "high";
+		params.bgcolor = "#000000";
+		params.allowscriptaccess = "sameDomain";
+		params.allowfullscreen = "true";
+		var attributes = {};
+		attributes.id = "Player";
+		attributes.name = "Player";
+		attributes.align = "middle";
+		swfobject.embedSWF("/sj/smh.player.swf","jwplayer", "640", "360", "10.1.0", false, flashvars, params, attributes);
+	}
+}
+</script>
+{/strip}
+{/block}
+{block name="my_cabinet"}
+{strip}
+<div class="P15">
+  <table width="100%" border="0" cellpadding="5" cellspacing="0">
+    <tr>
+      <td><h2>My Broadcasting</h2></td>
+    </tr>
+    <tr>
+    	<td><h4 class="pink">
+        {if $video['e.Title']}
+        {$video['e.Title']}{if $video.Order > 1} - Part {$video.Order}{/if}
+        {else}{$UserInfo.Name|ucfirst} - {$video['Pdate']|date_format}
+        {/if}
+        </h4>
+        </td>
+    </tr>
+    <tr>
+      <td align="left" valign="middle" nowrap="nowrap"><label></label>
+        <table border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+          <tr>
+            <td><br />
+              <br />
+              <div class="video-holder">
+                <div class="video" id="jwplayer"></div>
+                </div></td>
+          </tr>
+        </table></td>
+    </tr>
+  </table>
+</div>
+{/strip}
+{/block}

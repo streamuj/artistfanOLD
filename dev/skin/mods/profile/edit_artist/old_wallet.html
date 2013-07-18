@@ -1,0 +1,64 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitPayout();
+    });
+</script>       
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+    </div>
+    <h1>My wallet</h1>
+</div>
+<div class="content_block wide">
+    <p class="side"><a href="/artist/WalletHistory">Transaction history</a></p>
+    <div class="points">
+    <h3>You have</h3>
+    <div class="amount"><strong>{if $UserInfo.Wallet}{$UserInfo.Wallet}{else}0{/if}</strong> point(s)</div>
+    {if $UserInfo.WalletBlock}
+    <br />
+    <h3>Locked</h3>
+    <div class="amount"><strong>{$UserInfo.WalletBlock}</strong> point(s)</div>
+    {/if}
+    </div>
+
+<p><input type="button" onclick="Go('/artist/payout');" value="Payout request" class="button" /></p>
+
+
+<h3>Pending transfers</h3>
+<div class="ttable">
+<table class="style_table">
+    <colgroup>
+        <col />
+        <col width="150px" />
+        <col width="150px" />
+    </colgroup>
+    <tr>
+        <th align="left">Request</th>
+        <th>Status</th>
+        <th></th>
+    </tr>
+{foreach key=k item=i from=$payouts}
+    <tr>
+        <td>Points payout ${$i.Money}{* by {$methods[$i.Method]}*}</td>
+        <td align="center">{$statuses[$i.Status]}</td>
+        <td align="center"><a href="javascript:void(0);" aid="{$i.Id}" class="cancel_payout">Cancel</a></td>
+    </tr>
+    {foreachelse}
+    <tr>
+        <td colspan="3">No pending transfers</td>
+    </tr>
+{/foreach}
+</table>
+
+{$pagging}
+</div>
+</div>
+{/block}

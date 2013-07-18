@@ -1,0 +1,106 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+
+
+
+
+<script type="text/javascript" id='fbScript' src="/sfb/jquery.fancybox-1.3.4.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="/sfb/album-fancybox.css" media="screen" />
+
+<script type="text/javascript">
+		$(document).ready(function() {
+		$("a[rel=photoGroup]").fancybox({
+		'transitionIn'		: 'none',
+		'transitionOut'		: 'none',
+		'titlePosition' 	: 'over',
+				
+			});
+		});
+</script>
+
+
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+ <h2 style="background-color:#f5f5f5; padding-left:20px;"> From Fellow Artists </h2>
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="100%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>&nbsp;
+            </td>
+
+            <td>&nbsp;</td>
+            
+          </tr>
+        </table>
+          <label></label></td>
+      </tr>
+      <tr style="display:none;">
+        <td align="left" valign="middle" nowrap="nowrap"><label></label>
+          <table border="0" align="center" cellpadding="3" cellspacing="0">
+            <tr>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+            </tr>
+          </table></td>
+        </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">        
+        <table border="0" align="center" cellpadding="8" cellspacing="0">
+          <tr>
+          {foreach name=ph key=k item=i from=$pricedphotos }
+	      {if $i@index%3 == 0}<tr>{/if}
+          <!--Loop Start Here -->
+          <td>        
+            <table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td><div style="padding:10px; border:1px solid #ccc;">
+                <table border="0" cellspacing="0" cellpadding="1">
+                    <tr>
+                      <td>
+
+	<a href="/fan/PricedPhotoLightBox/{$i.album_id}?ph={$i.id}" name="popBox" id="popBox" rel="photoGroup"> 
+                     <img src="{if $i.image}{$SUB_DOMAIN}photo/thumbs/{$i.user_id}/{$i.image}{else}/dev/templates/images/nophoto.jpg{/if}" style="width:197px;height:162px;" />
+                      </a>
+                      </td>
+                    </tr>                
+                </table></div></td>
+              </tr>
+              <tr>
+                <td><table width="100%" border="0" cellpadding="2" cellspacing="0">
+                    <tr>
+                      <td valign="top">{if $i.title}{$i.title|truncate:20}{else}No Title{/if}</td>
+                      <td align="right">
+                      </td>
+                      
+                    
+                       
+                     </div>
+                    </tr>                    
+                </table></td>
+              </tr>
+            </table>
+            </td>
+            <!--Loop End Here -->
+          {if ($smarty.foreach.ph.index+1) mod 3 == 0}
+          <tr>          
+          {/if}    
+          {foreachelse}                  
+    <p align="center" class="alert alert_error">No Photos ... :( </p>              
+        {/foreach}              
+            </tr>
+        </table>
+        <!--Album End Here -->
+          </td>
+        </tr>
+    </table>
+  </div>
+
+
+{/block}

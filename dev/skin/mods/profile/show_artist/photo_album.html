@@ -1,0 +1,65 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript" src="/sj/cls/Wall.js"></script>
+<script type="text/javascript" src="/sfb/jquery.fancybox-1.3.4.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="/sfb/album-fancybox.css" media="screen" />
+<script type="text/javascript" id='fbScript' src="/sfb/jquery.fancybox-1.3.4.pack.js"></script>
+<script type="text/javascript" src="/sj/jquery.slimscroll.js"></script>
+<script type="text/javascript" src="/sj/cls/photoEdit.js"></script>
+<script type="text/javascript">
+	    var user_id = {$ui.Id};
+    	var fWall = 0;		
+		$(document).ready(function() {
+		$('a[rel=group1]').each(function(){
+		wallFancySetting.datahref = $(this).attr('data-href');
+		$(this).fancybox(wallFancySetting);
+		});					
+		oPopup.InitPurchase();							
+		//Scroll Pagination start		
+			$(window).scroll(function(){
+				if($(window).scrollTop() == $(document).height() - $(window).height()){ 
+					if($('.pagination').is(':visible')){
+						if($('.pagination').find('.wait').is(':visible')) return;
+						$('.pagination a').trigger('click');
+					}
+				}
+			});
+		//Scroll Pagination End				
+		});
+</script>
+
+{/block}
+{block name="my_cabinet"}
+<div class="P15">
+  <div>
+<h2 class="LF">Photos</h2>
+</div>
+<div class="clear">&nbsp;</div>
+<div class="subTab">
+<ul><li>
+   <a  href="/u/{$ui.Name}/photo">Albums <span id="totAlb">{$totalAlbums}</span> </a></li>
+	<li><a href="/u/{$ui.Name}/photo?allPhoto=1"  class="active">Photos <span id="totPhoto">{$totalPhotos}</span> </a></li>
+   </ul>
+</div>
+<div class="clear">&nbsp;</div>
+<p class="font18 black">{if $album.Title}<span>{$album.Title}</span>{/if}</p>
+  <div class="clear"></div>
+{if $photos}
+    <div class="phot-sect">
+        <div class="clear"></div>
+        <ul class="phto-clu" id="content">        
+	        {include file="mods/profile/show_artist/ajax/AllPhotoPagination.html"}                    
+        </ul>
+      </div>      
+{else}
+	No Photos
+{/if}
+{if $page &&  $totalPages|count>=$smarty.const.PHOTO_PER_PAGE }
+<div class="pagination"> <a href="javascript:void(0);" onclick="oPhotoEdit.PaginationShowArtistAlbum('{$ui.Id}','{$ui.Name}','{$page}');">See More Photo Albums</a>
+<span class="wait" style="display: none;"></span> </div>
+{/if}
+</div>
+
+{/block}
