@@ -1,0 +1,109 @@
+AddType font/svg .svg
+AddType application/x-font-woff        woff
+AddType application/font-woff		   woff
+AddType font/ttf .ttf
+AddType font/eot .eot
+AddType font/otf .otf
+AddType font/woff .woff
+
+AddDefaultCharset UTF-8
+
+php_flag magic_quotes_gpc off
+php_flag magic_quotes_runtime off
+
+RewriteEngine On
+Options +FollowSymlinks
+RewriteBase /
+
+RewriteCond %{REQUEST_URI} !(dev|files|tinymce|baseTheme|templates|skin|xinha|Antenna|\.php|\.js|\.swf|\.html|\.xml|\.woff|\.ttf|\.svg|\.eot)/?
+
+RewriteRule ^i/(.+\.(gif|png|jpg|htc))$ dev/templates/images/$1 [L]
+RewriteRule ^j/(.+\.(js|swf|png|css))$ dev/templates/js/$1     [L]
+RewriteRule ^s/(.+\.(css|stl))$ dev/templates/css/$1 [L]
+RewriteRule ^i2/(.+\.(gif|png|jpg|htc))$ dev/templates/mods/admin/images/$1 [L]
+RewriteRule ^s2/(.+\.(css|stl))$     dev/templates/mods/admin/styles/$1 [L]
+
+
+# Rewrite Rule for skin folder
+
+RewriteRule ^si/(.+\.(gif|png|jpg|htc|ico))$ dev/skin/images/$1 [L]
+RewriteRule ^ssi/(.+\.(gif|png|jpg|htc))$ dev/skin/jqtransformplugin/img/$1 [L]
+RewriteRule ^ssi2/(.+\.(gif|png|jpg|htc))$ dev/skin/mods/admin/images/$1 [L]
+RewriteRule ^sj/(.+\.(js|swf|png|css))$ dev/skin/js/$1     [L]
+RewriteRule ^ss/(.+\.(css|woff|ttf|svg))$ dev/skin/css/$1 [L]
+RewriteRule ^ss2/(.+\.(css|stl))$     dev/skin/mods/admin/styles/$1 [L]
+RewriteRule ^ss1/(.+\.(css|stl))$ dev/skin/jqtransformplugin/$1 [L]
+RewriteRule ^ssj/(.+\.(js|swf|png|css))$ dev/skin/jqtransformplugin/$1     [L]
+RewriteRule ^sfb/(.+\.(js|swf|png|css))$ dev/skin/fancybox/$1     [L]
+
+RewriteRule ^si2/(.+\.(gif|png|jpg|htc))$ dev/skin/mods/admin/images/$1 [L]
+RewriteRule ^ss2/(.+\.(css|stl))$ dev/skin/mods/admin/styles/$1 [L]
+
+RewriteRule ^reg/select/$ index.php?type=base&mod=user&what=RegistrationSelect&%{QUERY_STRING}     [L,NC] 
+RewriteRule ^reg/confirm/([a-z0-9]+)/?$ index.php?type=base&mod=user&what=Confirm&code=$1&%{QUERY_STRING}     [L,NC] 
+RewriteRule ^reg/confirm/$ index.php?type=base&mod=user&what=RegistrationConfirm&%{QUERY_STRING}     [L,NC] 
+RewriteRule ^reg/$ index.php?type=base&mod=user&what=Registration&%{QUERY_STRING}     [L,NC] 
+RewriteRule ^login/$ index.php?type=base&mod=user&what=Login&%{QUERY_STRING}     [L,NC]
+
+
+
+RewriteRule ^u/([a-z0-9_\-]+)/([a-z0-9]+)/([a-z0-9]+)/?$ index.php?type=base&mod=profile&what=index&login=$1&act=$2&id=$3&%{QUERY_STRING}     [L,NC]
+RewriteRule ^u/([a-z0-9_\-]+)/([a-z0-9]+)/?$ index.php?type=base&mod=profile&what=index&login=$1&act=$2&%{QUERY_STRING}     [L,NC]
+RewriteRule ^u/([a-z0-9_\-]+)/?$ index.php?type=base&mod=profile&what=index&login=$1&%{QUERY_STRING}     [L,NC]
+
+
+RewriteRule ^fan/([a-z0-9]+)/([a-z0-9]+)/?$ index.php?type=base&mod=fan&what=$1&id=$2&%{QUERY_STRING}     [L,NC]
+RewriteRule ^fan/([a-z0-9]+)/?$ index.php?type=base&mod=fan&what=$1&%{QUERY_STRING}     [L,NC]
+RewriteRule ^fan/$ index.php?type=base&mod=fan&what=index&%{QUERY_STRING}     [L,NC]
+
+RewriteRule ^download/([a-z0-9]+)/([0-9]+)/?$ index.php?type=base&mod=profile&what=download&act=$1&id=$2&%{QUERY_STRING}     [L,NC]
+RewriteRule ^broadcasting/([a-z0-9_\-]+)/([a-z0-9_\-]+)/$ index.php?type=base&mod=profile&what=broadcasting&id=$1&mode=$2&%{QUERY_STRING}     [L,NC]
+RewriteRule ^broadcasting/([a-z0-9_\-]+)/([a-z0-9_\-]+)$ index.php?type=base&mod=profile&what=broadcasting&id=$1&mode=$2&%{QUERY_STRING}     [L,NC]
+RewriteRule ^broadcasting/([a-z0-9_\-]+)/$ index.php?type=base&mod=profile&what=broadcasting&id=$1&%{QUERY_STRING}     [L,NC]
+
+RewriteRule ^artist/([a-z0-9]+)/([a-z0-9]+)/?$ index.php?type=base&mod=artist&what=$1&id=$2&%{QUERY_STRING}     [L,NC]
+RewriteRule ^artist/([a-z0-9]+)/?$ index.php?type=base&mod=artist&what=$1&%{QUERY_STRING}     [L,NC]
+RewriteRule ^artist/$ index.php?type=base&mod=artist&what=index&%{QUERY_STRING}     [L,NC]
+
+RewriteRule ^payment/([a-z0-9]+)/([a-z0-9]+)/?$ index.php?type=base&mod=payment&what=$1&id=$2&%{QUERY_STRING}     [L,NC]
+
+RewriteRule ^pages/([a-zA-Z0-9_]+)\.html$  index.php?type=base&mod=pages&what=index&pg=$1&%{QUERY_STRING}     [L,NC]
+
+RewriteRule ^siteadmin/?$ index.php?type=base&mod=admin&what=index     [L,NC]
+
+RewriteRule ^player/([a-z0-9]+)/([a-z0-9]+)/?$ index.php?type=base&mod=player&what=$1&id=$2&%{QUERY_STRING}     [L,NC]
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* index.php
+
+php_value upload_max_filesize    1024M
+php_value post_max_size          1024M
+php_value memory_limit           1024M
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 seconds"
+    ExpiresByType image/x-icon "access plus 2692000 seconds"
+    ExpiresByType image/jpeg "access plus 2692000 seconds"
+    ExpiresByType image/png "access plus 2692000 seconds"
+    ExpiresByType image/gif "access plus 2692000 seconds"
+    ##ExpiresByType application/x-shockwave-flash "access plus 2692000 seconds"
+    ExpiresByType text/css "access plus 2692000 seconds"
+    ExpiresByType text/javascript "access plus 2692000 seconds"
+    ExpiresByType application/x-javascript "access plus 2692000 seconds"
+</IfModule>
+<IfModule mod_headers.c>
+    <FilesMatch "\.(bmp|css|flv|gif|ico|jpg|jpeg|js|pdf|png|svg|tif|tiff)$">
+        Header set Last-Modified "Tue, 31 Aug 2010 00:00:00 GMT"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_php5.c>
+php_value post_max_size 1024M
+php_value upload_max_filesize 1024M
+php_value memory_limit 1024M
+php_value max_execution_time 259200
+php_value max_input_time 259200
+php_value session.gc_maxlifetime 1200
+</IfModule>
