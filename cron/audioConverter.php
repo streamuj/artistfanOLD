@@ -36,7 +36,7 @@ function GetAudiosForProcess()
 	for($cnt = 0; $cnt < count($ids); $cnt++){
 		$srcFile = VPATH.'source'.DS.$converted_from[$cnt];
 		if(!file_exists($srcFile)) {
-			$gPdo->query("UPDATE " . VTABLE . " SET status= 1 WHERE id= ".$ids[$cnt] );
+			/*$gPdo->query("UPDATE " . VTABLE . " SET status= 1 WHERE id= ".$ids[$cnt] );*/
 		 	continue;
 		 }
 		$destFile = VPATH.'result'.DS.'track'.DS.$converted_to[$cnt];
