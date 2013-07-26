@@ -1,0 +1,10 @@
+
+<!--COVER SLIDER-->
+<div class="miniSlider">
+<div id="myGallery" class="galleryview">
+               	{foreach key=k item=i from=$homeSlide}
+             <div class="panel">        
+             <a href="{if $i.hs_link}{$i.hs_link}{else}javascript:void(0){/if}" {if $i.hs_new}target="_blank"{/if}  {if $i.hs_link|strstr:"video"}{/if}><img src="{if $i.hs_image}{$SUB_DOMAIN}photo/slide/homeSlide/{$i.hs_image}{else}/si/slider-h.jpg{/if}" title="Home Slide"  /> </a>
+             </div>
+               {/foreach} 
+</div>

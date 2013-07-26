@@ -1,0 +1,21 @@
+{foreach key=k item=i from=$list}
+    <tr class="f11">
+        <td>{$i.Title}</td>
+        <td>{if $i['u.Name']}<a href="/base/user/AdminShowUser?id={$i.UserId}">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a>{/if}</td>
+        <td>{$i.Description|nl2br}</td>
+        <td>{$i.Location}</td>
+        <td>{$i.EventDate|mdate}</td>
+        <td class="acent">{if $i.Price}{$i.Price}{else}Free{/if}</td>
+        <td class="acent">{if $i.EventType==1}live{elseif $i.EventType==2}stream{elseif $i.EventType==3}online{/if}</td>
+        <td class="acent">{if $i.Status<2}&mdash;{elseif $i.Status==2}announced{elseif $i.Status==3}cancelled{elseif $i.Status==4}finished{/if}</td>
+        <td class="acent">{if $i.Deleted==1}Yes{else}No{/if}</td>
+        <td class="aright">
+            {if $i.Deleted==0}<a href="javascript:void(0);" onclick="oAdmin.DeleteEvent('{$i.Id}');">Delete</a>{else}
+            <a href="javascript:void(0);" onclick="oAdmin.RestoreEvent('{$i.Id}');">Restore</a>{/if}
+        </td>
+    </tr>
+{foreachelse}
+    <tr class="f11">
+        <td colspan="10">Events not found</td>
+    </tr>
+{/foreach}

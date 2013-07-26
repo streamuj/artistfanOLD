@@ -1,0 +1,56 @@
+<script type="text/javascript">
+	function showAlbum(value)
+    {
+
+            if(value == '0')
+            {
+                $('#AlbumTitle').show();
+                $('.inn-p-ta').hide();											
+            }
+            else if(value == '')
+            {
+                $('#AlbumTitle').hide();
+                $('.inn-p-ta').show();															
+            }else{
+				$('#AlbumTitle').hide();
+                $('.inn-p-ta').show();	
+			}
+    };
+	function getAlbumName()
+	{
+		var AlbumLabel = $("#AlbumId option:selected").text();
+		$('.inn-p-ta').css("display","block");			
+		$('#AlbumRemove').css("display","block");					
+		$('.inn-p-ta').html(AlbumLabel);	
+		$(".inn-p-ta").slideDown("slow");	
+																
+	};	
+</script>
+<div class="uplod-colu-ANO"style="height:168px;" >
+<span id="Msg"></span>
+<div class="leF-pa">
+<img src="{$SUB_DOMAIN}photo/thumbs/{$photo.UserId}/{$photo.Image}" class="inn-img">
+{*<p class="inn-p-ta" style="display:none;" >my photo albums<a href="#">remove</a></p>*}
+<p class="inn-p-ta" style="display:none;margin-left:249px;margin-top:-20px;">
+<span id="AlbumRemove">
+<a href="javascript:void(0);" onclick="oPhotoEdit.CloseAlbumEditAndPhoto();">remove</a>
+</span>
+</p>
+</div> 
+<div class="riG-pa">
+<textarea  name="desc" id="desc" id="PhotoTitle"  class="upl-tex-big">{$photo.Title} </textarea>
+<div class="clear"></div>
+	<select  class="upl-tex-sele" id="AlbumId" name="AlbumId" onchange="showAlbum($(this).val()),getAlbumName();">
+        {foreach key=k item=i from=$photoAlbum}
+       {if $i.Title !=$smarty.const.BANNER_IMAGES && $i.Title !=$smarty.const.PROFILE_PICTURES}                                   
+        <option value="{$i.Id}"{if $photo.AlbumId==$i.Id || (!$photo.AlbumId == $i.Id)} selected="selected"{/if}>{$i.Title|truncate:30}</option>              
+        {/if}
+        {/foreach}
+        </select>
+<input type="hidden" value="{$photo.Id}" id="PhId">
+<input type="hidden" value="{$photo.Title}" id="PhTitle">
+
+</div>
+</div>
+
+

@@ -1,0 +1,13 @@
+/* CSS file */
+
+
+.publishStart
+{
+	skin: Embed('assets/start_broadcast.png');
+}
+
+.publishStop
+{
+	skin: Embed('assets/stop_broadcast.png');
+}
+

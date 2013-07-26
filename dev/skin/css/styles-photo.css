@@ -1,0 +1,38 @@
+.head-par { margin:0px; padding:0px;}
+.phot-head { margin:0px; padding:0px; font-size:28px; color:#ED273C; float:left; width:400px;}
+.edit-butt:hover { background:#ccc; color:#000;}
+.phot-sect { margin:0px; padding:0px;}
+
+
+.tex-in { margin:0px; padding:0px 5px 5px; color: #53576C; font-size: 11px;}
+.tex-in-belo { margin:0px; padding:2px 5px 5px; color: #53576C; font-size: 10px; float:left;}
+
+.upl-tex { background:#FFF; border:none; margin:14px 0 0 13px; padding:0px 5px 0px 5px; width:220px; height:22px; float:left;}
+.uplo-phto-butt { background:#00999a; margin:10px 0 0 13px; padding:7px 0 0; width:110px; height:22px; display:block; float:left; color:#FFF; border-radius:2px; text-align:center;}
+.uplo-phto-butt:hover { background:#000; color:#cccccc;}
+
+
+
+
+.uplod-colu-ANO { background:#CCC; margin:5px 0px 5px; padding:0px; width:740px; height:188px; display:block; border-radius:3px 3px 3px 3px;}
+.leF-pa { margin:0px; padding:0px; width:230px; float:left;}
+.riG-pa { margin:0px; padding:0px; width:508px; float:right;}
+.inn-img { margin:20px 0px 10px 20px; padding:0px; width:180px; height:129px;}
+.inn-p-ta { margin:3px 20px; padding:0px;  font-size: 13px; color:#000; width:230px;}
+.inn-p-ta a { margin:3px 20px; padding:0px;  font-size: 13px; color:#ED273C;}
+.upl-tex-big { background:#FFF; border:none; margin:13px 0px 0px 13px; padding:5px 5px 5px 5px; width:465px; height:50px; float:left;}
+.upl-tex-sele { background:#FFF; border:none; margin:20px 0 0 13px; padding:1px 2px; width:108px; height:22px; float:left;}
+.uplo-phto-butt-ANO { background:#00999a; margin:10px 0 0 13px; padding:7px 0 0; width:110px; height:22px; display:block; float:left; color:#FFF; border-radius:2px; text-align:center;}
+.uplo-phto-butt-ANO:hover { background:#000; color:#cccccc;}
+.canc-phto-butt-ANO { background:#a3a3a3; margin:10px 0 0 13px; padding:7px 0 0; width:110px; height:22px; display:block; float:left; color:#FFF; border-radius:2px; text-align:center;}
+.canc-phto-butt-ANO:hover { background:#000; color:#fff;}
+.butt-ANO { margin:12px 0; padding:0px; float:right; width:266px;}
+.upl-tex-ANO { background:#FFF; border:none; margin:20px 0 0 13px; padding:0px 5px 0px 5px; width:220px; height:22px; float:left;}
+.add { background:#ccc; margin:1px 5px; padding:1px 3px; height:auto; border-radius:2px; display:block; color:#000; float:left; font-size:13px; line-height: 13px;}	
+
+
+
+
+
+
+

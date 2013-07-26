@@ -1,0 +1,55 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+    </div>
+    <h1>My Fans</h1>
+</div>
+
+<div class="content_block wide">
+<div class="sort_block">
+    <a href="">Export to excel</a>
+</div>
+<div class="ttable">
+<table class="style_table">
+    <colgroup>
+        <col width="260" />
+        <col width="60" />
+        <col />
+        <col />
+        <col />
+    </colgroup>
+    <tr>
+        <th align="left">Name</th>
+        <th align="left">Gender</th>
+        <th>Age</th>
+        <th align="left">Email</th>
+        <th align="left">Location</th>
+    </tr>
+{foreach key=k item=i from=$users}
+    <tr>
+        <td><a href="/u/{$i['u.Name']}"><strong>{$i['u.FirstName']} {$i['u.LastName']}</strong></a></td>
+        <td>{if 1==$i['u.Gender']}<span class="label male">Male</span>{elseif 2==$i['u.Gender']}<span class="label female">Female</span>{else}&ndash;{/if}</td>
+        <td align="center"{if $i['u.Dob']!='0000-00-00'} title="Birth date: {$i['u.Dob']|mdate:1}"{/if}>{if $i['u.Dob']=='0000-00-00'}&ndash;{else}{$i['u.Dob']|cdate:age}{/if}</td>
+        <td><a href="mailto:{$i['u.Email']}">{$i['u.Email']}</a></td>
+        <td>
+            {if $i['u.Location']}<a href="/artist/fanfinder?loc={$i['u.Location']}">{$i['u.Location']}</a>{else}&ndash;{/if}
+            {if $i['u.Country'] && $countries[$i['u.Country']]}({$countries[$i['u.Country']]['Name']}){/if}
+        </td>
+    </tr>
+{foreachelse}
+    <tr>
+        <td colspan="4">You don't have fans</td>
+    </tr>
+{/foreach}    
+</table>
+
+{$pagging}
+</div>
+    
+</div>
+
+{/block}

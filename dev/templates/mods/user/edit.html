@@ -1,0 +1,121 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/ajaxfileupload.js"></script>
+<script type="text/javascript" src="/dev/templates/js/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oUsers.Edit();
+    });
+</script>
+{/block}
+
+
+{block name="content"}
+<h2>Edit member profile</h2>
+
+<hr size="1" style="width: 50%;" align="left">
+
+<form action="/base/user/edit" method="post" id="edit_form" enctype="multipart/form-data">
+<table>
+<tr>
+    <td>E-mail address:<br />
+        <input type="text" name="fm[email]" id="email" value="{$UserInfo.Email}" style="width:300px;" /></td>
+    <td id="err_email" class="err"></td>
+</tr>
+<tr>
+    <td>Password:<br />
+        <input type="password" name="fm[pass]" id="pass" value="" style="width:300px;" />
+        <br /><span style="color: red;font-size: 12px;">Do not fill this field if you do not want to change your password</span>
+    </td>
+    <td id="err_pass" class="err"></td>
+</tr>
+<tr>
+    <td>First Name:<br />
+        <input type="text" name="fm[first_name]" id="first_name" value="{$UserInfo.FirstName}" style="width:300px;" /></td>
+    <td id="err_first_name" class="err"></td>
+</tr>
+<tr>
+    <td>Last Name:<br />
+        <input type="text" name="fm[last_name]" id="last_name" value="{$UserInfo.LastName}" style="width:300px;" /></td>
+    <td id="err_last_name" class="err"></td>
+</tr>
+<tr>
+    <td>Display Name:<br />
+        <input type="text" name="fm[name]" id="name" value="{$UserInfo.Name}" style="width:300px;" /></td>
+    <td id="err_name" class="err"></td>
+</tr>
+</table>
+
+<br />
+<i>Default check-in privacy options:</i>
+<table style="width: 700px;">
+<tr>
+    <td style="width: 50%;">
+        <input type="radio" name="fm[anonymous_checkin]" value="1"{if $UserInfo.AnonymousCheckin} checked="checked"{/if} /> Check in as < Display Name >
+    </td>
+    <td style="width: 50%;">
+        <input type="radio" name="fm[anonymous_checkin]" value="2"{if !$UserInfo.AnonymousCheckin} checked="checked"{/if} /> Check in Anonymously
+    </td>
+</tr>
+</table>
+
+
+<br />
+<i>Allow other guests to contact you:</i>
+<table style="width: 700px;">
+<tr>
+    <td style="width: 50%;">
+        <input type="radio" name="fm[allow_message]" value="1"{if $UserInfo.AllowMessage} checked="checked"{/if} /> Allow messages from other members
+    </td>
+    <td style="width: 50%;">
+        <input type="radio" name="fm[allow_message]" value="2"{if !$UserInfo.AllowMessage} checked="checked"{/if} /> Do not disturb
+    </td>
+</tr>
+</table>
+
+</table>
+<hr size="1" style="width: 50%;" align="left">
+
+<table>
+<tr>
+    <td>Picture:<br />
+           {if $UserInfo.Avatar}<img src="/files/images/{$UserInfo.Id|impath}s/{$UserInfo.Avatar}" id="avatar" alt="" />{/if}
+	       <input type="file" name="file" id="file"/>
+           <span>
+              {if $UserInfo.Avatar}<input type="checkbox" name="fm[delete_avatar]" value="1" /> Delete picture{/if}
+           </span>
+
+           <br /><span style="font-size: 12px;">Maximum size of 500kb. JPG, GIF, PNG</span>
+    </td>
+    <td id="err_picture" class="err"></td>
+</tr>
+<tr>
+    <td>Home location:<br />
+        <input type="text" name="fm[location]" id="location" value="{$UserInfo.Location}" style="width:300px;" /></td>
+    <td id="err_location" class="err"></td>
+</tr>
+<tr>
+    <td>About me:<br />
+        <textarea name="fm[about]" id="about" style="width:300px;">{$UserInfo.About}</textarea><br />
+       <span style="font-size: 10px;">About yourself in 160 chars</span>
+    </td>
+    <td id="err_about" class="err"></td>
+</tr>
+</table>
+<br />
+
+<table>
+<tr>
+    <td style="width: 50%;">
+        <input type="button" value="Update profile" id="edit_btn" style="font-size: 18px;" />
+    </td>
+</tr>
+</table>
+</form>
+
+{/block}
+
+
+        

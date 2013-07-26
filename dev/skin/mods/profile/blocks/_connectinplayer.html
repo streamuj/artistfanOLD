@@ -1,0 +1,84 @@
+<script>
+function follow(id)
+{
+	oUsers.Follow(id);
+	window.opener.location.href =	'/u/{$user1.Name}/music';
+	self.close();	
+}
+
+</script>
+<div style="background-color:#FFFFFF;margin-top:10px;">
+    <div class="alert_success good" style="display: none;">
+        <strong>Success!</strong> <span id="music_success"></span>
+    </div>
+    <div class="error" style="display:none;">
+        <strong>Error!</strong> <span id="music_err"></span>
+    </div>
+    <div class="album_img">
+        <a href="/u/{$user1.Name}/">
+          {if $user1.Avatar}
+          <img src="{$SUB_DOMAIN}images/avatars/s_{$user1.Avatar}" width="96" height="96" >
+          {else}          
+          <img src="http://{$smarty.server.SERVER_NAME}/i/ph/user-234x234.png" width="96" height="96" >          
+          {/if}        
+        </a>
+    </div>
+    <div class="track_block">
+        <div class="track_name">
+        </div>
+        <div class="track_author">
+		<a href="/u/{$user1.Name}">{if $user1.BandName}{$user1.BandName}{else}{$user1.FirstName} {$user1.LastName}{/if}</a></div>
+        <div class="track_album">
+            <span class="track_genres">Please {if $user2.Status==1} follow{/if} {if $user2.Status==2}connect with {/if} "{if $user1.BandName}{$user1.BandName}{else}{$user1.FirstName} {$user1.LastName}{/if}" to <br/> buy/add music albums, videos and live streams.
+			</span>
+        </div>
+    </div>
+    <div class="cl"></div>
+    <div class="line"></div> 
+    <span class="priceMusicShow"></span>
+    <span class="wait" style="display:none;"></span>
+	
+    <div style="clear:both"></div>
+    <input type="hidden" id="ConnectId" value="{$user1.Id}" />                
+    <input type="hidden" id="ConnectName" value="{$user1.Name}" />        
+    <input type="hidden" id="ConnectUrl" value="music" />                	    
+    {*
+{if $user2.Status==1} 
+ <input class="btn1 yellow_button photo_buy_btn" type="button" value="Follow" style="display: block;
+min-width: 80px;
+height: 1.8em;
+margin: 0px 5px 0px 0px;
+padding: 0 1.5em;
+border: none;
+border-radius: 4px;
+font-size: 110%;
+text-decoration: none;
+color: #fff;
+background: #4F8E25;" onclick="return follow('{$user1.Id}');" onclick="oUsers.Follow('{$user1.Id}'),;"  />
+{/if}
+{if $user2.Status==2}
+<input class="btn1 yellow_button photo_buy_btn" type="button" value="Connect" style="display: block;
+min-width: 80px;
+height: 1.8em;
+margin: 0px 5px 0px 0px;
+padding: 0 1.5em;
+border: none;
+border-radius: 4px;
+font-size: 110%;
+text-decoration: none;
+color: #fff;
+background: #4F8E25;" onclick="return follow('{$user1.Id}');" />
+{/if}           
+  &nbsp;&nbsp;
+    <input class="btn1 reset_button"  type="reset" value="Cancel" style="display: block;
+min-width: 80px;
+height: 1.8em;
+margin: 0px 5px 0px 0px;
+padding: 0 1.5em;
+border: none;
+border-radius: 4px;
+font-size: 110%;
+text-decoration: none;
+color: #fff;
+background: #990000;display:none;" /> *}
+</div>

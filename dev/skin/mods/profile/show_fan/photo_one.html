@@ -1,0 +1,26 @@
+{block name="content"}
+{strip}
+<div id="popBox" class="AlbumPOP" style="min-width:700px;">
+ <div class="clear"></div>
+ 	 <div class="Lpic"><img src="{$SUB_DOMAIN}photo/mid/{$photo.UserId}/{$photo.Image}" alt="{$photo.Title}"/></div>
+      <div class="clear"></div>
+    	<div class="comContain">
+          <div class="storyContent">
+            <div class="photoCommentsnShare">
+              <div class="artistInfo"> 
+               <div class="aName">{if $photo.Title}{$photo.Title}{/if}</div>
+                <div class="comments_date">{$photo.PhotoDate|mdate:5}</div>
+              </div>
+              <div class="profSetOptions">
+                <ul>
+                  <li><span class="muted">Image Size: ({$photo.Sizes.0} &times; {$photo.Sizes.1})</span></li>
+                </ul>
+              </div>
+              <div class="clear"></div>
+            </div>
+          </div>
+    </div>
+</div>
+</div>
+{/strip}
+{/block}

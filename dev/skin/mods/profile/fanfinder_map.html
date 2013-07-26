@@ -1,0 +1,53 @@
+{*
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+    var user_id = {if $ui.Id}{$ui.Id}{else}{$UserInfo.Id}{/if};
+    var map;
+    var geocoder;
+    function initialize() {
+        geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(38.6,-98);
+        var myOptions = {
+            zoom: 2,
+            center: latlng,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+		{foreach key=k item=i from=$cities}
+				try
+				{
+					geocoder.geocode( { 'address': '{$i.Location}'}, function(results, status)
+					{
+						if (status == google.maps.GeocoderStatus.OK)
+						{
+							var marker = add_marker(results[0].geometry.location, "{$i.Location}", "<div class='map-marker'><strong>{$i.Location}</strong><br /><br /><br /><a href='/artist/fanfinder?loc={$i.Location}'>See list</a></div>");
+							marker.setMap(map);
+						}
+					});
+				}
+				catch(err){}
+		{/foreach}
+    }
+
+    function add_marker(latlng, title, box_html)
+    {
+        var infowindow = new google.maps.InfoWindow({
+            content: box_html
+        });
+        var marker = new google.maps.Marker({
+              position: latlng,
+              map: map,
+              title: title
+        });
+        google.maps.event.addListener(marker, 'click', function()
+        {
+            infowindow.open(map,marker);
+        });
+        return marker;
+    }
+	$(document).ready(function(){
+	 initialize();
+	});	
+</script>  
+
+*}

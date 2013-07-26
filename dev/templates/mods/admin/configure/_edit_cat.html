@@ -1,0 +1,38 @@
+<div class="path">
+    <a href="{$siteAdr}">Панель администрирования</a> &raquo; Настройки
+</div>
+
+<h1>{if $id}Редактировать{else}Добавить{/if} категорию</h1>
+
+
+
+<form method="post" action="{$siteAdr}base/configure/editcat/">
+{if $id}
+<input type="hidden" name="id" value="{$id}" />
+{/if}
+
+{if $errs}
+    <font color="#990000">
+    {foreach key=k item=i from=$errs}
+     - {$i}<br />
+    {/foreach}
+    </font><br />
+{/if}
+
+<div class="blue_block">
+
+<p>Сортировка<br /><input  class="text_input_small" style="width:120px;" type="text" name="fm[Sortid]" value="{$fm.Sortid}"  /></p>
+<p>Заголовок категории<br /><input  class="text_input_small" style="width:370px;" type="text" name="fm[Title]" value="{$fm.Title}"  /></p>
+<p>Название категории(латинское, для выборки)<br /><input class="text_input_small" type="text" style="width:360px;" name="fm[Pagename]" value="{$fm.Pagename}"  /></p>
+<p>Тип категории<br />
+    <select name="fm[Ctype]">
+        <option value="0">Категория типа параметр-значение</option>
+        <option value="1"{if 1==$fm.Ctype} selected="selected"{/if}>Категория для скидок</option>
+    </select>    
+</p>
+
+
+<p><input type="button" value="Отмена" onclick="Go('{$siteAdr}base/configure/IndexAdmin');" /> <input type="submit" value="Сохранить" /></p>
+
+</div>
+</form>

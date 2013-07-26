@@ -1,0 +1,52 @@
+<div>
+  <table cellspacing="0" cellpadding="8" border="0">
+          <tbody><tr width="100%">
+                <td width="104" valign="middle" align="left" class="P20" style="border-bottom:1px solid #eee;"><span class=" caps">Event </span ></td>                
+                <td width="750" valign="middle" align="left" class="P20" style="border-bottom:1px solid #eee;"><span class=" caps" style="width:450px; display:block">Details</span ></td>
+                <td width="166" valign="middle" align="center" class="P20" style="border-bottom:1px solid #eee;"><span class=" caps">Buy</span ></td>
+               </tr>
+       {foreach key=k item=i from=$events}                
+       {if $i.Price}      
+	    <tr>
+    	<td style="border-bottom:1px solid #eee;">
+        {if $i.name}
+	    <a href="/u/{$i.name}/events/{$i.Id}"><img src="/files/photo/thumbs/{$i.UserId}/{$i.EventPhoto}" width="200" height="115" /></a>            
+            {/if}  
+        </td>        
+        <td valign="top" nowrap="nowrap" align="left" style="border-bottom:1px solid #eee;" width="250"><table cellspacing="0" cellpadding="5" border="0" width="622" >
+          <tbody><tr>
+            <td width="200" nowrap="nowrap"><span class="icDate LF font14"><a href="/u/{$i.name}/events/{$i.Id}">{$i.EventDate|date_format} | {$i.EventDate|date_format:"%A"}</a></span></td>
+            <td width="420" nowrap="nowrap"><span class="icTime LF font14">            
+            {$i.EventDate|date_format:'%I:%M  %p'}  
+            </span></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+             {if $i.band_name}
+            <p class="font16 caps"><a href="/u/{$i.name}/events/{$i.Id}">{$i.band_name|capitalize}</a>  </p>             
+             {else}
+            <p class="font16 caps"><a href="/u/{$i.name}/events/{$i.Id}">{$i.name|capitalize}</a> </p>             
+             {/if}
+              <p class="font16 caps"><a href="/u/{$i.name}/events/{$i.Id}"><b>{$i.Title}</b></a></p>
+              <p><a href="/u/{$i.name}/events/{$i.Id}">{$i.Descr|truncate:300:"..."}</a></p></td>
+            </tr>
+        </tbody></table></td>       
+        <td align="center" style="border-bottom:1px solid #eee;">$ {$i.Price|string_format:'%.2f'}
+ {if $i.EventType!=3}{if !$i['EventAttend.Id']}
+                       {*<a href="javascript:void(0);" class="btn-gray attend_event" mid="{$i.Id}">I will go!</a>{else}<div class="good status-good">You're going</div>*}{/if}{/if}
+                        {if $i.EventType>1}{if !$i['EventPurchase.Id']}
+                        <a href="javascript:void(0);" class="pricetag event free M2 IndexEvents" onclick="oPopup.IndexEvents('{$i.Id}','{$i.UserId}');" mid="{$i.Id}" price="{$i.Price}">
+                        {if $i.Price>0}Buy{else}Get{/if}</a>{else}
+                        <a href="/fan/events/{$i.Id}" class="btn-gray">Access info</a>
+                        {/if}
+                        {/if}         
+        </td> 
+      </tr>
+      {/if}
+      {/foreach}
+    </tbody></table>
+  <div class="clear"></div>
+  <div align="center">&nbsp;</div>
+</div>
+</div>
+  <div class="clear"></div>

@@ -1,0 +1,142 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery.form.js"></script>
+
+
+<script type="text/javascript" src="/sj/cls/Admin.js"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function()
+    {
+		event_app = 1;//{if $event_app}{$event_app}{else}0{/if};
+				
+        oAdmin.EventsList(1, event_app);
+		
+       /* $("#dfrom, #dto").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+		*/
+		
+        $('#bsearch').click(function() {		
+			{*event_type = $('.tabs-panel .act').attr('id').split('_')[1];		
+			var event_app = typeof event_app1 != "undefined" ? event_app1 :event_type;	
+			*}
+            oAdmin.EventsFilter(1);
+        });
+    });
+</script>
+{/block}
+
+{block name="content"}
+
+<h1>Events</h1>
+
+<ul class="tabs-panel">
+     <li id="eventType_0" class="act"><a href="javascript:void(0)" onclick="oAdmin.EventsList(1, 0)">Pending Events </a></li>
+     <li id="eventType_1"><a href="javascript:void(0)" onclick="oAdmin.EventsList(1, 1)">Approved Events</a></li>
+     <li id="eventType_2"><a href="javascript:void(0)" onclick="oAdmin.EventsList(1, 2)">Denied Events</a></li>
+</ul>
+<div class="clear"></div>
+
+<form action="/base/admin/EventsList" method="post" id="elist">
+    <input type="hidden" id="flist" value="" />
+    <input type="hidden" name="page" id="page" value="1" />
+    <input type="hidden" name="s[event_app]" value="{$event_app}" />
+    
+<div class="blue_block">
+<table>
+    <tr>
+       <td colspan="2"><h6>Search events</h6></td>
+    </tr>
+    <tr>
+        <td>User e-mail</td>
+        <td><input type="text" name="s[email]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>User name</td>
+        <td><input type="text" name="s[name]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Event Title</td>
+        <td><input type="text" name="s[title]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Event Location</td>
+        <td><input type="text" name="s[location]" value="" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Event date</td>
+        <td>
+            <input type="text" id="dfrom" name="s[dfrom]" value="" class="text_input_small short" />
+            &ndash;
+            <input type="text" id="dto" name="s[dto]" value="" class="text_input_small short" />
+        </td>
+    </tr>
+    <tr>
+        <td>Event type</td>
+        <td>
+            <select name="s[etype]">
+                <option value="0">All</option>
+                <option value="1">live show</option>
+                <option value="2">stream show</option>
+                <option value="3">online show</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input type="button" id="bsearch" value="Search" /></td>
+    </tr>
+</table>
+<br />
+</div>
+
+<div style="position:absolute;z-index:100;left:550px;display:none;" id="wait"><img src="/i2/wait.gif" alt="Wait..."></div>
+<br /><br />
+<table class="style_table f13">
+    <colgroup>
+        <col />
+        <col width="150px" />
+        <col />
+        <col width="150px" />
+        <col width="80px" />
+        <col width="50px" />
+        <col width="50px" />
+        <col width="70px" />
+        <col width="50px" />
+        <col width="50px" />
+        <col width="100px" />
+    </colgroup>
+    <thead>
+        <tr style="color:#28B7F3;">
+            <th class="aleft">Title</th>
+            <th class="aleft">Artist</th>
+            <th class="aleft">Description</th>
+            <th class="aleft">Location</th>
+            <th>Date</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Approved</th>
+            <th>Deleted</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="list">
+    {include file="mods/admin/events/ajax/_list_ajax.html"}
+    </tbody>
+</table>
+<div id="pagging"></div>
+<br />
+<div style="float:left;">
+    <select name="pcnt" id="pcnt" onchange="oAdmin.EventsList(1);">
+        <option value="10"{if $pcnt==10} selected="selected"{/if}>10</option>
+        <option value="30"{if $pcnt==30} selected="selected"{/if}>30</option>
+        <option value="50"{if $pcnt==50} selected="selected"{/if}>50</option>
+        <option value="70"{if $pcnt==70} selected="selected"{/if}>70</option>
+        <option value="100"{if $pcnt==100} selected="selected"{/if}>100</option>
+        <option value="1000000000"{if $pcnt==1000000000} selected="selected"{/if}>all</option>
+    </select>
+</div>
+</form>
+{/block}

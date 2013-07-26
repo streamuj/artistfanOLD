@@ -1,0 +1,149 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<link rel="stylesheet" href="/s/fileuploader.css" />
+
+<script type="text/javascript" src="/j/jquery.autoellipsis-1.0.3.js"></script>
+<script type="text/javascript" src="/j/cls/Wall.js"></script>
+<script type="text/javascript" src="/j/cls/Play.js"></script>
+<script type="text/javascript" src="/j/cls/Player.js"></script>
+<script type="text/javascript" src="/j/fileuploader.js"></script>
+<script type="text/javascript" src="/j/cls/Errors.js"></script>
+<script type="text/javascript">
+    var user_id = {$ui.Id};
+    $(document).ready(function()
+    {
+        oWall.Reload();
+        oPlay.InitPlayButtons();
+        $(".ttl a").ellipsis();
+		$('#file-uploader').hide();		
+		$('#video-uploader').hide();
+		$('#tabPhoto').click(function(){
+			$('#file-uploader').show();
+			$('#video-uploader').hide();
+		});
+		$('#tabVideo').click(function(){
+			$('#file-uploader').hide();
+			$('#video-uploader').show();
+					
+		});
+    });
+</script>
+{/block}
+
+{block name="content"}
+    <!--sitebar_01-->
+    <div class="sitebar sitebar_01">
+        <div class="big_user_icon">
+            <img src="{if !$ui.Avatar}/i/ph/user-234x234.png{else}/files/images/avatars/m_{$ui.Avatar}{/if}" id="image" width="234" alt="" />
+        </div>
+
+        {if $music}
+        <div class="user_content_block">
+            <h3><a href="/fan/music">Music</a> <a href="/fan/music" class="see_all">see all</a></h3>
+            <table class="content_list">
+                {foreach key=k item=i from=$music}
+                <tr>
+                    <td width="29"><a href="javascript:void(0);" class="playlist_track" mid="{$i.Id}"><img src="{if $i.Image}/{$i.Image}{else}/i/ph/track-22x22.png{/if}" width="22" height="22" alt="" /></a></td>
+                    <td class="ttl"><a href="javascript:void(0);" class="playlist_track" mid="{$i.Id}">{$i.Title}</a></td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+        {/if}
+
+        {if $follow}
+        <div class="user_content_block">
+            <h3><a href="/fan/artists">Artists</a> <a href="/fan/artists" class="see_all">see all</a></h3>
+            <table class="content_list">
+                {foreach key=k item=i from=$follow}
+                <tr>
+                    <td width="29"><a href="/u/{$i['u.Name']}"><img src="{if $i['u.Avatar']}/files/images/avatars/x_{$i['u.Avatar']}{else}/i/ph/user-22x22.png{/if}" width="22" height="22" alt="" /></a></td>
+                    <td class="ttl"><a href="/u/{$i['u.Name']}">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a></td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+        {/if}
+        {if $fellow_fans}
+        <div class="user_content_block">
+            <h3><a href="/fan/fans">My Fellow Fans</a> <a href="/fan/fans" class="see_all">see all</a></h3>
+            <table class="content_list">
+                {foreach key=k item=i from=$fellow_fans}
+                <tr>
+                    <td width="29"><a href="/u/{$i['u.Name']}"><img src="{if $i['u.Avatar']}/files/images/avatars/x_{$i['u.Avatar']}{else}/i/ph/user-48x48.png{/if}"/></a>{if $i['u.IsOnline'] == 1}<font color="#00CC33">Online</font>{else}Offline{/if}</td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+        {/if}
+        
+        {if $follower_events}
+        <div class="user_content_block">
+            <h3><a href="/fan/events">Events</a> <a href="/fan/events" class="see_all">see all</a></h3>
+            <ul class="calend_list">
+                {foreach key=k item=i from=$follower_events}
+                <li><div class="date">{$i.EventDate|mdate:2}<br /> {$i.EventDate|mdate:3}</div> <strong><a href="/u/{$i.Name}/events/{$i.Id}">{$i.Title}</a></strong> <br />{$i.Location}</li>
+                {/foreach}
+            </ul>
+        </div>
+        {/if}
+        
+        {if $video}
+        <div class="user_content_block">
+            <h3><a href="/fan/video">Videos</a> <a href="/fan/video" class="see_all">see all</a></h3>
+            <table class="content_list">
+                {foreach key=k item=i from=$video}
+                <tr>
+                    <td width="29"><a href="/fan/video/{$i.Id}"><img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/default.jpg{elseif $i.Status == 2}/files/video/thumbnail/{$i.UserId}/x_{$i.Video}.jpg{else}/i/ph/video-22x22.png{/if}" width="22" height="22" alt="" /></a></td>
+                    <td class="ttl"><a href="/fan/video/{$i.Id}">{$i.Title}</a></td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+        {/if}
+        
+        {if $wall_video}
+        <div class="user_content_block">
+            <h3>Wall Videos</h3>
+            <table class="content_list">
+                {foreach key=k item=i from=$wall_video}
+                <tr>
+                    <td width="29"><a href="/fan/wallvideo/{$i.Id}"><img src="{$videoObj->getVideoThumbnail($i.Video)}" width="22" height="22" alt=""/></a></td>
+                    <td class="ttl"><a href="/fan/wallvideo/{$i.Id}">view video..</a></td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+        {/if}
+                
+    </div>
+    <!--/sitebar_01-->
+    <!--content_block-->
+    <div class="header_block">
+        <a href="/fan/" class="button fl_right"><span class="edit_icon">Edit my page</span></a>
+        <h1>{$ui.FirstName} {$ui.LastName}</h1>
+    </div>
+    {include file="mods/profile/say_form.html"}
+    <!--/content_block-->
+
+    <!--sitebar_02-->
+    <div class="sitebar sitebar_02">
+        <div class="my_wallet">
+            <div class="my_wallet_block">
+                <b><a href="/fan/wallet">My wallet</a></b><br /> {if $ui.Wallet}{$ui.Wallet}{else}0{/if} credits
+            </div>
+        </div>
+        {if $events}
+        <div class="user_content_block">
+            <h3><a href="/fan/events">Events</a> <a href="/fan/events" class="see_all">see all</a></h3>
+            <ul class="calend_list">
+                {foreach key=k item=i from=$events}
+                <li><div class="date">{$i.EventDate|mdate:2}<br /> {$i.EventDate|mdate:3}</div> <strong><a href="{if ($i.EventType > 1 && $i['EventPurchase.Id']) || ($i.EventType==1 && $i['EventAttend.Id'])}/fan{else}/u/{$i['Artist']['Name']}{/if}/events/{$i.Id}">{$i.Title}</a></strong> <br />{$i.Location}</li>
+                {/foreach}
+            </ul>
+        </div>
+        {/if}
+    </div>
+    <!--/sitebar_02-->
+{/block}

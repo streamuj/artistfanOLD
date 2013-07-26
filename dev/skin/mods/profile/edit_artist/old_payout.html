@@ -1,0 +1,134 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+        $('a.pull-right').click(function()
+        {
+            $('#pinfo').hide();
+            $('#pinfo_form').show();
+            $('#PaymentInfoId').val('');
+        });
+    });
+</script>       
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/wallet">My wallet</a>
+    </div>
+    <h1>Payout request</h1>
+</div>
+
+<div class="content_block wide">
+{if $errs}
+<div class="alert alert_error" style="display:none;">
+    <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+    <strong>Error!</strong> <span id="form_errs"></span>
+</div>
+{/if}
+
+<form method="post" action="/artist/payout" id="fmd" class="big_form">
+    <br />
+    <table class="form_table">
+    	<tr>
+            <td class="label_td"><label>Available to withdraw:</label></td>
+            <td style="padding-top: 8px;">
+                <strong>${$UserInfo.Wallet-$UserInfo.WalletBlock}</strong>
+            </td>
+            <td></td>
+    	</tr>
+        <tr>
+            <td class="label_td"><label>I want to withdraw:</label></td>
+            <td> 
+            <input type="text" name="fm[Payout]" value="" class="text_input small_input" /></td>
+            <td id="err_Payout" class="err"></td>
+        </tr>
+
+    </table>
+
+    <h3>Payment information</h3>
+    <div id="pinfo_form"{if $pfm.Id} style="display:none;"{/if}>
+    <h4>ACH Direct Deposit details (US banks only)</h4>
+    <table class="form_table">
+    	<tr>
+            <td class="label_td"><label>Routing / ABA Code</label></td>
+            <td><input type="text" name="pfm[RoutingCode]" value="{$pfm.RoutingCode}" class="text_input" /></td>
+            <td id="err_RoutingCode" class="err"></td>
+    	</tr>
+    	<tr>
+            <td class="label_td"><label>Bank Account Number</label></td>
+            <td><input type="text" name="pfm[AccountNumber]" value="{$pfm.AccountNumber}" class="text_input" /></td>
+            <td id="err_AccountNumber" class="err"></td>
+    	</tr>
+    	<tr>
+            <td class="label_td"><label for="">Bank Account Holder Name</label></td>
+            <td><input type="text" name="pfm[HolderName]" value="{$pfm.HolderName}" class="text_input" /></td>
+            <td id="err_HolderName" class="err"></td>
+    	</tr>
+    	<tr>
+            <td class="label_td"><label>Account Type</label></td>
+            <td>
+                <select name="pfm[AccountType]">
+                    {foreach key=k item=i from=$account_types}
+                    <option value="{$k}"{if $pfm.AccountType==$k} selected="selected"{/if}>{$i}</option>
+                    {/foreach}
+                </select>
+            </td>
+            <td id="err_AccountType" class="err"></td>
+    	</tr>
+    </table>
+    </div>
+    <div id="pinfo"{if !$pfm.Id} style="display:none;"{/if}>
+        <input type="hidden" name="fm[PaymentInfoId]" id="PaymentInfoId" value="{$pfm.Id}" />
+        <a class="pull-right" href="javascript:void(0);">Edit details</a>
+        <h4>ACH Direct Deposit details (US banks only)</h4>
+        <table class="form_table">
+            <tr>
+    		<td class="label_td">Routing / ABA Code</td>
+    		<td><strong>{$pfm.RoutingCode}</strong></td>
+    		<td></td>
+            </tr>
+            <tr>
+    		<td class="label_td">Bank Account Number</td>
+    		<td><strong>{$pfm.AccountNumber}</strong></td>
+    		<td></td>
+            </tr>
+            <tr>
+    		<td class="label_td">Bank Account Holder Name</td>
+    		<td><strong>{$pfm.HolderName}</strong></td>
+    		<td></td>
+            </tr>
+            <tr>
+    		<td class="label_td">Account Type</td>
+    		<td>
+                    <strong>{$account_types[$pfm.AccountType]}</strong>
+    		</td>
+    		<td></td>
+            </tr>
+        </table>
+    </div>
+    <div class="line"></div>
+
+    <div class="alert alert_note">
+        <strong>Withdrawal processing:</strong> You will be notified on approval of your request. After approval please allow 1 to 3 business days for transfer completion.
+    </div>
+
+    <table class="form_table">
+        <tr>
+            <td class="label_td"></td>
+            <td>
+                <input type="button" onclick="$('#fmd').submit();" class="button" value="Send request" />
+            </td>
+        </tr>
+    </table>
+</form>
+</div>
+{/block}

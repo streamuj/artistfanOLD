@@ -1,0 +1,117 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+    var map;
+    var geocoder;
+    function initialize() {
+        geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(38.6,-98);
+        var myOptions = {
+            zoom: 4,
+            center: latlng,
+            mapTypeId: google.maps.MapTypeId.ROADMAP // can be SATELLITE  , HYBRID, ROADMAP or TERRAIN
+        };
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+        /* map.setCenter(new GLatLng(38.6,-98), 4, G_ROAD_MAP); */
+        /* map.setUIToDefault(); */
+
+{foreach key=k item=i from=$cit}
+        geocoder.geocode( { 'address': '{$i}'}, function(results, status)
+        {
+            if (status == google.maps.GeocoderStatus.OK)
+            {
+                var marker = add_marker(results[0].geometry.location, "{$i}", "<div class='map-marker'><strong>{$i}</strong><br /><br /><br /><a href='/artist/fanfinder?loc={$i}'>See list</a></div>", {if $location==$i.Location}1{else}0{/if});
+                marker.setMap(map);
+                {if $location}
+                map.setCenter(results[0].geometry.location);
+                {/if}
+            }
+        });
+{/foreach}
+    }
+
+    function add_marker(latlng, title, box_html, open)
+    {
+        var infowindow = new google.maps.InfoWindow({
+            content: box_html
+        });
+
+        var marker = new google.maps.Marker({
+              position: latlng,
+              map: map,
+              title: title
+        });
+
+        google.maps.event.addListener(marker, 'click', function()
+        {
+            infowindow.open(map,marker);
+        });
+        if(open == 1)
+        {
+            infowindow.open(map,marker);
+        }
+
+        return marker;
+    }
+    $(document).ready(function()
+    {
+        initialize();
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+
+<div style="padding:15px;background:#f6f6f6;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td bgcolor="#FFFFFF"><table border="0" cellspacing="0" cellpadding="5">
+          <tr>
+            <td><strong class="font16">Fan Finder</strong>
+              <label></label></td>
+          </tr>
+        </table>
+          <label></label></td>
+      </tr>
+      <tr>
+        <td><div id="map_canvas" style="width: 738px; height: 468px"></div></td>
+      </tr>
+    </table>
+    <h3><strong>Fans{if $location} in {$location}: {$count}{/if}</strong></h3>    
+<table class="style_table">
+    <colgroup>
+    	<col width="260" />
+        <col width="60" />
+        <col />
+        <col />
+        <col />
+    </colgroup>
+    <tbody>
+    <tr>
+    	<th align="left">Name</th>
+        <th align="left">Gender</th>
+        <th>Age</th>
+        <th align="left">Email</th>
+        <th align="left">Location</th>
+    </tr>
+    {foreach key=k item=i from=$fans}
+    <tr>
+        <td><a href="/u/{$i.Name}"><strong>{$i.FirstName} {$i.LastName}</strong></a></td>
+        <td>{if 1==$i.Gender}<span class="label male">Male</span>{elseif 2==$i.Gender}<span class="label female">Female</span>{else}&ndash;{/if}</td>
+        <td align="center"{if $i.Dob!='0000-00-00'} title="Birth date: {$i.Dob|mdate:1}"{/if}>{if $i.Dob=='0000-00-00'}&ndash;{else}{$i.Dob|cdate:age}{/if}</td>
+        <td><a href="mailto:{$i.Email}">{$i.Email}</a></td>
+        <td>
+            {if $i.Location}<a href="/artist/fanfinder?loc={$i.Location}">{$i.Location}</a>{else}&ndash;{/if}
+            {if $i.Country && $countries[$i.Country]}({$countries[$i.Country]['Name']}){/if}
+        </td>
+    </tr>
+    {foreachelse}
+    <tr>
+        <td colspan="5">No fans</td>
+    </tr>
+    {/foreach}
+    </table> 
+</div>   
+{/block}

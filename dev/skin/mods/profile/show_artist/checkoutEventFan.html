@@ -1,0 +1,39 @@
+{strip}
+{if $ErrorMsg}
+<div>
+<p>{$ErrorMsg}</p>
+</div>
+{/if}
+<div style="background:#F6F6F6;">
+<div class="eventListBox">
+<table border="0" cellspacing="0" cellpadding="8">
+  <tr>
+    <td rowspan="2" align="left" valign="top"><p  class="tb LF" style="width:201px; height:115px; display:block;">
+    <img src="{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}" width="200" height="115" /></p>    </td>
+    <td align="left" valign="top">
+	<p  class="timTxt"><span><span class="evDate">{$event.EventDate|date_format}</span> <span><strong>{$event.EventDate|date_format:"%A"} at {$event.EventDate|date_format:'%l:%M  %p'} EST</strong></span></p>
+	</td>
+    <td rowspan="2" align="center" valign="top" >
+{if $event.EventType!=1}{if $event.Price>0}<p class="button wblue free P5 bold" style="cursor:default;">${$smarty.session.payMore|string_format:'%.2f'}</p>{else}<p class="pricetag event free P5 bold">Free</p>{/if}{/if}        
+    {if $event.EventApp == $smarty.const.EVENT_APPROVED or $event.EventType==1}    
+    {if !$event.EventDate|ispast && $event.Status<3}
+    {if $event.Status==1}{elseif $event.Status==2}
+    {/if}
+    {if $event.EventType>1}{/if}
+    {/if}
+    {if $event.Status==3}
+    {elseif $event.Status==4 || $event.EventDate|ispast}
+    {/if}
+    
+    {elseif $event.EventApp == $smarty.const.EVENT_PENDING} Pending
+    {else}{/if}</td>
+  </tr>
+  <tr>
+    <td align="left" valign="bootom">
+        <p class="titleTxt" style="color:#D90E25;">{$event.Title|truncate:95}</p>
+        <p class="decTxt">{$event.Descr|truncate:130:"..."} </p>
+    </td>
+  </tr>
+</table>
+</div></div>
+{/strip}

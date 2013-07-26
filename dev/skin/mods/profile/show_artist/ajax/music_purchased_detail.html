@@ -1,0 +1,77 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="javascript"}
+		{if $musicAlbumMsg['success'][0]=='Thanks for purchasing Music' }	
+		<meta http-equiv="refresh" content="2;url=/base/profile/AblumZipDownload/?u_id={$ui.Id}&a_id={$musicAlbumId}&download=true"> 
+    	{/if}
+        {strip}
+		<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+        <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+        <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+        <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Player.js"></script>
+        <script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.slimscroll.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function()
+            {
+                oPlay.InitPlayButtons();
+        
+                $('.musicList .shList') .click(function(){
+                var curTrackList = $(this).parents('.musicList').find('.trackList');
+                $('.trackList').removeClass('current');
+                curTrackList.addClass('current');
+                curTrackList.slideToggle();
+                    $('.trackList').each(function(){
+                        if(!$(this).hasClass('current')) $(this).slideUp();
+                    });
+                });
+                
+            });
+        </script>
+	   {/strip}
+{/block}
+{block name="my_cabinet"}
+{strip}
+<div class="P15">
+<h2 class="block" style="margin-bottom:15px;">Thanks for purchasing {$album.Title}</h2>
+<div  class="musicList">
+            <table width="100%" border="0" align="left"cellpadding="8" cellspacing="0">
+                <tbody>
+                  <tr>
+                    <td width="104" rowspan="2" align="left" valign="top"><a href="javascript:void(0);" class="shList"><img src="{if $album.Image}/{$smarty.const.TRACK_IMG_PATH}/{$album.UserId}/m_{$album.Image}{else}{$SUB_DOMAIN}si/ph/album-96x96.png{/if}" width="150" height="150" /></a></td>
+                    <td align="left" valign="top" nowrap="nowrap"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="left" valign="top"><h4 class="M2 shList"><a title="Click to view tracks" href="javascript:void(0)">{$album.Title|truncate:40:'...'}</a></h4>
+                          <p class="M2"><a href="javascript.void(0)" class="black font14">{$album.Descr|wordwrap:70:"<br />\n"}</a></p>
+                          <p class="font14 M2">{if $album.Tracks > 1} {$album.Tracks} Tracks {else} {$album.Tracks} Track {/if}</p></td>
+                          <td width="1%" align="right" valign="top"><a href="javascript:void(0)" class="button wblue RT"> {if $album.Price} $ {$album.Price|string_format:'%.2f'}{else}FREE{/if}</a></td>
+                        </tr>
+                        <tr>
+                          <td colspan="2" align="right" valign="bottom">&nbsp;</td>
+                        </tr>
+                    </table></td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="bottom" nowrap="nowrap">&nbsp;</td>
+                  </tr>
+                </tbody>
+            </table>
+            <div class="clear"></div>
+            <ul class="trackList none">
+            {if $album.TrackList}
+            {$album.TrackList|print_r}
+                 {foreach $album.TrackList as $track}
+                    <li class="track">
+                        <a href="javascript:void(0)"  class="floatL button play round play_track" mid="{$track.Id}"><img class="icon" src="{$SUB_DOMAIN}si/ic-playGrey.png"></a>
+                        <span class="P10">{$track@iteration}</span>
+                        <a class="trackLink trackTitle" href="javascript:void(0)">{$track.Title|truncate:60:'...'}</a>
+                        <a href="javascript:void(0)" class="pricetag free RT button">{if $track.Price>0 } ${$track.Price|string_format:'%.2f'} {elseif $album.Price >0} Bonus {else} FREE {/if}</a>
+                        <a href="javascript:void(0)" onclick="CGo('/artist/removetrack?id={$track.Id}', 'Do you want to remove this track?');" class="iconSet RT"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a>
+                        <a href="/artist/edittrack?id={$track.Id}" class="iconSet RT"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a>
+                       <span class="RT trackLink">{if $track.TrackLength} {$track.TrackLength|date_format:"%M:%S"} {else} In process {/if}</span>
+                    </li>
+                    {/foreach}
+            {/if}
+            </ul>
+</div>
+{/strip}
+
+{/block}

@@ -1,0 +1,121 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/ss/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+<script type="text/javascript" src="/sj/cls/Music.js"></script>
+<script type="text/javascript" src="/sj/cls/Player.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oPlay.InitPlayButtons();
+		oMusic.InitMusicButtons();					
+    });
+</script>
+{/block}
+{block name="my_cabinet"}
+<!--content_block-->
+<div style="padding:15px;">
+<div class="header_block">
+    <table width="100%" cellpadding="5">
+        <tr>
+         <td colspan="2"><h3>My Music Store </h3></td>
+        </tr>
+        <tr>
+        	<td width="75%"><a href="/artist/editalbum" class="floatR btn1">New album</a></td>
+            <td width="25%"><a href="/artist/pricedtracks" class="floatL btn1">My Playlist </a></td>
+        </tr>
+                
+	</table>  
+<div class="clear"></div>
+	{if $track_added || $track_updated || $track_removed || $album_removed || $album_added || $album_updated}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> {if $track_added}Track added!{elseif $track_updated}Track updated!{elseif $track_removed}Track removed!{elseif $album_removed}Album removed!{elseif $album_added}Album added!{elseif $album_updated}Album updated!{/if}
+    </div>
+	<div class="clear"></div>    
+    {/if}
+    
+</div>
+<div class="tabC" >
+<a href="javascript:void(0);" id="btn_view_album"><strong>Albums</strong></a> 
+<a href="javascript:void(0);" class="active" id="btn_view_track"><strong>Tracks</strong></a>
+</div>
+<div>
+<div class="clear"></div>
+<div class="content_block" id="view_album" style="padding-bottom:20px;" >  
+    <table width="100%" border="0" cellspacing="0" cellpadding="10" align="center" >
+    {if $albums} 
+      <tr bgcolor="#FFFFFF">
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>No.</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Art</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Title</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Price</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Publish</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Action</strong></td>
+      </tr>
+      {foreach key=k item=i from=$albums} 
+       <tr bgcolor="#FFFFFF">
+        <td align="center" valign="middle" nowrap="nowrap">{$i@iteration}</td>
+        <td  align="center" ><a href="javascript:void(0);" onclick="oMusic.ShowArtistTrack({$i.Id})" title="Click to view tracks" ><img src="{if $i.Image}/{$i.Image}{else}/i/ph/album-96x96.png{/if}" alt="" style="cursor:pointer;" /></a></td>            
+        <td align="center" valign="middle" nowrap="nowrap"><a href="javascript:void(0);" onclick="oMusic.ShowArtistTrack({$i.Id})">{$i.Title}</a></td>
+        <td align="center" valign="middle" nowrap="nowrap">{if $i.Price > 0}<span class="pricetag free" title="Price: $ {$i.Price}" >{if $i.Price} $ {$i.Price|string_format:'%.2f'}{/if}</span>{else}<span class="pricetag free" title="This album is free!" >Free</span>{/if}</td>
+        <td align="center" valign="middle" nowrap="nowrap">{if $i.Active}Yes{else} No{/if} </td>
+        
+        <td align="center" valign="middle" nowrap="nowrap">
+            <table width="100%" border="0" cellspacing="2" cellpadding="0">
+      			<tr>
+                    <td><a href="javascript:void(0);" class="btn1 play_album" mid="{$i.Id}"><span>Play all</span></a></td>
+                    <td><a href="/artist/editalbum?id={$i.Id}" class="btn1">Edit</a></td>
+                    <td><a href="javascript:void(0);" onclick="CGo('/artist/removealbum?id={$i.Id}', 'Do you want to remove this album?');" class="btn1">Remove</a></td>
+                    
+               </tr>
+            	
+            </table></td>
+      </tr>
+      <tbody id="tracks_by_album_{$i.Id}" bgcolor="#FFFFFF">
+      </tbody>
+	{/foreach}
+    {else}
+    <tr><td colspan="6" class="tblhead" bgcolor="#FFF">No albums created </td></tr>
+    {/if} 
+    </table> 
+   </div> 
+   <div class="clear"></div>  
+<div class="content_block" id="view_tracks" style="padding-bottom:20px;" >
+ 
+<table width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
+	{if $tracks}     
+      <tr bgcolor="#FFFFFF">
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>&nbsp;</strong></td>
+        <td align="left" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Title &amp; Artist</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Length</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Price</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Listen</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Edit</strong></td>
+        <td align="center" valign="top" style="border-top:1px #ccc solid;border-bottom:1px #ccc solid;"><strong>Delete</strong></td>
+      </tr>
+      {foreach key=k item=i from=$tracks} 
+       <tr bgcolor="#FFFFFF">
+        <td><img class="icArtpic30x30" src="/si/ic-music-17x14.png" width="30" height="30" /></span></td>
+        <td class="ttl">{$i.Title}</td> 
+        <td align="center" valign="middle" nowrap="nowrap">{if $i.TrackLength} {$i.TrackLength} {else} No Track Length {/if}</td>
+        <td align="center" valign="middle" nowrap="nowrap">{if $i.Price>0}<span class="pricetag free" title="Price: $ {$i.Price}">{if $i.Price} $ {$i.Price|string_format:'%.2f'}{/if}</span>{else}<span class="pricetag free" title="This track is free!">Free</span>{/if}</td>
+        <td align="center" valign="middle" nowrap="nowrap"><a href="javascript:void(0)" class="button play_button play_track" mid="{$i.Id}"><img src="/si/ic-play2.png" width="24" height="24" /></a></td>
+        <td align="center" valign="middle" nowrap="nowrap"><a href="/artist/edittrack?id={$i.Id}"><img src="/si/ic-edit1.gif" width="19" height="19" /></a></td>
+        <td align="center" valign="middle" nowrap="nowrap"><a href="javascript:void(0);" onclick="CGo('/artist/removetrack?id={$i.Id}', 'Do you want to remove this track?');"><img src="/si/closelabel.png" width="24" height="24" /></a></td>
+      </tr>
+{/foreach} 
+    {else}
+    <tr><td colspan="7" class="tblhead" bgcolor="#FFF">No Tracks </td></tr>
+    {/if}
+    </table> 
+
+</div>
+</div>
+<div style="padding: 10px 0;"> <a class="btn1" href="/artist/edittrack">Upload</a> </div>
+</div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

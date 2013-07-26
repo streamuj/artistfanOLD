@@ -1,0 +1,201 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+<script type="text/javascript" src="/dev/templates/js/fileuploader.js"></script>
+<link rel="stylesheet" href="/dev/templates/css/fileuploader.css" />
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/fan/UploadAvatar',
+            params: { },
+            // validation
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            // each file size limit in bytes
+            sizeLimit: 5120000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('image');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('image');
+                if (responseJSON.success==1) {
+                    $('#image_err').html( '' );
+                    var img = '/'+responseJSON['image'];
+                    //console.log( img );
+                    $('#image, #image_edit').attr('src', img);
+                    $('#image').show();
+                    oErrors.SetOkFld('image', 'Image uploaded!');
+                    //$('#images').append('<div class="image" style="float:left;padding-left:5px;"><img src="'+img+'" alt="" /><br /><a href="javascript:void(0);" onclick="$(this).parents(\'.image\').remove();oTask.DeleteImage('+responseJSON['num']+', \'tmp\');">Удалить</a></div>');
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                //alert(message);
+                oErrors.SetBadFld('image', message);
+            }
+        });
+    });
+</script>
+{/block}
+        
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{$UserInfo.FirstName} {$UserInfo.LastName}</a>
+    </div>
+    <h1>My Profile</h1>
+</div>
+
+<div class="content_block wide">
+    {if $confirm}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> Profile saved!
+    </div>
+    {/if}
+    {if $errs}
+    <div class="alert alert_error">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Error!</strong> Errors were found with your profile edit. Please correct the highlighted fields below.
+    </div>
+    {/if}
+    
+    <form method="post" action="/fan/profile" class="big_form">
+        <h3>Profile photo</h3>
+        <table class="form_table">
+            <tr>
+                <td>
+                    <div id="file-uploader" style="float: left;">
+                        <noscript>
+                            <p>Please enable JavaScript to use file uploader.</p>
+                        </noscript>
+                    </div>
+                </td>
+                <td id="err_image" class="err" style="width:100px;"></td>
+                <td>
+                    <img src="{if $UserInfo.Avatar}/files/images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}" id="image_edit" width="48" height="48" alt="" />
+                </td>
+                <td>{if $UserInfo.Avatar}<br /><input type="checkbox" name="fm[DeleteAvatar]" value="1" /> Delete avatar{/if}</td>
+            </tr>
+        </table>
+        
+        <h3>Account info</h3>
+        <table class="form_table">
+            <tr>
+                <td class="label_td"><label>First Name<span style="color:red;">*</span></label></td>
+                <td width="289"><input type="text" name="fm[FirstName]" id="first_name" value="{$fm.FirstName}" class="text_input" />
+                </td>
+                <td id="err_FirstName" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Last Name<span style="color:red;">*</span></label></td>
+                <td><input type="text" name="fm[LastName]" id="last_name" value="{$fm.LastName}" class="text_input" /></td>
+                <td id="err_LastName" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Username<span style="color:red;">*</span></label></td>
+                <td><input type="text" name="fm[Name]" id="name" value="{$fm.Name}" class="text_input" /></td>
+                <td id="err_Name" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Birth date</label></td>
+                <td>
+                    <select name="fm[mm]" class="small_select">
+                        <option value="">month</option>
+                        {foreach key=k item=i from=$mm}
+                        <option value="{$k}"
+                        {if $k==$fm.mm} selected="selected"{/if}>{$i}</option>
+                        {/foreach}
+                    </select>
+
+                    <select name="fm[dd]" class="small_select">
+                        <option value="">day</option>
+                        {foreach key=k item=i from=$dd}
+                        <option value="{$k}"
+                        {if $k==$fm.dd} selected="selected"{/if}>{$i}</option>
+                        {/foreach}
+                    </select>
+
+                    <select name="fm[yy]" class="small_select">
+                        <option value="">year</option>
+                        {foreach key=k item=i from=$yy}
+                        <option value="{$k}"
+                        {if $k==$fm.yy} selected="selected"{/if}>{$i}</option>
+                        {/foreach}
+                    </select>
+                </td>
+                <td id="err_dob" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Gender</label></td>
+                <td class="radio_td"><input name="fm[Gender]" class="radio" id="male"{if $fm.Gender==1} checked="checked"{/if} value="1" type="radio"><label for="male">Male</label><input name="fm[Gender]" class="radio" id="female"{if $fm.Gender==2} checked="checked"{/if} value="2" type="radio"><label for="female">Female</label><input name="fm[Gender]" class="radio" id="disclose"{if !$fm.Gender} checked="checked"{/if} value="0" type="radio"><label for="disclose">Prefer not to disclose</label></td>
+                <td id="err_Gender" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>Likes</label></td>
+                <td><input type="text" name="fm[Likes]" id="likes" value="{$fm.Likes}" class="text_input" /></td>
+                <td id="err_Likes" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>About me</label></td>
+                <td colspan="2"><textarea name="fm[About]" id="about">{$fm.About}</textarea></td>
+            </tr>
+        </table>
+        
+        <h3>Location</h3>
+        <table class="form_table">
+            <tr>
+                <td class="label_td"><label>Country</label></td>
+                <td>
+                    <select name="fm[Country]" id="country">
+                        <option value="0">Please select</option>
+                        {foreach key=k item=i from=$countries}
+                        <option value="{$i.Iso2}"{if $i.Iso2==$fm.Country} selected="selected"{/if}>{$i.Name}</option>
+                        {/foreach}
+                    </select>
+                </td>
+                <td id="err_Country" class="err"></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label>City</label></td>
+                <td><input type="text" class="text_input" value="{$fm.Location}" style="width: 170px;" id="city" name="fm[Location]">&nbsp;&nbsp;
+                    <label for="">ZIP</label>&nbsp;<input type="text" class="text_input" value="{$fm.Zip}" style="width: 50px;" id="zip" name="fm[Zip]">
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="label_td"><label></label></td>
+                <td class="radio_td"><input type="checkbox" name="fm[HideLoc]" value="1" id="loc"{if $fm.HideLoc} checked="checked"{/if}>&nbsp;<label for="loc">Don't publish my location on my page</label></td>
+                <td></td>
+            </tr>
+        </table>    
+        
+
+        <div class="line"></div>
+        <table class="form_table">
+            <tr>
+                <td class="label_td"></td>
+                <td>
+                    <input class="button yellow_button" type="submit" value="Update profile" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+{/block}

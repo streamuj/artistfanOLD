@@ -1,0 +1,53 @@
+<div style="background-color:#FFFFFF;">
+    <input type="hidden" id="dialog_mid" value="{$video.Id}" />
+    <input type="hidden" id="dialog_price" value="{$video.Price}" />    
+    <div class="alert_success good" style="display: none;">
+        <strong>Success!</strong> <span id="music_success"></span>
+    </div>
+    <div class="error" style="display:none;">
+        <strong>Error!</strong> <span id="music_err"></span>
+    </div>
+    <div class="album_img">
+        <a href="/u/{$ui.Name}/video">
+		 {if $video.FromYt}        
+            <img width="200" src="http://img.youtube.com/vi/{$video.Video}/0.jpg" alt="">            
+          {else if $video.Video}            
+            <img width="200"  src="{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/{$video.Video}.jpg" alt="">                      
+            {else}
+            <img width="200" src="/i/ph/album-96x96.png" alt="">                        
+            {/if}                    
+        </a>
+    </div>
+    <div class="track_block">
+        <div class="track_name">
+            {$video.Title}
+        </div>
+        <div class="track_author">
+            by 1  <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+
+        </div>
+        <div class="track_album">
+            <span class="track_genres">
+			{$video.Genres}
+            {assign var="numg" value=0}
+            	
+            {foreach name=n key=k item=i from=$genres}
+				{if $ui.Genres.$k}{$i}{assign var="numg" value=$numg+1}{if $numg < $ui.Genres|@count},{/if} {/if}
+			{/foreach}
+
+			</span>
+           
+        </div>
+    </div>
+    <div class="cl"></div>
+    <div class="line"></div> 
+    <span class="priceMusicShow"></span>
+    <span class="wait" style="display:none;"></span>
+    <div class="price">
+    <b>Name your price</b>
+    $&nbsp;&nbsp;<input type="text" size="6"  maxlength="6" name="getprice" id="getprice" value="">&nbsp;&nbsp;<b>USD (<strong>${$video.Price|string_format:'%.2f'} or more </strong>)</b>
+    </div>
+    <div style="clear:both"></div><br/>        
+    <div style="clear:both"></div> <br/>  
+    <img src="{$SUB_DOMAIN}si/ccardspp.png" alt="" style="margin-top:-11px;">    
+   </div>

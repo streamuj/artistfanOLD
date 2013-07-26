@@ -1,0 +1,37 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+ <h2 style="background-color:#f5f5f5; padding-left:20px;"> {$album.Title} </h2>
+ 
+   <h2 style="text-align:center;">
+        <div class="btn-prev">
+            <a href="{if $links.prev}/artist/photo/{$album.Id}?ph={$links.prev}{else}javascript:void(0);{/if}" class="button{if !$links.prev} noactive{/if}">&laquo;</a> 
+            <a href="/artist/editphotoalbum?id={$album.Id}">All photos in this album</a>
+			<a href="{if $links.next}/artist/photo/{$album.Id}?ph={$links.next}{else}javascript:void(0);{/if}" class="button{if !$links.next} noactive{/if}">&raquo;</a>       </div>
+  </h2>
+  
+  
+    <div>
+        <img src="/files/photo/mid/{$photo.UserId}/{$photo.Image}" alt="" width="750"  height="500"/>
+    </div>
+    
+	<table align="right"> 
+    <tr><td><a href="/files/photo/origin/{$photo.UserId}/{$photo.Image}" target="_blank">Download</a> <span class="muted">({$photo.Sizes.0} &times; {$photo.Sizes.1})</span></td></tr></table>
+    
+    <div class="body">
+            {if $photo.Title}<div class="title">{$photo.Title}</div>{/if}
+            <div class="date">{$photo.PhotoDate|mdate:5}</div>
+	</div>
+    
+    <div class="tools">
+        <a href="/artist/editphoto?id={$photo.Id}" class="floatL btn1">Edit this photo</a> &nbsp; <a href="javascript:void(0);" onclick="CGo('/artist/removephoto?id={$photo.Id}', 'Do you realy want to remove this photo?')" class="floatR btn1">Remove photo</a>
+    </div>
+    
+
+</div>
+{/block}

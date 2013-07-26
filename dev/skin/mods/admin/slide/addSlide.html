@@ -1,0 +1,240 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+
+ 
+<link rel="stylesheet" href="/ss/jquery.Jcrop.css" />
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/fileuploader.js"></script>
+{*<script type="text/javascript" src="/sj/cls/jquery.imgareaselect.min.js"></script>*}
+<script type="text/javascript" src="/sj/jquery.form.js"></script>
+<script type="text/javascript" src="/sj/jquery.Jcrop.min.js"></script>
+<link rel="stylesheet" href="/ss/fileuploader.css" />
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+	imgWidth = 1;
+	imgHeight = 1;
+    $(document).ready(function()
+    {
+		  var jcrop_api;
+		  oErrors.Show();
+	      $('#media_type').hide();
+           var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/base/HomeSlide/UploadPhoto',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('Image');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('Image');
+                if (responseJSON.success==true) {
+                    oErrors.SetClearFld('Image');
+                    var img = '/'+responseJSON['photo'];
+                    $('#cropImage').attr('src', img );
+					imgWidth = responseJSON['width'];
+					imgHeight = responseJSON['height'];
+                    if($('.jcrop-holder img').length){
+						$('.jcrop-holder img').attr('src', img );
+					}
+					if(jcrop_api){
+						jcrop_api.release();
+					}
+					$('#photo_image').load(function () {
+						$(this).Jcrop({
+							onChange: showPreview,
+							onSelect: showPreview,
+							aspectRatio: {$tWidth}/{$tHeight},
+							onSelect: updateCoords,
+							setSelect: [ 0, 0, {$tWidth}/2, {$tHeight}/2 ]
+							}, function(){
+							  jcrop_api = this;
+						});
+					}).attr('src', img);
+                    oErrors.SetOkFld('Image', 'Image uploaded!');
+                }
+			},
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('Image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('Image', message);
+            }
+        });
+
+    });	
+	function updateCoords(c)
+	{
+		$('#x1').val(c.x);
+		$('#y1').val(c.y);
+		$('#x2').val(c.x+c.w);
+		$('#y2').val(c.y+c.h);
+		$('#w').val(c.w);
+		$('#h').val(c.h);
+	};
+	$imgpos = {
+		width	: {$tWidth},
+		height	: {$tHeight}
+	};
+	function showPreview(coords)
+	{
+		if (parseInt(coords.w) > 0)
+		{
+			var rx = {$tWidth} / coords.w;
+			var ry = {$tHeight} / coords.h;
+			$('#cropImage').css({
+				width: Math.round(rx * imgWidth) + 'px', 
+				height: Math.round(ry * imgHeight) + 'px',
+				marginLeft: '-' + Math.round(rx * coords.x) + 'px', 
+				marginTop: '-' + Math.round(ry * coords.y) + 'px' 
+			});
+		}
+	};
+{*
+$(window).load(function () { 
+	$('#photo_image').imgAreaSelect({ aspectRatio: '1:{$ratio}', onSelectChange: preview }); 
+
+});
+*}
+
+</script>
+{/block}
+
+{block name="content"}
+<h1>Manage Home Page Slide</h1>
+
+
+<form class="big_form" id="photo_form" method="post" action="/base/HomeSlide/AddSlide" enctype="multipart/form-data">
+    <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+    <input type="hidden" id="flist" value="" />
+    <input type="hidden" name="status" id="status" value="{$Smarty.const.USER_ARTIST}" />
+    <input type="hidden" name="page" id="page" value="1" />
+    
+    <table class="style_table no_border">
+     <colgroup>
+                <col width="55">
+                <col />
+            </colgroup>
+        <tbody>
+      <tr>
+        <td colspan="2"><strong class="font16">Add New Slide</strong>          <label></label></td>
+        </tr>
+     
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap"><strong>Cover Image</strong></td>
+        <td align="left" valign="middle">
+                <label>
+                  <div id="file-uploader" style="float:left;">
+                    <noscript>
+                       <p>Please enable JavaScript to use file uploader.</p>
+                    </noscript>
+                    </div>
+
+       </label>
+        </td>
+      </tr>
+      
+      <tr>
+              
+        <td align="left" valign="middle" colspan="2">
+           <span class="err" id="err_Image"></span>       
+               
+            <img id="photo_image" src = "{if $fm.Image}{$fm.Image}{/if}"/>
+             <div style="float:left; position:relative; overflow:hidden; width:{$tWidth}px; height:{$tHeight}px; display:none;">
+				<img id="cropImage" src="{$fm.Image}" style="position: relative;" alt="photo_image Preview" />
+			</div>
+				<input type="hidden" name="x1" value="" id="x1" />
+				<input type="hidden" name="y1" value="" id="y1" />
+				<input type="hidden" name="x2" value="" id="x2" />
+				<input type="hidden" name="y2" value="" id="y2" />
+				<input type="hidden" name="w" value="" id="w" />
+				<input type="hidden" name="h" value="" id="h" />
+
+            </a>
+        </td>
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap"><strong>Slide Display Order:</strong></td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><input type="text" id="DisplayOrder" name="DisplayOrder" value="" class="txtBox" size="2px;" /></td>
+          </tr>
+        </table></td>
+      </tr>
+      <!--Album List Start -->
+	<tr>
+        <td align="left" valign="middle" nowrap="nowrap"><strong>Home Slide Link</strong></td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><input type="text" id="link" name="link" value="" class="txtBox" size="40px;" /></td>
+          </tr>        
+        </table></td>
+      </tr>           
+	  <tr>
+       <td><strong>Link Open In</strong></td>
+       <td><input type="radio" name="is_new" value="0" checked="checked"  />current window&nbsp;<input type="radio" name="is_new" value="1"  />new window</td>      </tr>        
+      <tr>
+        <td align="left" valign="middle" colspan="2">&nbsp;
+        	
+        </td>
+      </tr>    
+     </tbody>
+    </table>
+    <table>
+          <tr>
+             <td colspan="2"><h6>Search users</h6></td>
+         </tr>
+        <tr>
+                    <td>E-mail</td>
+                    <td><input type="text" id="email" name="s[email]" value="{$s.email}" class="text_input_small mid" /></td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td><input type="text" id="name" name="s[name]" value="{$s.name}" class="text_input_small mid" /></td>
+                </tr>
+                <tr>
+                    <td>Location</td>
+                    <td><input type="text" id="location" name="s[location]" value="{$s.location}" class="text_input_small mid" /></td>
+                </tr>
+                
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><input type="button"  onclick="oUsers.SlideUsersFilter()" value="Search" /></td>
+                </tr>
+                
+		<tbody id="list">
+        {include file="mods/admin/slide/ajax/_user_list_ajax.html"}
+        </tbody>                
+   </table>
+
+ 
+ 
+ <div class="clear">&nbsp;</div>
+ <div id="media_type">Select Media Type :
+ 	<select name="s_media" id="s_media" onchange="oUsers.SlideLinkFunction(this.value)"> 
+    	<option value="">- Select -</option>
+    	<option value="SlideLinkVideo">Video</option> 
+        <option value="SlideLinkMusic">Music</option> 
+      	<option value="SlideLinkEvent">Event</option> 
+       	<option value="SlideLinkPhoto">Photo</option> 
+ 	</select>
+    <br />   
+ </div> 
+      <div id="SlideLinkSelected" align="center" style="padding-left:15px;"></div><br />
+      <div class="clear"></div>
+ 
+    <div align="center">  <input type="submit" value="Save" class="str_submit" /></div>
+</form>
+
+{/block}

@@ -1,0 +1,51 @@
+<style>
+.txtBox { border:1px solid #CCCCCC; height: 32px; width:500px; padding-left: 5px; border-radius:3px;  line-height:17px;}
+.txtBox1 { border:1px solid #CCCCCC; height: 132px; width:500px; padding-left: 5px; border-radius:3px;  line-height:17px;}  
+.green_button{   
+ 	display: block;
+	min-width: 80px;
+	height: 1.8em;
+	margin: 0 0 0.6em;
+	padding: 0 1.5em;
+	border: none;
+	border-radius: 4px;
+	font-size: 110%;
+	text-decoration: none;
+	color: #fff;
+	background: #4F8E25;
+}
+.reset_button{
+	display: block;
+	min-width: 80px;
+	height: 1.8em;
+	margin: 0 0 0.6em;
+	padding: 0 1.5em;
+	border: none;
+	border-radius: 4px;
+	font-size: 110%;
+	text-decoration: none;
+	color: #fff;
+	background: #990000;
+} 
+</style>   
+    <div class="good" style="display: none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> <span id="mail_send"></span>
+    </div>
+       
+  <span class="wait" style="display:none;"></span>
+  <div id="mContent">
+    <b>Subject</b><br/>
+    <input type="text" name="subject" id="subject" value="" class="txtBox"><br/>
+	<span id="subject_err" style="display:none;"></span><br/>
+    
+    <b>Message Body</b><br/>
+    <textarea name="message" id="message" class="txtBox1"></textarea><br/>
+  	<span id="message_err" style="display:none;"></span><br/>
+  
+  <span id="mail_send_err" style="display:none;"></span>
+    <div style="clear:both"></div><br/>        
+   {* <input class="btn1 green_button event_buy_btn" type="button" value="Send"/>*}&nbsp;&nbsp;&nbsp;
+
+    </div>  
+        

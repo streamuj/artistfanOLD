@@ -1,0 +1,160 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="javascript"}
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitEventActions();
+    });
+</script>
+{include file="mods/profile/fanfinder_map.html"}
+{/block}
+
+{block name="my_cabinet"}
+
+<div style="padding-left:15px;">
+ <div class="header_block">
+    <div class="path" style="display:none;"> <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a> <a href="/artist/events">My Events</a> </div>
+<br/>
+    <table width="100%" cellpadding="5">
+      <tr style="background-color:#f5f5f5">
+        <td><h2 style="background-color:#f5f5f5; padding-left:20px;"> 
+          Events</h2>
+        </td>
+      </tr>
+    </table>
+    
+<div class="content_block wide">
+    <table width="100%" cellpadding="5">
+      <tr>
+        <td >Title</td><td class="ttl">{$event.Title}</td>
+      </tr>
+      <tr>
+        <td >Location</td><td>{$event.Location}</td>
+      </tr>
+      <tr>
+        <td >Date/Time</td><td>{$event.EventDate}</td>
+      </tr>
+      {if $event.Descr}
+      <tr>
+        <td >Description</td><td> {$event.Descr|nl2br} </td>
+      </tr>
+      {/if}
+      {if $event.TicketUrl}
+      <tr>
+        <td>Event Ticket Buy Url</td><td><a href="{$event.TicketUrl}" target="_blank">Click here to buy ticket</a> </td>
+      </tr>
+      {/if}
+    </table>
+<br/>
+<table>
+{if $event.Status < 3}
+{if $event.EventType==1}
+<tr>
+  <td><p><b>This event will only be accessible live on location</b></p></td>
+</tr>
+<tr>
+  <td><div class="good status-good">You're going</div></td>
+</tr>
+{*
+<!--<a href="javascript:void(0);" class="button notattend_event" mid="{$event.Id}">I will not go</a>-->
+*}
+{elseif $event.EventType==2}
+    {if !$event['EventPurchase']['Id']}
+<tr>
+  <td><p><b>This event can be attended live by purchasing a ticket or on our site by purchasing access to online stream</b></p></td>
+</tr>
+<tr>
+  <td><p>Access price: {if $event.Price}{$event.Price} credit(s){else}free{/if}</p></td>
+</tr>
+{if !$event['EventAttend']['Id'] && !$event.EventDate|ispast}<a href="javascript:void(0);" class="button attend_event" mid="{$event.Id}">I will go!</a>{elseif $event['EventAttend']['Id']}
+<div class="good status-good">You're going</div>
+{/if}
+    {else}
+<tr>
+  <td><p><b>How to access video streaming for this event:</b></p></td>
+</tr>
+<tr>
+  <td><p>Video stream will be available at the time of event at this page:</p></td>
+</tr>
+<tr>
+  <td><strong><p><a href="http://{$DOMAIN}/broadcasting/{$event.Id}/" style="color:#0099FF">http://{$DOMAIN}/broadcasting/{$event.Id}/</a></p></strong></td>
+</tr>
+{*
+<tr>
+  <td><p>Code of event: <b>{$event.Code}</b></p></td>
+</tr>
+<tr>
+  <td><p>Your password for access: <b>{$event['EventPurchase']['Code']}</b></p></td>
+</tr>
+<tr>
+  <td><p><i>After this event will end, we will place the recording into your "My videos" section, cause it's a part of your purchase</i></p></td>
+</tr>
+*}
+{/if}
+{elseif $event.EventType==3}
+    {if !$event['EventPurchase']['Id']}
+<tr>
+  <td>This event can be attended live by purchasing a ticket or on our site by purchasing access to online stream</td>
+</tr>
+<tr>
+  <td>Access price: {if $event.Price}{$event.Price} credit(s){else}free{/if}</td>
+</tr>
+{else}
+<table>
+  <tr>
+    <td>How to access video streaming for this event:</td>
+  </tr>
+  <tr>
+    <td>Video stream will be available at the time of event at this page:</td>
+  </tr>
+  <tr>
+    <td><a href="http://{$DOMAIN}/broadcasting/{$event.Id}/">http://{$DOMAIN}/broadcasting/{$event.Id}/</a></td>
+  </tr>
+  {*
+  <tr>
+    <td>Code of event: <b>{$event.Code}</b>
+      </p></td>
+  </tr>
+  <tr>
+    <td>Your password for access: <b>{$event['EventPurchase']['Code']}</td>
+  </tr>
+  <tr>
+    <td><i>After this event will end, we will place the recording into your "My videos" section, cause it's a part of your purchase</i></td>
+  </tr>
+  *}
+</table>
+{/if}
+{/if}
+<table>
+  {elseif $event.Status==3}
+  <div class="good">Event cancelled</div>
+  {elseif $event.Status==4}
+  <div class="good">Event finished</div>
+  {/if}
+  
+  
+  {* if $event.EventType != 1 && $event.Status == 4} <br />
+  <br />
+  <h2>Broadcast recordings</h2>
+  <table class="style_table">
+    <col />
+    <col width="70%" />
+    <col />
+    {foreach key=k item=i from=$recordings}
+    <tr>
+      <td><span class="muted">{$i.Pdate|mdate:4}</span> </td>
+      <td> {$event.Title}{if $i.Order > 1} - Part {$i.Order}{/if} </td>
+      <td><a href="/fan/video/b{$i.Id}">Review</a> </td>
+    </tr>
+    {foreachelse}
+    <tr>
+      <td colspan="3">No recordings available</td>
+    </tr>
+    {/foreach}
+  </table>
+  {/if *}
+</table>
+</div>
+{/block}

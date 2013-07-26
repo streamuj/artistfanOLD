@@ -1,0 +1,24 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+{/block}
+
+{block name="content"}
+{strip}
+<div>
+	<div class="content_block big_content" style="padding:250px 310px;">
+   
+            <h1>{$smarty.const.PAGE_NOT_FOUND}</h1>
+            <br />
+            <p style="width:500px;">We're sorry, but we could not find the page you're trying to access.</p>
+            <p>
+            <ul>
+                    <li>Please double check the address in the address bar</li>
+                    <li>Or try our <a href="{$smarty.const.ROOT_HTTP_PATH}">home page</a> instead</li>
+            </ul>
+            </p>
+   </div>
+</div>
+{/strip}
+	<!--/content_block-->
+{/block}

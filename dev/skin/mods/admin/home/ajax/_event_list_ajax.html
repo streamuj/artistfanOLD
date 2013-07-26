@@ -1,0 +1,22 @@
+{if $u_events}
+	<h2><span id="art_name"></span> Events</h2>
+{/if}
+
+<ul class="fGridSlide">
+{if $u_events}
+      {foreach key=k item=i from=$u_events}
+		<li onclick="oHome.HomeFullLink({$i.Id})" class="eBox">
+
+        <div class="calend_date">
+    			  <div class="day">{$i.EventDate|cdate:dweek}</div><div class="month">{$i.EventDate|cdate:month}</div><div>{$i.EventDate|cdate:mday} </div>
+         </div>
+        
+        {if $i.Title}{$i.Title|truncate:15:"..."}{/if} <br />
+        {if $i.Location}{$i.Location|truncate:15:"..."}{/if}<br />
+        {if $i.EventDate}{$i.EventDate|date_format:"%d-%m-%Y"}{/if}
+        </li>
+      {/foreach}
+{else}      
+	        <li style="padding-left:10px;"> No Events </li>
+{/if}
+</ul>

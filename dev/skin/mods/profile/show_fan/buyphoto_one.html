@@ -1,0 +1,48 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="javascript"}{/block}
+{block name="my_cabinet"}
+{strip}
+<div class="header_block">
+    <div class="path">
+        <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+        <a href="/u/{$ui.Name}/photo">Artist photos</a>
+    </div>
+    <h1>{$album.Title}</h1>
+</div>
+
+<div class="content_block photos wide">
+    <h2 class="calendar">
+        <div class="btn-prev">
+            <a href="{if $links.prev}/u/{$ui.Name}/photo/{$album.Id}?ph={$links.prev}{else}javascript:void(0);{/if}" class="button{if !$links.prev} noactive{/if}">&laquo;</a>
+        </div>
+        <span class="center">
+                <a href="/u/{$ui.Name}/photo/{$album.Id}">All photos in this album</a>
+        </span>
+        <div class="btn-next">
+            <a href="{if $links.next}/u/{$ui.Name}/photo/{$album.Id}?ph={$links.next}{else}javascript:void(0);{/if}" class="button{if !$links.next} noactive{/if}">&raquo;</a>
+        </div>
+    </h2>
+
+    <div class="photo-display">
+        <img src="{$SUB_DOMAIN}photo/mid/{$photo.UserId}/{$photo.Image}" alt="" />
+    </div>
+
+    <div class="photo-meta">
+        <div class="side">
+            <div class="download">
+            	
+                <a href="{$SUB_DOMAIN}photo/origin/{$photo.UserId}/{$photo.Image}" target="_blank">Download</a> <span class="muted">({$photo.Sizes.0} &times; {$photo.Sizes.1})</span>
+                <br/>
+                <a href="#" class="button yellow_button"> Buy </a>
+		        <a href="#" class="button yellow_button"> Pay More </a>
+            </div>
+        </div>
+
+        <div class="body">
+            {if $photo.Title}<div class="title">{$photo.Title}</div>{/if}
+            <div class="date">{$photo.PhotoDate|mdate:5}</div>
+        </div>
+    </div>
+</div>
+{/strip}
+{/block}

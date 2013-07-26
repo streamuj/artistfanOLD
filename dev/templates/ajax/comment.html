@@ -1,0 +1,11 @@
+
+
+{foreach $commentList as $comment}
+<div class="comment" cid="{$comment.cmt_id}" style="margin:10px;">
+  <div class="post_user_icon"> <a href="/u/{$comment.Name}"><img src="{if $comment.Avatar}/files/images/avatars/x_{$comment.Avatar}{else}/i/ph/user-48x48.png{/if}" width="48" height="48" alt="" /></a></div>
+</div>
+<div class="post_user_text">
+  <div class="user_name"><a style="color:#000;" href="/u/{$comment.Name}"> {if $comment.BandName}{$comment.BandName}{else}{$comment.FirstName} {$comment.LastName}{/if}</a> <span>says {if  $comment.cdate}{$comment.cdate} ago{/if}</span></div>
+  <p>{$comment.cmt_message}</p>
+</div>
+{/foreach}

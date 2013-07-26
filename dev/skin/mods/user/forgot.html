@@ -1,0 +1,34 @@
+{extends file="base_login.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+{/block}
+{block name="background"}style="background:transparent"{/block}
+{block name="content"}
+{strip}
+    <div class="logBoxRed"  style="background:#fff; margin-top:-25px;">             
+     <div  class="alert" style="display: none;"> 
+        	<span id="forgot_msg" class="good"></span> 
+     </div>        
+     <h4 style=" margin-top:10px; font-weight:400; text-align:center;" class="red font26">Watch, Shop and Connect</h4>
+      <div class="loginBox boBox" style=" padding:0 30px; ">
+      <h3 align="center">Forgot Password</h3>
+            <div style="border-radius:3px;" class="P15">
+            <input type="text"  class="txtBox" name="email" id="email" value="" placeholder="Email Address" style="width:393px;"/>
+            <p id="err_email"></p>
+            <input type="submit" id="forgot_subm" value="Send" onclick="oUsers.InitForgot();" class="button wblue M0" style="margin-left:5px;" />
+            <a href="/base/user/login" title="Forgot Password" class="button M0 bgrey RT" style="margin-right:5px;" >Back To Login</a></div>
+            <div class="clear">&nbsp;</div>
+             <table border="0" cellspacing="0" cellpadding="0" width="100%" style="border-top:1px solid #cccccc;">
+                  <tr>
+                    <td align="left">Need an Account?</td>
+                    <td align="right"> <a href="/reg/?status=1" class="button wblue">Signup as a Fan</a> <a href="/reg/?status=2" class="button bgrey">Signup as an Artist</a></td>
+                  </tr>
+			</table>
+        <div class="clear"></div>
+      </div>
+    </div>
+     <div id="infoAlert" title="Error !"> 	
+      </div>
+{/strip}      
+{/block}

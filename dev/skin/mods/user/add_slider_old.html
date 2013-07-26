@@ -1,0 +1,261 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
+
+
+
+<script type="text/javascript" src="/sj/fileuploader.js"></script>
+<link rel="stylesheet" href="/ss/fileuploader.css" />
+
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+
+
+<!--<script type="text/javascript" src="/sj/cls/jquery-pack.js"></script>-->
+<script type="text/javascript" src="/sj/cls/jquery.imgareaselect.min.js"></script>
+
+
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+</script>
+
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+	imgWidth = 1;
+	imgHeight = 1;
+	
+	
+	u_id = {$UserInfo.Id};
+	user_name = '{$UserInfo.Name}';
+		
+	function showAlbum(value)
+    {
+            if(value == '0')
+            {
+                $('#new_album').show();
+            }
+            else
+            {
+                $('#new_album').hide();
+            }
+    };
+	
+    $(document).ready(function()
+    {
+ 
+        oErrors.Show();
+		oProfile.SlideLinkUser(user_name, u_id);
+        $("#PhotoDate").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+		
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/base/user/UploadSlidePhoto',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, // max size
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('Image');
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('Image');
+                if (responseJSON.success==true) {
+                    oErrors.SetClearFld('Image');
+                    var img = '/'+responseJSON['photo'];
+                    //$('#photo_image').css('background-image', 'url("' + img + '")');					
+					$('#photo_image').attr('src', img );
+					$('#cropImage').attr('src', img );
+					imgWidth = responseJSON['width'];
+					imgHeight = responseJSON['height'];
+                    //$('#photo_image').parent('.thumb').attr('href', img);
+                    oErrors.SetOkFld('Image', 'Image uploaded!');
+                }
+				},
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('Image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                // error messages, see qq.FileUploaderBasic for content
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('Image', message);
+            }
+        });
+
+    });
+	</script>
+<script>	
+function preview(img, selection) { 
+
+	var scaleX = {$tWidth} / selection.width; 
+	var scaleY = {$tHeight} / selection.height; 
+	
+	$('#photo_image + div > img').css({ 
+		width: Math.round(scaleX * imgWidth) + 'px', 
+		height: Math.round(scaleY * imgHeight) + 'px',
+		marginLeft: '-' + Math.round(scaleX * selection.x1) + 'px', 
+		marginTop: '-' + Math.round(scaleY * selection.y1) + 'px' 
+	});
+	$('#x1').val(selection.x1);
+	$('#y1').val(selection.y1);
+	$('#x2').val(selection.x2);
+	$('#y2').val(selection.y2);
+	$('#w').val(selection.width);
+	$('#h').val(selection.height);
+} 
+
+$(document).ready(function () { 
+	$('#save_thumb').click(function() {
+		var x1 = $('#x1').val();
+		var y1 = $('#y1').val();
+		var x2 = $('#x2').val();
+		var y2 = $('#y2').val();
+		var w = $('#w').val();
+		var h = $('#h').val();
+		if(x1=="" || y1=="" || x2=="" || y2=="" || w=="" || h==""){
+			alert("You must make a selection first");
+			return false;
+		}else{
+			return true;
+		}
+	});
+}); 
+
+$(window).load(function () { 
+	$('#photo_image').imgAreaSelect({ aspectRatio: '1:{$ratio}', onSelectChange: preview }); 
+});
+
+
+</script>
+
+{/block}
+
+{block name="content"}
+
+
+<form class="big_form" id="photo_form" method="post" action="/base/user/AddSlider">
+        <input type="hidden" name="id" value="{$id}"/>
+        <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+    <table width="100%" border="0" cellpadding="0" cellspacing="20">
+      <tr>
+        <td colspan="2"><strong class="font16">New Album</strong>          <label></label></td>
+        </tr>
+     <tr>
+        <td align="left" valign="top" nowrap="nowrap">Title / Description</td>
+        <td align="left" valign="top" ><label>
+          <textarea name="fm[Title]" cols="55" rows="2" class="txtBox" style="height:auto">{$fm.Title}</textarea>
+        </label>
+      
+        </td>
+      </tr>
+       <!--Album List Start -->
+      
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">Album</td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><label>
+    			
+            </label></td>
+            <td class="xform">
+	               <select id="AlbumId" name="fm[AlbumId]" onchange="showAlbum($(this).val());">
+    	                 <option value="0">New album...</option>
+                        {foreach key=k item=i from=$albums}
+                         <option value="{$i.Id}">{$i.Title}</option>
+                        {/foreach}
+                    </select>
+
+            </td>
+          </tr>
+        </table></td>
+      </tr>
+      
+      <!--Album List End -->
+      
+      <!--New Album Start-->
+      <tr  id="new_album" style="{if $fm.AlbumId || $album}display: none;{/if}">
+        <td align="left" valign="middle" nowrap="nowrap"><label>Name for new album</label></td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            
+            <td>
+            <input type="text" name="fm[AlbumTitle]" id="AlbumTitle" value="{$fm.AlbumTitle}" class="txtBox" />
+            </td>
+          </tr>
+        </table></td>
+      </tr>
+      <!--New Album End -->
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">Photo Date</td>
+        <td align="left" valign="middle" ><input type="text" id="PhotoDate" name="fm[PhotoDate]" value="{$fm.PhotoDate}" class="txtBox" />
+        <span class="err" id="err_PhotoDate"></span>
+        </td>
+      </tr>
+     
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">Cover Image</td>
+        <td align="left" valign="middle">
+                <label>
+                  <div id="file-uploader" style="float:left;">
+                    <noscript>
+                       <p>Please enable JavaScript to use file uploader.</p>
+                    </noscript>
+                    </div>
+
+       </label>
+        </td>
+      </tr>
+      <tr>
+        
+        <td align="left" valign="middle" colspan="2" >
+          <div style="width:985px;">
+           <span class="err" id="err_Image"></span>
+         <div style="background:#eee; border:2px solid #ccc; text-align:center; padding:5px;">
+         <img id="photo_image" src = "{if $fm.Image}{$fm.Image}{else}/i/nophoto.jpg{/if}" style="cursor:move; max-width:100%" title="Drag To Crop The Image" alt="Drag To Crop The Image"/></div> 
+        <div style="float:left; margin-top:5px; position:relative; overflow:hidden; width:{$tWidth}px; height:{$tHeight}px; display:none;">
+				<img id="cropImage" src="{$fm.Image}" style="position: relative;" alt="Crop Image Preview" />
+			</div>
+
+				<input type="hidden" name="x1" value="" id="x1" />
+				<input type="hidden" name="y1" value="" id="y1" />
+				<input type="hidden" name="x2" value="" id="x2" />
+				<input type="hidden" name="y2" value="" id="y2" />
+				<input type="hidden" name="w" value="" id="w" />
+				<input type="hidden" name="h" value="" id="h" />
+			</div>
+        </td>
+      </tr>
+      {if $UserInfo.Status == 2}
+      <tr><td>&nbsp;Cover Image Link</td><td><input type="text" id="link" name="fm[Link]" value="{$fm.Link}"  class="txtBox" /></td></tr>
+      <tr><td>&nbsp;Select Link</td><td id="media_type">
+      			<select name="s_media" id="s_media" onchange="oProfile.SlideLinkFunction(this.value)"> 
+                    <option value="">- Select -</option>
+                    <option value="SlideLinkVideo">Video</option> 
+                    <option value="SlideLinkMusic">Music</option> 
+                    <option value="SlideLinkEvent">Event</option> 
+                    <option value="SlideLinkPhoto">Photo</option> 
+                </select>
+    		</td></tr>
+            {/if}
+      </table>
+      <div id="SlideLinkSelected" align="center" style="padding-left:15px;"></div><br />
+      <div class="clear"></div>
+     <table align="center">
+     	<tr><td> <input type="button" onclick="oProfile.EditPhoto();" value="{if $id}Update{else}Publish{/if}" class="btn2"/></td></tr>     
+     </table>
+      
+
+    </form>    
+
+{/block}

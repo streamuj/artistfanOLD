@@ -1,0 +1,124 @@
+{extends file="base.html"}
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery.tinycarousel.min.js"></script>
+<script type="text/javascript">
+		$(document).ready(function(){
+			$('.tbSlider').tinycarousel({ display: 4 });	
+		});
+</script>
+<script type="text/javascript" src="/sj/cls/Play.js"></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oPlay.InitPlayButtons();
+        oProfile.InitEventActions();
+        oPopup.InitPurchase();		
+    		
+    });
+</script>
+{/block}
+{block name="content"}
+<!--COVER SLIDER-->
+<div class="clear"></div>
+<!--CONTENT-->
+  <div class="row1" style="border-left:1px solid #ccc; border-right:1px solid #ccc;">
+  <div class="tbBox">
+      <h2 class="P20">VIDEOS</h2>
+      <div id="slider3" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+        <div class="viewport">
+          <ul class="overview">
+            {foreach key=k item=i from=$video}          
+            <li>
+              <div class="imgBox">
+              <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/video/{$i.VideoId}" class="playIC"><span></span></a>
+              <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/video/{$i.VideoId}"></a>
+              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/default.jpg{elseif $i.Status == 2}/files/video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}" alt="pic" width="210" /></div>
+              <p class="titleTxt"><strong class="font16"><a href="/u/{$i.Name}/video/{$i.VideoId}">{$i.Title}{$i.UserId}</a></strong> <br/>
+              	 <span class="font14"><a href="/u/{$i.Name}">{if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a></span> 
+              </p>
+              {if $i.FromYt}   
+<a href="javascript: void(0);" style="padding-left:76px;" class="addIc pink Indexadd_video" mid="{$i.VideoId}" myimage="{$i.Video}" myprice="0" userid="{$i.UserId}">ADD</a>
+                {else}
+<a href="javascript: void(0);" style="padding-left:76px;" class="addIc pink IndexVideos" mid="{$i.VideoId}" myimage="{$i.Video}" myprice="0" userid="{$i.UserId}">BUY</a>		{/if}
+              
+            {* <p class="viewTxt">Views: </p> *}
+            </li>
+			{/foreach}            
+          </ul>
+        </div>
+        <a class="buttons next" href="#">right</a> </div>
+    </div>
+    
+    <div class="clear"></div>
+	<div class="tbBox">
+      <h2 class="P20">ARTISTS</h2>
+      <div id="slider4" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+        <div class="viewport">
+          <ul class="overview">
+            {foreach key=k item=i from=$artist}
+            <li>
+              <div class="imgBox"><a href="/u/{$i.Name}"></a> <img src="{if $i.Avatar}/files/images/avatars/s_{$i.Avatar}{else}/si/pic-100x100.jpg{/if}" alt="pic" width="210"  /> </div>
+              <p class="titleTxt"><strong class="font16"><a href="/u/{$i.Name}">{if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a></strong> </p>
+            </li>
+            {/foreach}
+          </ul>
+        </div>
+        <a class="buttons next" href="#">right</a> </div>
+    </div>
+    
+	<div class="clear"></div>
+	<div class="tbBox">
+      <h2 class="P20">MUSICS</h2>
+      <div id="slider4" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+        <div class="viewport">
+          <ul class="overview">
+            {foreach key=k item=i from=$music_album}
+            <li>
+              <div class="imgBox"><a href="javascript:void(0);" class="play_album" mid="{$i.AlbumId}"></a><img src="{if $i.Image}/files/images/1/{$i.Image}{else}/i/ph/album-96x96.png{/if}" alt="pic" width="218" /></div>
+              <p class="titleTxt"><strong class="font16"><a href="/u/{$i.Name}/music">{$i.Title}</a></strong></br>
+              <span class="font14"><a href="/u/{$i.Name}">{if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a></span>
+               </p>
+             {if $i.Price > 0}
+                	<a href="javascript:void(0);" mid="{$i.MusicAlbumId}" price="{$i.Price}" userid="{$i.UserId}" savings="{$i.Savings}" tracks="{$i.Tracks}"  image="{if $i.Image}files/images/1/{$i.Image}{else}/i/ph/album-96x96.png{/if}" filename="{$i.Title}" artistUrl="{$ui.Name}"  class="floatL btn1 floatL btn1 IndexMusic"  >Buy Album</a> 
+                    {else}
+				   <a href="javascript:void(0);" mid="{$i.MusicAlbumId}" tracks="{$i.Tracks}" userid="{$i.UserId}" image="{if $i.Image}files/images/1/{$i.Image}{else}/i/ph/album-96x96.png{/if}"  filename="{$i.Title}" class="btn1 IndexAddAlbum">Add to My music</a>
+                    {/if}             
+               
+            </li>
+            {/foreach}
+          </ul>
+        </div>
+        <a class="buttons next" href="#">right</a> </div>
+    </div>    
+	
+    <div class="clear"></div>        
+  {* <div class="tbBox">
+      <h2 class="P20">EVENTS</h2>
+      <div id="slider2" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+        <div class="viewport">
+          <ul class="overview">
+            {foreach key=k item=i from=$event}              
+            <li>
+              <div class="imgBox"><a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/events/{$i.EventId}"></a><img src="/files/photo/thumbs/{$i.UserId}/{$i.EventPhoto}" alt="pic" width="210" /></div>
+              <p class="titleTxt"><strong class="font16"><a href="/u/{$i.Name}/events/{$i.EventId}">{$i.Title}</a></strong><br />
+                <span class="font14">{if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</span></p>
+                 <p class="viewTxt">{if $i.EventDate}{$i.EventDate|date_format:"%d-%m-%Y"}{/if}</p>
+   <a href="javascript:void(0);" class="btn-yellow BuyEvents" mid="{$i.EventId}" price="{$i.Price}">
+            {if $i.Price>0}Buy{else}Get{/if} access</a>                               
+            </li>
+            {/foreach}
+          </ul>
+        </div>
+        <a class="buttons next" href="#">right</a> </div>
+    </div> *}
+    <div class="clear"></div>
+    
+    
+    
+  </div>
+<div class="clear"></div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block} 

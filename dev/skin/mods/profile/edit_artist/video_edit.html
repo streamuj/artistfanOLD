@@ -1,0 +1,224 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+	    $("#VideoDate").datepicker({
+            dateFormat: 'mm/dd/yy',
+			minDate: 0 	
+        });	
+        oErrors.Show();
+		{if $fm.VideoType==$smarty.const.YT_VIDEO}
+		    $('#yt_video').show();
+			$('#upload_video').hide();
+		{else}		
+        	$('#yt_video').hide();		
+			$('#upload_video').show();					
+		{/if}
+		
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/artist/UploadVideo',
+            params: {},
+            allowedExtensions: [{$validExt}],
+            sizeLimit: {$smarty.const.VIDEO_FILE_SIZE}, 
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('video');
+                this.params = {
+                'id': $('#VideoId').val(),
+                'rand_id': $('#rand_id').val()
+                };
+                $('#progress').show();
+            },
+            onProgress: function(id, fileName, loaded, total){
+                if(total > 0 && loaded <= total ){
+                    var width = Math.round(loaded / total * 100);
+                    $('#progress-percent').html(width);
+                    $('#progress-value').css('width', width + '%');
+                }
+            },
+            onComplete: function(id, fileName, responseJSON){
+                $('#progress').hide();
+                oErrors.SetClearFld('video');
+                if (responseJSON.success==true) {
+                    var video = '/'+responseJSON['video'];
+                    $('#video').html( video );
+                    oErrors.SetOkFld('video', 'File uploaded!');
+                }
+                else if(responseJSON.error)
+                {
+                    oErrors.SetBadFld('video', responseJSON.error);
+                }
+            },
+            onCancel: function(id, fileName){
+                $('#progress').hide();
+                oErrors.SetClearFld('video');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('video', message);
+            }
+        });
+    
+		 $('input.video_type').click(function(){
+
+            var ch = 1*$('input.video_type').filter(':checked').val();
+            switch (ch)
+            {
+                case 1:
+                    $('#yt_video').hide();
+					$('#upload_video').show();
+                    break;
+                case 2:
+                    $('#yt_video').hide();					
+					$('#upload_video').show();
+                    break;
+                case 3:
+                    $('#yt_video').show();
+					$('#upload_video').hide();
+                    break;
+            }
+        });
+		
+    });
+</script>
+{/strip}
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+<div style="padding:15px;">
+<form class="ttable big_form" method="post" id="video_form" action="/artist/editvideo">
+	<input type="hidden" name="id" id="VideoId" value="{$id}"/>
+    <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td colspan="2"><h2 class="LF">{if $id}Edit{else}Upload New{/if} Video </h2><label></label></td>
+        </tr>
+      <tr>
+        <td colspan="2"><strong class="font16">Select video type:</strong><label></label></td>
+      </tr> 
+      {if !$id}       
+	  <tr>
+        <td class="label_td">&nbsp;</td>
+        <td class="radio_td">
+          
+            <input type="radio" id="VideoType1" class="video_type radio" name="fm[VideoType]" value="1"{if $fm.VideoType==$smarty.const.MUSIC_VIDEO || !$fm.VideoType} checked="checked"{/if} {if $fm.VideoType==$smarty.const.YT_VIDEO} disabled="disabled"{/if}/> <label for="VideoType1">Music video </label><br /><br /> 
+            <input type="radio" id="VideoType2" class="video_type radio" name="fm[VideoType]" value="2"{if $fm.VideoType==$smarty.const.RE_LIVE_STREAM} checked="checked" {/if} {if $fm.VideoType==$smarty.const.YT_VIDEO} disabled="disabled"{/if}  /> <label for="VideoType2">Recorded live stream</label><br /><br />
+            <input type="radio" id="VideoType3" class="video_type radio" name="fm[VideoType]"  value="3"{if $fm.VideoType==$smarty.const.YT_VIDEO} checked="checked"{/if}  {if $fm.Duration} disabled="disabled"{/if}/> <label for="VideoType3">Add youtube video</label><br /> 
+        <td id="err_VideoType" class="err"></td>
+    </tr>
+    {else}
+    <tr>
+        <td class="label_td">&nbsp;</td>
+        <td class="radio_td">
+          
+            <input type="radio" id="VideoType1" class="video_type radio" name="fm[VideoType]" value="1"{if $fm.VideoType==$smarty.const.MUSIC_VIDEO} checked="checked"{else}disabled="disabled"{/if}/> <label for="VideoType1">Music video </label><br /><br /> 
+            <input type="radio" id="VideoType2" class="video_type radio" name="fm[VideoType]" value="2"{if $fm.VideoType==$smarty.const.RE_LIVE_STREAM} checked="checked" {else} disabled="disabled" {/if} /> <label for="VideoType2">Recorded live stream</label><br /><br />
+            <input type="radio" id="VideoType3" class="video_type radio" name="fm[VideoType]"  value="3"{if $fm.VideoType==$smarty.const.YT_VIDEO} checked="checked"{else}disabled="disabled"{/if} /> <label for="VideoType3">Add youtube video</label><br /> 
+        <td id="err_VideoType" class="err"></td>
+    </tr>
+    {/if}
+	<tr>
+        <td width="20%" align="left" valign="middle" nowrap="nowrap">Title<span style="color:red;">*</span></td>
+        <td width="80%" align="left" valign="middle" ><label>
+          <input class="txtBox" id="Title" name="fm[Title]" value="{$fm.Title} "  size="50" />
+        </label><span id="err_Title" class="err"></span></td>
+      </tr>
+
+    <tr>
+        <td width="20%" align="left" valign="middle">Release Date<span style="color:red;"></span></td>
+        <td width="80%" align="left" valign="middle"><label>{if !$id}<input type="text" id="VideoDate" class="txtBox" name="fm[VideoDate]" value="{$fm.VideoDate}"   size="10"  />{else}{$fm.VideoDate|date_format} <input type="hidden" id="VideoDate" class="txtBox" name="fm[VideoDate]" value="{$fm.VideoDate}"   size="10"  />{/if}
+		</label><span id="err_VideoDate" class="err"></span>                
+        </td>
+
+    </tr>
+
+
+	
+ 		<tr id="upload_video">
+        	<td colspan="2">            
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" >      
+              <tr>
+                <td align="left" valign="middle" nowrap="nowrap" width="20%">Upload Video<span style="color:red;">*</span></td>
+                <td align="left" valign="middle" width="80%"><label>
+                                 <div id="file-uploader" style="float: left;">                     <noscript>
+                           <p>Please enable JavaScript to use file uploader.</p>
+                        </noscript>
+                        </div>
+                        <div style="float: left;padding-left: 15px; font-size: 11px;">
+                            <div id="video">{if $fm.Video}{$fm.Video}{else}No file{/if}</div>
+                        </div>
+                        <div class="clear"></div>
+                        <div id="progress" style="display: none;">
+                            Progress <span id="progress-percent">0</span>%<br />
+                            <div style="border:#dedede solid 1px;"><div id="progress-value" style="height:15px; width:0; background-color: #fff6cc;"></div></div>
+                        </div></label>
+                    <span id="err_video" class="err"></span>
+                </td>
+              </tr>
+              <tr>
+              	<td colspan="2">&nbsp;</td>
+              </tr>
+          
+              <tr id="tr_Price" {if $fm.VideoType==$smarty.const.YT_VIDEO} style="display: none;"{/if}>
+                <td align="left" valign="middle" nowrap="nowrap">Price</td>
+                <td align="left" valign="middle" >
+                 <table border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td>$ <input type="text" id="Price" name="fm[Price]" value="{if $fm.Price}{$fm.Price|string_format:'%.2f'}{else}0.00{/if}" class="txtBox" size="15" /><span id="err_Price" class="err"></span></td>
+                    <td><label>
+                      &nbsp;
+                     <input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" onclick="oProfile.CheckFree()" value="1"{if $fm.PriceFree} checked="checked"{/if} />
+                    </label></td>
+                    <td>&nbsp;&nbsp;Free</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    
+                    <td>{*<input type="checkbox" class="checkbox" id="payMore" name="fm[payMore]" value="1"{if $fm.payMore} checked="checked"{/if} />*}</td>
+                    <td nowrap="nowrap">{*<strong class="font16">&nbsp;Pay what you like&nbsp;</strong>*}</td>
+                  </tr>
+                </table></td>
+              </tr>
+	        </table>
+          </td> 
+		 </tr>
+
+          <tr id="yt_video">
+            <td align="left" valign="middle" nowrap="nowrap">Video link <span style="color:red;">*</span></td>
+            <td align="left" valign="top" ><input type="text" class="txtBox" id="VideoLink" name="fm[VideoLink]" value="{if $fm.FromYt}http://www.youtube.com/watch?v={$fm.Video}{else}{$fm.VideoLink}{/if}" size="72" />
+             <span id="err_VideoLink" class="err"></span> </td>
+          </tr>          
+      <input type="hidden" class="checkbox" id="Active" name="fm[Active]" value="1" checked="checked" {if $fm.Active}{/if} />
+      
+      <tr>
+        <td>&nbsp;</td>
+        <td align="left" valign="middle"><table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><input type="button"  onclick="oProfile.EditVideo();" class="button wblue" value="Save" /></td>
+            <td>&nbsp;</td>
+            <td><input type="button" onclick="Go('/artist/video')" class="button bgrey" value="Cancel" /></td>
+          </tr>
+        </table></td>
+      </tr>
+    </table>
+ </form>
+  </div>
+  {/strip}
+{include file="mods/profile/blocks/_buy_block.html"}  
+{/block}

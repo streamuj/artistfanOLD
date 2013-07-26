@@ -1,0 +1,24 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{$UserInfo.FirstName} {$UserInfo.LastName}</a>
+    </div>
+    <h1>My Fellow fans</h1>
+</div>
+
+<div class="content_block wide">
+
+    <h3>Fans that I follow:</h3>
+
+            <table class="content_list">
+                {foreach key=k item=i from=$fans_follow}
+                <tr>
+                    <td width="29"><a href="/u/{$i['u.Name']}"><img src="{if $i['u.Avatar']}/files/images/avatars/x_{$i['u.Avatar']}{else}/i/ph/user-48x48.png{/if}"/>&nbsp;  <b>{$i['u.FirstName']} {$i['u.LastName']} </b></a>{if $i['u.IsOnline'] == 1}<font color="#00CC33"> [ Online ]</font>{else}[ Offline ]{/if}</td>
+                </tr>
+                {/foreach}
+            </table>    
+</div>
+{/block}

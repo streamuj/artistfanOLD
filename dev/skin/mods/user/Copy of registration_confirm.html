@@ -1,0 +1,27 @@
+{* extends file="mods/search/cabinet_search.html" *}
+{extends file="base.html"}
+
+{block name="profile"}
+
+<div class="contentArea" style="padding-left:20px; height:670px;">
+ <h1>Sign up </h1>
+ 
+ <div class="clear"></div>
+<div class="colLeft" margin-bottom:10px;">   
+
+    <div class="alert alert_success" style="width:640px;">
+            <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+            <strong>Success!</strong>
+            
+            {if $status == 2}
+              Registration complete! Your request to create a profile has been submitted. You will be notified once your profile has been approved”.
+            {else}
+              Registration completed!. Please check your email for confirmation.
+            {/if}
+    </div>
+    
+    {* <a href="/base/user/Login">Please Log In</a> *}
+ </div>
+</div>
+
+{/block}

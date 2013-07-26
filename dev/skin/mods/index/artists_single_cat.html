@@ -1,0 +1,29 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+{/block}
+{block name="content"}
+<!--COVER SLIDER-->
+<div class="clear"></div>
+<!--CONTENT-->
+
+  <div class="row1" style="border-left:1px solid #ccc; border-right:1px solid #ccc;">
+    <h3 style="padding:10px;">ARTISTS</h3>  
+    <div class="tbBox">
+      <h2 class="P20">{$vCat->GetCategoryInfoById({$id})}</h2>    
+      <div class="tbList">
+        <ul class="overview">
+          {foreach key=k item=i from=$artist}
+          <li>
+            <div class="imgBox"><a href="/u/{$i.Name}"></a><img src="{if $i.Avatar}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{else}/si/pic-100x100.jpg{/if}" alt="pic" width="218" /></div>
+            <p class="titleTxt"><strong class="font16">Title :<a href="/u/{$i.Name}">{$i.Name}</a></strong></p>
+          </li>
+          {/foreach}
+        </ul>
+        <div class="clear"></div>
+      </div>
+    </div>
+  </div>
+
+<div class="clear"></div>
+{/block} 

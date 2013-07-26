@@ -1,0 +1,25 @@
+{strip}
+     {foreach name=ph key=k item=i from=$albums }
+    <li id="PhotoAlbums_{$i.Id}"> <a href="/artist/editphotoalbum?id={$i.Id}" class="tb"> <img id="photoid_{$i.Id}" class="phto-clu-img" src='{if $i.Cover}{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.Cover}{else}{$SUB_DOMAIN}si/nophoto.jpg{/if}'  /> </a>
+      <ul class="font12 block relative">
+        <li class="block font14" id="AlbumName_{$i.Id}">{$i.Title|truncate:30}</li>
+        <li class="LF">{$i.Pdate|date_format:"%b%d at %l:%M%p"}</li>
+        <li class="RT">{$i.CountPhotos} Photos</li>
+        <li class="clear"></li>
+        <li class="belw editTool none"> {if $i.Title !=$smarty.const.BANNER_IMAGES && $i.Title !=$smarty.const.PROFILE_PICTURES} <span class="DeleteAlbum LF" PhId="{$i.Id}" ><img src="{$SUB_DOMAIN}si/remvIconGry.png">&nbsp;Remove</span> <span class="RT P0"  onclick="oPhotoEdit.TopAdd({$i.Id},'{$i.Title}');"><img src="{$SUB_DOMAIN}si/addBtnBk.png">&nbsp;Add</span> <span class="RT edit" onclick="oPhotoEdit.albumNameEdit({$i.Id},'{$i.Title|escape:quotes}');" ><img src="{$SUB_DOMAIN}si/addBtnBk.png">&nbsp;Edit</span> {else}
+          &nbsp;
+          {/if} </li>
+        <li class="clear"></li>
+      </ul>
+    </li>
+    {foreachelse}
+    <li id="NoPhotoAlbums"> <a href="javascript:void(0);"> <img  class="phto-clu-img" src="{if $i.Cover}{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.Cover}{else}/dev/templates/images/nophoto.jpg{/if}"  /> </a>
+      <div>
+        <p style="padding:0 5px;" id="AlbumName_{$i.Id}" >No Albums</p>
+        <p class="tex-in LF font11 gray">&nbsp;</p>
+        <p  class="tex-in RT gray">&nbsp;</p>
+      </div>
+    </li>
+    {/foreach}
+    <li id="recentPhotoAdded" style="display:none;"></li>
+{/strip}

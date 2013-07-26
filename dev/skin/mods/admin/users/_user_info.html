@@ -1,0 +1,307 @@
+{extends file="mods/admin/index.html"}
+
+<!--text_content-->
+{block name="javascript"}
+<script type="text/javascript">
+    function ShBlock()
+    {
+        if ($("#ublock").css('display')=='none')
+        {
+            $("#ublock").show();
+            $("#ublock_1").show();
+            $("#ublock_2").hide();
+        } else
+        {
+            $("#ublock").hide();
+            $("#ublock_1").hide();
+            $("#ublock_2").show();
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.switchActive').click(function(){
+		var divParent = $(this).parent('tr');
+		var Id = $(this).attr('id').split('_')[1];
+		$('#active').val(Id);
+		var thisObj = $(this);
+		if($(this).hasClass('act_ico')){
+			active = 0;
+		} else {
+			active = 1;
+		}
+		thisObj = $(this);
+		$.ajax({
+			type:'post',
+			url: '/base/user/AdminArtistActivate',
+			dataType:'json',
+			data: { 'id': Id, 'active': active},
+			success: function(response){
+			  	if(thisObj.hasClass('act_ico')){
+					thisObj.removeClass('act_ico');
+					thisObj.addClass('in_act_ico');
+				} else {
+					thisObj.removeClass('in_act_ico');
+					thisObj.addClass('act_ico');
+				}
+			}
+		})
+		
+	});
+});
+
+</script>
+
+{/block}
+
+
+{block name="content"}
+<input type="hidden" name="uid" id="uid" value="{$ui.Id}">
+
+<div class="path">
+    <a href="/siteadmin/">Administration panel</a> »
+    <a href="/base/user/indexadmin{if $ui.Status==2}?status=2{/if}">Users</a> »
+    User profile
+</div>
+
+
+<h1>{if $ui.Status==1}Fan{else}Artist{/if} {$ui.FirstName} {$ui.LastName}</h1>
+
+<div class="white_block">
+    <table class="style_table2">
+        <colgroup>
+            <col width="275">
+        </colgroup>
+        <tbody>
+        <tr class="border_bottom2">
+            <td><h6>Access info</h6></td>
+            <td><a class="edit_icon" href="/base/user/AdminEditUser?id={$ui.Id}"></a></td>
+        </tr>
+        <tr>
+            <td><b class="gray f13">ID</b></td>
+            <td><b class="f13 blue1">{$ui.Id}</b></td>
+        </tr>
+        <tr>
+            <td><b class="gray f13">Email</b></td>
+            <td><b class="f13 blue1">{$ui.Email}</b></td>
+        </tr>
+        <tr>
+            <td><b class="gray f13">Registration date</b></td>
+            <td><b class="f13 blue1">{$ui.DateReg|mdate}</b></td>
+        </tr>
+        <tr>
+            <td><b class="gray f13">Last access IP</b></td>
+            <td><b class="f13 blue1">{$ui.Ip}</b></td>
+        </tr>
+        {if $ui.Status==2}
+		<tr>
+            <td><b class="gray f13">Account Activate</b></td>
+            <td>
+               <a href="javascript:void(0)" id="active_{$ui.Id}" style="text-decoration:none" class="switchActive {if $ui.EmailConfirmed==0}in_act_ico{else}act_ico{/if}">&nbsp;</a>
+            </td>
+        </tr>
+        {/if}
+        <tr>
+            <td><b class="gray f13">Account status</b></td>
+            <td>
+                 {if $ui.Blocked}
+                 <span class="red">Blocked{if $ui.BlockReason} by reason "{$ui.BlockReason}"{/if}</span>
+                 {else}
+                 <span class="green">Active</span>
+                 {/if}<br />
+                 <span id="block"{if $ui.Blocked} style="display:none;"{/if}><a href="javascript:ShBlock();" class="red">Block</a></span>
+                 <a id="unblock" {if !$ui.Blocked} style="display:none;"{/if}href="javascript:CGo('/base/user/AdminBlockUser?id={$ui.Id}', 'Unblock user?');" class="green">Unblock</a>
+            </td>
+        </tr>
+
+        <tr class="border_bottom2" style="display:none;" id="ublock">
+            <td colspan="2">
+                <table class="style_table2">
+                    <tbody>
+                        <tr class="blue_bg2" valign="top">
+                            <td><b class="gray">Block reason</b></td>
+                            <td>
+                                <form action="/base/user/AdminBlockUser">
+                                    <input type="hidden" name="id" value="{$ui.Id}">
+                                    <textarea class="textarea" id="block_descr" name="block_descr" style="width:370px; height:140px; padding:3px;"></textarea>
+                                    <br /><br />
+                                    <table class="pd_0 no_border">
+                                        <tr>
+                                            <td><input type="submit" value="Block" class="submit_02"  /></td>
+                                            <td>&nbsp;&nbsp;&nbsp; <a href="javascript:ShBlock();">Cancel</a></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                                <br />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        </tbody>
+
+        <tbody id="adi_info">
+            <tr class="border_bottom2">
+                <td><h6>Account info</h6></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Avatar</b></td>
+                <td><img src="{if $ui.Avatar}{$SUB_DOMAIN}images/avatars/x_{$ui.Avatar}{else}/i/ph/user-48x48.png{/if}" alt="" /></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Username</b></td>
+                <td><b class="f13 blue1">{$ui.Name}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Name</b></td>
+                <td><b class="f13 blue1">{$ui.FirstName} {$ui.LastName}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Birth date</b></td>
+                <td><b class="f13 blue1">{if $i.Dob!='0000-00-00'}{$ui.Dob|mdate:1}{else}&mdash;{/if}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Gender</b></td>
+                <td><b class="f13 blue1">{if $ui.Gender==1}Male{elseif $ui.Gender==2}Female{else}Disclose{/if}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Likes</b></td>
+                <td><b class="f13 blue1">{$ui.Likes}</b></td>
+            </tr>
+	{if $ui.Status==2}            
+            <tr>
+                <td><b class="gray f13">Phone</b></td>
+                <td><b class="f13 blue1">{$ui.UserPhone}</b></td>
+            </tr> 
+	{/if}                       
+            <tr>
+                <td><b class="gray f13">About</b></td>
+                <td><b class="f13 blue1">{$ui.About}</b></td>
+            </tr>
+
+            <tr class="border_bottom2">
+                <td><h6>Location</h6></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Country</b></td>
+                <td><b class="f13 blue1">{$ui.Country}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">City</b></td>
+                <td><b class="f13 blue1">{$ui.Location}</b></td>
+            </tr>
+            {if $ui.Status==1}
+            <tr>
+                <td><b class="gray f13">ZIP</b></td>
+                <td><b class="f13 blue1">{$ui.Zip}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Hide location</b></td>
+                <td><b class="f13 blue1">{if $ui.HideLoc}Yes{else}No{/if}</b></td>
+            </tr>
+            {/if}
+            {if $ui.Status==2}
+            <tr class="border_bottom2">
+                <td><h6>Artist/band info</h6></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Featured</b></td>
+                <td><b class="f13 blue1">{if $ui.Featured==1}Yes{else}No{/if}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Band Name</b></td>
+                <td><b class="f13 blue1">{$ui.BandName}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Years active</b></td>
+                <td><b class="f13 blue1">{$ui.YearsActive}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Genre(s)</b></td>
+                <td><b class="f13 blue1">{assign var="numg" value=0}
+                {foreach name=n key=k item=i from=$genres}
+                {if $ui.Genres.$k}{$i}{assign var="numg" value=$numg+1}{if $numg < $ui.Genres|@count},{/if} {/if}
+                {/foreach}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Members</b></td>
+                <td><b class="f13 blue1">{$ui.Members}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Website</b></td>
+                <td><b class="f13 blue1">{$ui.Website}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Bio</b></td>
+                <td><b class="f13 blue1">{$ui.Bio}</b></td>
+            </tr>
+            <tr>
+                <td><b class="gray f13">Record label(s)</b></td>
+                <td>
+                    {foreach name=n key=k item=i from=$ui.RecordLabel}
+                    {$ui.RecordLabel.$k} {if $ui.RecordLabelLink.$k}(<a href="{$ui.RecordLabelLink.$k}" target="_blank">{$ui.RecordLabelLink.$k}</a>){/if}<br />
+                    {/foreach}
+                </td>
+            </tr>                              
+            {/if}
+            
+			<tr class="border_bottom2">
+                <td><h6>{if $ui.Status==2}Artist earning {else}Purchase {/if}info</h6></td>
+                <td></td>
+            </tr>
+                       
+            <tr>
+            	<td colspan="2" align="left">
+                	<table width="50%" border="0" cellspacing="0" cellpadding="0">
+                    	<tr >
+                        	<td class="tblhead">{if $ui.Status==2}Sold{else}Purchased{/if} Item</td> 
+                            <td class="tblhead">Count</td> 
+                            <td class="tblhead">Price</td>
+                        </tr>
+                        <tr>
+                            <td><b class="gray f13">Video</b></td>
+                            <td><b class="f13 blue1">{$video.count}</b></td>
+                            <td><b class="f13 blue1">{$video.price|string_format:'%.2f'}</b></td>                            
+                        </tr>
+                        <tr>
+                            <td><b class="gray f13">Music</b></td>
+                            <td><b class="f13 blue1">{$music.count}</b></td>
+                            <td><b class="f13 blue1">{$music.price|string_format:'%.2f'}</b></td>                            
+                        </tr>
+                        <tr>
+                            <td><b class="gray f13">Photo</b></td>
+                            <td><b class="f13 blue1">{$photo.count}</b></td>
+                            <td><b class="f13 blue1">{$photo.price|string_format:'%.2f'}</b></td>                            
+                        </tr>
+                        <tr>
+                            <td><b class="gray f13">Event</b></td>
+                            <td><b class="f13 blue1">{$event.count}</b></td>
+                            <td><b class="f13 blue1">{$event.price|string_format:'%.2f'}</b></td>                            
+                        </tr>
+                                                                                                
+
+                                                            
+                        <tr>
+                            <td><b class="gray f13">Total no.of Items</b></td>
+                            <td colspan="2"><b class="f13 blue1">{$total_count}</b></td>                   
+                        </tr>
+                        <tr>
+                            <td><b class="gray f13">Total {if $ui.Status==2}Income{else}Expence{/if}</b></td>
+                            <td colspan="2"><b class="f13 blue1">{$total_price|string_format:'%.2f'}</b></td>                            
+                        </tr>   
+                    </table>
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+</div>
+<!--/text_content-->
+{/block}

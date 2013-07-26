@@ -1,0 +1,183 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.tinycarousel.min.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function()
+    {
+		
+		$('.tbSlider').tinycarousel({ display: 5 });
+		{*
+		$('.evShow').tinycarousel({ display: 1, interval:true, intervaltime: 3000, duration: 1000, animation: true  });
+		*}	
+        oPlay.InitPlayButtons();
+        oProfile.InitPurchase();
+		oPopup.InitPurchase();	
+		
+		$('.add_album').click(function() {
+	   	  {if $fellow} 
+			oProfile.addAlbumBuyMusicDialogClear();
+            var imgsrc = ($(this).parent().find('img').length > 0) ? $(this).parent().find('img').attr('src') : $(this).parent().parent().find('img').attr('src');
+			imgsrc = '{$SUB_DOMAIN}track/images/'+$(this).attr('userid')+'/m_'+$(this).attr('image');
+            oProfile.addAlbum( $(this).attr('mid'), /*$(this).parent().find('.ttl').html()*/$(this).attr('filename'), 0, $(this).attr('tracks'), 0, imgsrc, '', '', '' );
+		   {/if}	
+        });
+		
+					
+    });
+</script>
+{if $album_slide|@count gt 1}
+<script type="text/javascript" language="javascript" src="{$SUB_DOMAIN}sj/slide360.js"></script>
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/slider360.css" type="text/css" media="screen"/>
+<script type="text/javascript" language="javascript">
+			$(function() {
+				$('#coverSlider').carouFredSel({
+					auto: false,
+					prev: '#prev2',
+					next: '#next2',
+					mousewheel: true,
+					width: 1025,
+					height:350,
+					swipe: { onMouse: true, onTouch: true},
+					visible: { min: 1,max: 1},
+					auto: { pauseOnHover: 'resume',progress: '#timer1',timeoutDuration: 5000},
+				});
+			});
+</script>
+{/if}
+{/strip}
+{/block}
+{block name="content"}
+{strip}
+<div class="contentArea">
+  <div class="row1">
+ <div class="slide360 wideSlide">
+				<ul id="coverSlider">
+               {foreach key=k item=i from=$album_slide}
+             
+					<li>
+                    <a href="{$i.Link}">
+                    <img src="{if $i.Slide}{$SUB_DOMAIN}photo/slide/music/s_{$i.Slide|jpgfile}{else}{$SUB_DOMAIN}si/slider-h.jpg{/if}" alt="Music" />
+                   </a>
+                    
+                    </li>
+                    {foreachelse}
+                    <li><img src="{$SUB_DOMAIN}si/noMusic.jpg" /></li>
+                  {/foreach} 
+				</ul>
+				<div class="navi"><a id="prev2" class="prev buttons" href="#"></a>
+				<a id="next2" class="next buttons" href="#"></a></div>
+			</div> 
+       <div class="clear"></div>
+    <h2 class="P15 caps pink">MUSIC</h2>
+    {if $recentRelease}
+    <div class="clear"></div>
+    <div class="tbMus">
+      <div class="tbBox">
+        <h4 class="P15 caps">Recent Releases {if $recentReleaseCount gt 5}<a href="/base/index/music?id=rr" class="seeAll">See all</a> {/if}</h4>
+        <div id="slider3" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+          <div class="viewport">
+            <ul class="overview">
+              {foreach key=k item=i from=$recentRelease}
+              <li>
+                <div class="imgBox"><a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/music/{$i.Id}" class="font16 caps" mid="{$i.Id}"><img src="{if $i.Image}/{$smarty.const.TRACK_IMG_PATH}/{$i.UserId}/m_{$i.Image}{else}/i/ph/album-96x96.png{/if}" alt="pic" width="160" height="160"  /></a></div>
+                {if $UserInfo.Id != $i.UserId}
+                {if !$i.Purchase}
+                {if $i.Price > 0} <a href="javascript:void(0);" class="btn1 buy_album {if $i.Fellow}buy_albumTXT{/if}"  {if $i.Fellow} savings="" tracks="" mid="{$i.Id}"  {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.Id}" {/if}  price="{$i.Price}"  >
+                BUY</a> {else}  
+                <a href="javascript:void(0);" class="btn1 {if $i.Fellow} Freeadd_album {/if}"  {if $i.Fellow} mid="{$i.Id}" tracks="{$i.Tracks}" image="{$i.Image}"  filename="{$i.Title}" userid="{$i.UserId}" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.Id}" {/if}  price="{$i.Price}" > 
+                FREE </a> {/if} 
+                {/if}
+                {/if} <a href="javascript:void(0);" class="titleTxt play_exp_album" UserId="{$i.UserId}"  fellow="{$i.Fellow}" mid="{$i.Id}">{$i.Title|truncate:30:'...'} </a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName}{else}{$i.FirstName|cat:' '|cat:$i.LastName}{/if}</a> </li>
+              {/foreach}
+            </ul>
+          </div>
+          <a class="buttons next" href="#">right</a> </div>
+      </div>
+    </div>
+    {/if}
+    
+    {if $bestSellers}
+    <div class="clear"></div>
+    <div class="tbMus">
+      <div class="tbBox">
+        <h4 class="P15 caps">Best Sellers {if $bestSellersCount gt 5}<a href="/base/index/music?id=bs" class="seeAll">See all</a> {/if} </h4>
+        <div id="slider3" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+          <div class="viewport">
+            <ul class="overview">
+              {foreach key=k item=i from=$bestSellers}
+              <li>
+                <div class="imgBox"><a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/music/{$i.Id}" class="font16 caps" mid="{$i.Id}"><img src="{if $i.Image}/{$smarty.const.TRACK_IMG_PATH}/{$i.UserId}/m_{$i.Image}{else}/i/ph/album-96x96.png{/if}" alt="pic" width="160" height="160"  /></a></div>
+                {if $UserInfo.Id != $i.UserId}
+                {if !$i.Purchase}
+                {if $i.Price > 0} <a href="javascript:void(0);" class="btn1 buy_album {if $i.Fellow}buy_albumTXT{/if}"  {if $i.Fellow} onClick="{if $UserInfo.Status}oProfile.InitBuyAlbum(this);{else}oProfile.PurchaseRedirect('album', $(this).attr('mid'), 1);{/if}" mid="{$i.Id}" savings="" tracks="" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.Id}" {/if}  price="{$i.Price}"  >BUY</a> {else} <a href="javascript:void(0);" class="btn1 {if $i.Fellow} Freeadd_album {/if}"  {if $i.Fellow} mid="{$i.Id}" tracks="{$i.Tracks}" image="{$i.Image}"  filename="{$i.Title}" userid="{$i.UserId}" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.Id}" {/if}  price="{$i.Price}" > FREE </a> {/if} 
+                {/if}
+                {/if} <a href="javascript:void(0);" class="titleTxt play_exp_album" UserId="{$i.UserId}"  fellow="{$i.Fellow}" mid="{$i.Id}">{$i.Title|truncate:30:'...'} </a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName}{else}{$i.FirstName|cat:' '|cat:$i.LastName}{/if}</a> </li>
+              {/foreach}
+            </ul>
+          </div>
+          <a class="buttons next" href="#">right</a> </div>
+      </div>
+    </div>
+    {/if}
+    
+    {foreach key=ki item=ii from=$musicCat}
+    <div class="clear"></div>
+    <div class="tbMus">
+      <div class="tbBox">
+        <h4 class="P15 caps">{$vCat->GetCategoryInfoById({$ki})}  {if $vHCat->getMusicAlbumListCount({$ki}) gt 5} <a href="/base/index/music?id={$ki}" class="seeAll">See all</a> {/if}</h4>
+        <div id="slider3" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+          <div class="viewport">
+            <ul class="overview">
+              {foreach key=k item=i from=$ii}
+              <li>
+                <div class="imgBox"><a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/music/{$i.AlbumId}" class="font16 caps" mid="{$i.AlbumId}"><img src="{if $i.Image}/{$smarty.const.TRACK_IMG_PATH}/{$i.UserId}/m_{$i.Image}{else}/i/ph/album-96x96.png{/if}" alt="pic" width="160" height="160"  /></a></div>
+                {if $UserInfo.Id != $i.UserId}
+                {if !$i.Purchase}
+                {if $i.Price > 0} <a href="javascript:void(0);" class="btn1 {if $i.Fellow}buy_albumTXT{/if}"  {if $i.Fellow} onClick="{if $UserInfo.Status}oProfile.InitBuyAlbum(this);{else}oProfile.PurchaseRedirect('album', $(this).attr('mid'), 1);{/if}" mid="{$i.AlbumId}" savings="" tracks="" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.AlbumId}" {/if}  price="{$i.Price}"  >BUY</a> {else} <a href="javascript:void(0);" class="btn1 {if $i.Fellow} Freeadd_album {/if}"  {if $i.Fellow} mid="{$i.AlbumId}" tracks="{$i.Tracks}" image="{$i.Image}"  filename="{$i.Title}" userid="{$i.UserId}" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.AlbumId}" {/if}  price="{$i.Price}" > FREE </a> {/if} 
+                {/if}
+                {/if} <a href="javascript:void(0);" class="titleTxt play_exp_album" UserId="{$i.UserId}"  fellow="{$i.Fellow}" mid="{$i.AlbumId}">{$i.Title|truncate:30:'...'} </a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName}{else}{$i.FirstName|cat:' '|cat:$i.LastName}{/if}</a> </li>
+              {/foreach}
+            </ul>
+          </div>
+          <a class="buttons next" href="#">right</a> </div>
+      </div>
+    </div>
+    {/foreach} 
+    
+    {if $hotSingles}
+    <div class="clear"></div>
+    <div class="tbMus">
+      <div class="tbBox">
+        <h4 class="P15 caps">Hot Singles {if $hotSinglesCount gt 5}<a href="/base/index/music?id=hs" class="seeAll">See all</a>{/if}</h4>
+        <div id="slider3" class="tbSlider"> <a class="buttons prev" href="#">left</a>
+          <div class="viewport">
+            <ul class="overview">
+              {foreach key=k item=i from=$hotSingles}
+              <li>
+                <div class="imgBox"><a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/music/{$i.Id}" class="font16 caps" mid="{$i.Id}"><img src="{if $i.Image}/{$smarty.const.TRACK_IMG_PATH}/{$i.UserId}/m_{$i.Image}{else}/i/ph/album-96x96.png{/if}" alt="pic" width="160" height="160"  /></a></div>
+                {if $UserInfo.Id != $i.UserId}
+                {if !$i.Purchase}
+                {if $i.Price > 0} <a href="javascript:void(0);" class="btn1 {if $i.Fellow}buy_albumTXT{/if}"  {if $i.Fellow} onClick="{if $UserInfo.Status}oProfile.InitBuyAlbum(this);{else}oProfile.PurchaseRedirect('album', $(this).attr('mid'), 1);{/if}" mid="{$i.Id}" savings="" tracks="" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.Id}" {/if}  price="{$i.Price}"  >BUY</a> {else} <a href="javascript:void(0);" class="btn1 {if $i.Fellow} Freeadd_album {/if}"  {if $i.Fellow} mid="{$i.Id}" tracks="{$i.Tracks}" image="{$i.Image}"  filename="{$i.Title}" userid="{$i.UserId}" {else} onClick="oPopup.connectinplayer('{$i.UserId}','{$UserInfo.Status}');" mid="{$i.Id}" {/if}  price="{$i.Price}" > FREE </a> {/if} 
+                {/if}
+                {/if} <a href="javascript:void(0);" class="titleTxt play_exp_album" UserId="{$i.UserId}"  fellow="{$i.Fellow}" mid="{$i.Id}">{$i.Title|truncate:30:'...'} </a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName}{else}{$i.FirstName|cat:' '|cat:$i.LastName}{/if}</a> </li>
+              {/foreach}
+            </ul>
+          </div>
+          <a class="buttons next" href="#">right</a> </div>
+      </div>
+    </div>
+    {/if}
+    <div class="clear"></div>
+  </div>
+</div>
+<div class="clear"></div>
+{/strip}
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block} 

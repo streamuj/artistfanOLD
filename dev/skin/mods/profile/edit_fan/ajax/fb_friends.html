@@ -1,0 +1,47 @@
+{strip}
+	{foreach key=k item=i from=$fbFriends} 
+         <tr class="{cycle values="tbldata,tbldata1"}">
+            <td><img src="https://graph.facebook.com/{$i.IdFbid}/picture"  /> </td>
+            <td style="vertical-align:middle">{$i.IdName} </td>
+            <td>
+				{if $i.UserId}                
+                    {if $i.UFollow}
+                        <span class="good">Friend</span>
+                    {else}
+                        
+                        {if $i.Status == 1}
+                        	{if $UserInfo.Status != 2}
+	                            <span id="follow"><input type="button" onclick="oUsers.Follow('{$i.UserId}');" value="Follow" class="button" /></span>
+    						{else}
+                            	<span>Fan</span>	                        	
+                            {/if}
+                        {else}
+                        	{if $UserInfo.Status != 2}
+	                            <span id="follow"><input type="button" onclick="oUsers.Follow('{$i.UserId}');" value="Connect" class="button"  /></span>
+                            {else}
+                            	<span id="follow"><input type="button" onclick="oUsers.Follow('{$i.UserId}');" value="Follow" class="button"/></span>
+                            {/if}
+                        {/if}
+                        
+                    {/if}
+               {else}
+               		{if $i.Invited}
+                    	<span class="good">Invited</span>
+                    {else}
+                 	<span id="Invite_{$i.Id}"  style="vertical-align:middle"><input type="button" onclick="oUsers.FBInvitationAdd( '{$i.IaUserId}', '{$i.Id}', '{$i.IdName}', '{$i.IdFbid}');" value="Invite" class="button" /></span>
+                    {/if}
+               {/if}
+            </td>         
+         </tr>  
+   {foreachelse}
+   		<tr>
+        	<td colspan="4"> No Friends</td>
+        </tr>
+   {/foreach}     
+   <input type="hidden" id="root_path" value="{$smarty.const.ROOT_HTTP_PATH}" /> 
+   <input type="hidden" id="appId" value="{$appId}" /> 
+   <input type="hidden" id="uFbId" value="{$smarty.session.facebook_id}" /> 
+   <input type="hidden" id="fbAppName" value="{$smarty.const.FB_APP_NAME}" /> 
+   <div class="clear"></div> 
+   <div id="pagging"></div>
+{/strip}

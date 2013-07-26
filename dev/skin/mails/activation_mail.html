@@ -1,0 +1,60 @@
+{extends file="mails/base_mail.html"}
+{strip}
+{block name="title"}Welcome to {$DOMAIN}{/block}
+{/strip}
+{block name="content"}
+{strip}
+<table width="650" border="0" align="center" cellpadding="20" cellspacing="0">
+  <tr>
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><h1 {$headerStyle}>Hi {$name},</h1> <p {$paraStyle} >Welcome to the ArtistFan family!</p></td>
+      </tr>
+      <tr>
+        <td><p {$paraHeadStyle}>Here are some tips to help gear you towards your independent future!</p></td>
+      </tr>      
+      <tr>
+        <td>
+        	<h1 {$headerStyle}>+ Engage your fans! </h1><p {$paraStyle}><a href="http://www.artistfan.com/pages/faq.html" target="_blank" style="color:#333333;text-decoration:none;">Involving fan community, providing content, benefits of being engaging</a></p>
+        </td>
+      </tr>      
+
+      <tr>
+        <td>
+        	<h1 {$headerStyle}>+ Build connections!</h1><p {$paraStyle} ><a href="http://www.artistfan.com/pages/faq.html" target="_blank" style="color:#333333;text-decoration:none;">Following artists/fans, interacting with followers</a></p>
+        </td>
+      </tr>      
+
+      
+      <tr>
+        <td>
+        	<h1 {$headerStyle}>+ Personalize your profile!</h1><p {$paraStyle} ><a href="http://www.artistfan.com/pages/faq.html" target="_blank" style="color:#333333;text-decoration:none;">Photos, wall content, etc</a></p>
+        </td>
+      </tr>      
+
+      
+      <tr>
+        <td>
+        	<h1 {$headerStyle}>+ Upload your work! </h1><p {$paraStyle} ><a href="http://www.artistfan.com/pages/faq.html" target="_blank" style="color:#333333;text-decoration:none;">Music, albums, videos</a></p>
+        </td>
+      </tr>      
+
+      
+      <tr>
+        <td>
+        	<h1 {$headerStyle}>+ Stream yourself live!</h1><p {$paraStyle} ><a href="http://www.artistfan.com/pages/faq.html" target="_blank" style="color:#333333;text-decoration:none;">Events, LiveStream, PPV</a></p>
+        </td>
+      </tr>      
+
+      
+      <tr>
+        <td>
+        	<h1 {$headerStyle}>+ Control how you get paid!</h1><p {$paraStyle} ><a href="http://www.artistfan.com/pages/faq.html" target="_blank" style="color:#333333;text-decoration:none;">Pricing, receiving money</a></p>
+        </td>
+      </tr>      
+      
+      </table></td>
+  </tr>
+</table>
+{/strip}
+{/block} 

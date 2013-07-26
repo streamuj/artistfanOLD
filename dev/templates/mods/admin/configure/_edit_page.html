@@ -1,0 +1,110 @@
+<div class="path">
+    <a href="{$siteAdr}">Панель администрирования</a> &raquo; Настройки
+</div>
+				
+<h1>{if $id}Редактировать{else}Добавить{/if} элемент конфигурации</h1>
+
+
+<div class="blue_block">
+<form method="post" action="{$siteAdr}base/configure/editpage/" id="fmb">
+{if $id}
+<input type="hidden" name="id" value="{$id}" />
+{/if}
+<input type="hidden" name="dact" id="dact" value="" />
+		
+{if $errs}
+    <font color="#990000">
+    {foreach key=k item=i from=$errs}
+     - {$i}<br />
+    {/foreach}        
+    </font><br />    
+{/if}
+		
+<p>Сортировка<br /><input  class="text_input_small" style="width:120px;" type="text" name="fm[Sortid]" value="{$fm.Sortid}"  /></p>
+<p>Категория<br />
+{if !$id}
+<select name="fm[CategoryId]" onchange="document.location='{$siteAdr}base/configure/editpage/?cid='+this.value;">
+    <option value="0">Верхний уровень</option>
+    {foreach key=k item=i from=$cats}
+    <option value="{$i.Id}"{if $i.Id==$fm.CategoryId} selected="selected"{/if}>{$i.Title}</option>
+    {/foreach}
+</select>
+{else}
+    <input type="hidden" name="fm[CategoryId]" value="{$fm.CategoryId}" />
+    {foreach key=k item=i from=$cats}
+        {if $i.Id==$fm.CategoryId}<b>{$i.Title}</b>{/if}
+    {/foreach}
+{/if}
+</p>
+{if $ci.Ctype==1}
+    <p>Количество вещей при заказе<br />
+    <input class="text_input_small" type="text" style="width:360px;" name="fm[Title]" value="{$fm.Title}"  />
+    </p>
+{else}
+    <p>Заголовок параметра<br /><textarea  class="text_input_small" style="width:100%; height: 70px;" name="fm[Title]">{$fm.Title}</textarea></p>
+{/if}
+
+{if $ci.Ctype==1}
+    <input type="hidden" name="fm[Pagename]" value="{$fm.Pagename}"  />
+{else}
+    <p>Название параметра(латинское, для выборки)<br /><input class="text_input_small" type="text" style="width:360px;" name="fm[Pagename]" value="{$fm.Pagename}"  /></p>
+{/if}
+
+
+{if $ci.Ctype==1}
+<p>Величина скидки<br />
+    <input class="text_input_small" type="text" style="width:360px;" name="fm[Story]" value="{$fm.Story}"  />
+</p>
+{else}
+<p>Значение конфигурации<br />
+{if $edit_conf}
+    {if $saved}
+    <p style="color:green;">Конфигурация сохранена в файл</p>
+    {/if}
+    
+    {if $restored}
+    <p style="color:green;">Конфигурация восстановлена</p>
+    {/if}
+
+    <p style="color:red;">Редактируемые данные взяты из файла конфигурации.
+    В файлах конфигурации хранятся данные для подсказок, а так-же некоторые 
+    небольшие текстовые блоки, используемые на страницах сайта.</p>
+    <p>
+    Для редактирования подобных данных требуется соблюдать следующие правила:</p>
+    <p>- один параметр - одна строка</p>
+    <p>- формат описания параметра:<br />
+    параметр на латинском  = 'значение', например<br />
+    variable = 'значение параметра'<br />
+    <font style="color:red;">Для редактирования параметра достаточно вписать в ковычки: ' ' значение параметра</font>.
+    </p>
+    <p>- крайне не рекомендуется удалять параметры (лучше оставить его пустым).</p>
+    
+    <p>- параметры разбиты по секциям, например: [section]. Крайне не рекомендуется удалять секции параметров.</p> 
+
+
+    <p>- решеткой выделяются комментарии к параметрам.  Их можно дополнять, а также писать новые комментарии, например:<br />
+       #некий новый комментарий к параметру
+    </p> 
+    <p>- если версия испорчена  - для загрузки старой версии из файла достаточно очистить весь текст и сохранить. После загрузки
+    текст восстановитя из файла</p>
+    <p>- для выгрузки в текстовый файл и применения конфигурации на сайте нужно нажать на кнопку "Применить конфигурацию"</p>
+    <p>- для восстановления предыдущей конфигурации нужно нажать на кнопку "Восстановить конфигурацию"</p>
+    
+    <div>
+        <input type="button" onclick="$('#dact').val('load_conf');$('#fmb').submit();" value="Восстановить конфигурацию" /> 
+    </div><br />
+{/if}  
+
+
+    <textarea id="myTextArea" name="fm[Story]" rows="100" cols="20" style="font-size:14px;width: 100%;height:500px;">{$fm.Story}</textarea>
+</p>
+{/if}    
+
+<p><input type="button" value="Отмена" onclick="Go('{$siteAdr}base/configure/IndexAdmin{if $fm.CategoryId}?cid={$fm.CategoryId}{/if}');" /> <input type="submit" value="Сохранить" />
+{if $edit_conf}
+<span style="float:right;"><input type="button" onclick="$('#dact').val('save_conf');$('#fmb').submit();" value="Применить конфигурацию" /></span> 
+{/if}
+
+</p>
+</form>
+</div>

@@ -1,0 +1,715 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.Jcrop.css" />
+
+<script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.form.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+</script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+	var confirmInfo = {if $errs}{$errs}{else}{$confirm}{/if};
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+	imgWidth = 1;
+	imgHeight = 1;
+    $(document).ready(function()
+    {
+        oErrors.Show();
+		var jcrop_api;
+		var orginalImage = '{if $UserInfo.Avatar}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}';
+        var uploader = new qq.FileUploader({
+            element: $('#file-uploader')[0],
+            action: '/artist/UploadAvatar',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, 
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('image');
+				var loadImage = "{$SUB_DOMAIN}si/loading.gif";
+				$('#image_edit').attr('src', loadImage);
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('image');
+				if(responseJSON.success == 0){
+
+					$('.jcrop-holder').hide();
+				    $('#image_edit').attr('src', orginalImage).css({ 'visibility': 'visible', width:'auto', height : 'auto'}).show();
+
+					$('#profilePic').removeClass('good').html('');
+					$('#saveAvatar').hide();
+					$('#cropedTxt').html('');
+					$('#cropImage').parents('tr').find('div').hide();
+					$('#image_err').addClass('error').html(responseJSON.message);
+					return;
+				}
+                if (responseJSON.success==1) {
+                    $('#image_err').removeClass('error').html( '' );
+					$('#image_edit').hide();
+                    var img = '/'+responseJSON['image'];
+
+					imgWidth = responseJSON['width'];
+					imgHeight = responseJSON['height'];
+                    oErrors.SetOkFld('image', 'Image uploaded!');
+					$('#deleted').hide();
+					$('#profilePic').addClass('good').html('Profile Picture Uploaded');
+					if(jcrop_api){
+						jcrop_api.setImage(img);
+						jcrop_api.release();
+					}
+/*					if($('.jcrop-holder img').length){
+						$('.jcrop-holder img').attr('src', img );
+					}*/
+					$('#image_edit').load(function () {
+						$(this).Jcrop({
+							onChange: showPreview,
+							onSelect: showPreview,
+							aspectRatio: 1,
+							onSelect: updateCoords,
+							setSelect: [ 0, 0, 100, 100 ]
+							}, function(){
+							  jcrop_api = this;
+						});
+						
+					}).attr('src', img);
+					$('.jcrop-holder').show();
+					$('#saveAvatar').show();
+					$('#cropedTxt').html('Croped Image');
+					$('#cropImage').parents('tr').find('div').show();					
+					$('#cropImage').attr('src', img );
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('image');
+            },
+
+            multiple: false,
+            autoSubmit: true,
+
+            messages: {
+                
+            },
+            showMessage: function(message){
+                 oErrors.SetBadFld('image', message);
+            }
+        });
+		
+		$('#add_label').click(function() {
+            var obj = $('.rlabel div:first').clone(true);
+            $(obj).find('input:text').val('');
+            $(obj).appendTo('.rlabel');
+        });
+		
+		$('#saveAvatar').click(function(){
+			var x1 = $('#x1').val();
+			var x2 = $('#x2').val();
+			var y1 = $('#y1').val();
+			var y2 = $('#y2').val();
+			var w = $('#w').val();
+			var h = $('#h').val();
+			$.ajax({
+				type:'post',
+				url:'/artist/SaveAvatar',
+				data:{ x1: x1, x2:x2, y1: y1, y2:y2, w: w, h: h, rand_id: $('#rand_id').val(), ppic: 1},
+				dataType: 'json',
+				success: function(response){
+					window.location.href = window.location;
+				}
+			});
+		});
+
+        $('.del_label').click(function() {
+            if ($('.pitem').length > 1)
+            {
+                $(this).parents('.pitem').remove();
+            }  
+            else
+            {
+                $(this).parents('.pitem').find('input:text').val('');
+            }
+              
+        });
+		
+    });
+	function updateCoords(c)
+	{
+		$('#x1').val(c.x);
+		$('#y1').val(c.y);
+		$('#x2').val(c.x+c.w);
+		$('#y2').val(c.y+c.h);
+		$('#w').val(c.w);
+		$('#h').val(c.h);
+	};
+	$imgpos = {
+		width	: 300,
+		height	: 300
+	};
+	function showPreview(coords)
+	{
+		if (parseInt(coords.w) > 0)
+		{
+			var rx = 234 / coords.w;
+			var ry = 234 / coords.h;
+			$('#cropImage').css({
+				width: Math.round(rx * imgWidth) + 'px', 
+				height: Math.round(ry * imgHeight) + 'px',
+				marginLeft: '-' + Math.round(rx * coords.x) + 'px', 
+				marginTop: '-' + Math.round(ry * coords.y) + 'px' 
+			});
+		}
+	};
+</script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	$('#alt_email_div').hide();
+	$('#alt_save_div').hide();			
+
+    $('#test').click(function(){
+		$('#alt_email_div').show();
+		$('#alt_save_div').show();		
+	});
+	
+	$('#profileInfo').hide();
+	$('#bandInfo').hide();
+	$('#changePassword').hide();
+	$('#changeEmail').hide();
+	
+
+	if(confirmInfo)
+	{
+		$('.subTab a').removeClass('active');		
+		$('.subTab #tabProfileInfo').addClass('active');
+			
+		$('#profilePicture').hide();
+		$('#profileInfo').show();
+		$('#bandInfo').show();
+		$('#changePassword').hide();
+		$('#changeEmail').hide();
+	}
+	
+	$('#tabProfilePicture').click(function(){
+		
+		$('.subTab a').removeClass('active');		
+		$('.subTab #tabProfilePicture').addClass('active');
+		
+		$('#profilePicture').show();
+		$('#profileInfo').hide();
+		$('#bandInfo').hide();
+		$('#changePassword').hide();
+		$('#changeEmail').hide();
+		
+		confirmInfo ='';
+		$('.alert_success').hide();
+		
+		
+	});
+	$('#tabProfileInfo').click(function(){
+
+		$('.subTab a').removeClass('active');		
+		$('.subTab #tabProfileInfo').addClass('active');
+			
+		$('#profilePicture').hide();
+		$('#profileInfo').show();
+		$('#bandInfo').show();
+		$('#changePassword').hide();
+		$('#changeEmail').hide();
+		
+	});
+	$('#tabChangePassword').click(function(){
+
+		$('.subTab a').removeClass('active');		
+		$('.subTab #tabChangePassword').addClass('active');
+			
+		$('#profilePicture').hide();
+		$('#profileInfo').hide();
+		$('#bandInfo').hide();
+		$('#changePassword').show();
+		$('#changeEmail').hide();
+
+		confirmInfo ='';
+		$('.alert_success').hide();		
+		
+	});
+	$('#tabChangeEmail').click(function(){
+
+		$('.subTab a').removeClass('active');		
+		$('.subTab #tabChangeEmail').addClass('active');
+			
+		$('#profilePicture').hide();
+		$('#profileInfo').hide();
+		$('#bandInfo').hide();
+		$('#changePassword').hide();
+		$('#changeEmail').show();
+		
+		confirmInfo ='';
+		$('.alert_success').hide();		
+		
+	});	
+
+	$('#delDialog').dialog({ autoOpen: false });
+	$('#delConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		buttons: {
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button bgrey', "click": function() {
+			 		$(this).dialog('close');
+			 	}
+			 },
+		'Delete': {
+				"text":'Delete', "class":'button wblue',  "click":function(){
+				$('body').addClass('loading');
+				deleteProfilePic();
+				$(this).dialog('close');				
+				}
+			}
+		}
+	});
+	$('body').on('click', '.DeleteProfilePic', function(){
+			$('#delConfirm').dialog('open');
+			});
+function deleteProfilePic()
+	{
+		        $.ajax({
+            type:     'POST',
+            dataType: 'json',
+            url:      '/base/user/deleteavatar',
+            success: function (data)
+            {
+                if (data.q == 'ok')
+               {
+					$('body').removeClass('loading');																	
+					$('#image_edit').attr('src', '/i/ph/user-48x48.png');
+                    $('#deleted').addClass('good').html("Profile Picture Deleted Successfully");
+                }
+            }
+        });
+
+	}	
+});
+</script>
+{/strip}
+{/block}
+
+
+{block name="my_cabinet"}
+{strip}
+<div class="P15">
+  <div>
+  <h2 class="LF">My Profile </h2> 
+  </div>
+   
+  <div class="clear">&nbsp;</div>
+  
+<div class="subTab">
+	<ul>
+     <li><a href="javascript:void(0);"  class="active" id="tabProfilePicture"><strong>Profile Picture</strong></a></li>
+	 <li><a href="javascript:void(0);" id="tabProfileInfo"><strong>Profile Info</strong></a></li>
+   	 <li><a href="javascript:void(0);" id="tabChangePassword"><strong>Change Password </strong></a></li>
+	 <li><a href="javascript:void(0);" id="tabChangeEmail"><strong>Change Email </strong></a> </li>
+     </ul>
+  </div>
+
+  <div class="clear"></div>
+
+<form method="post" action="/artist/profile" id="big_form">
+  <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+ <!-- profile picture start here-->
+<div style="padding:15px; border-top:1px solid #cccccc;" id="profilePicture">
+  <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td colspan="3"><h4>{if $UserInfo.Avatar}Edit{else}Add{/if} Profile Picture</h4></td>
+      </tr>  
+    <tr>
+      <td width="11%" align="left" valign="middle" nowrap="nowrap">Profile Picture</td>
+      <td width="44%" align="left" valign="middle" >
+      <label>
+          <div id="file-uploader" style="float: left;">           <noscript>
+              <p>Please enable JavaScript to use file uploader.</p>
+              </noscript>
+          </div>
+      </label>      
+      </td>
+      <td width="45%" align="left" valign="middle" >
+      {* onclick="oProfile.DeleteAvatar();" *}
+      	 {if $UserInfo.Avatar}
+        	<span id="deleted" class="DeleteProfilePic button black RT">Delete</span>                       
+         {/if}
+         <input type="button" value="Save" class="button wblue RT" id="saveAvatar" style="display:none"/>&nbsp;
+       </td>
+    </tr>
+    <tr>
+      
+      <td colspan="3" align="center" valign="middle">
+     <div style="border-top: 1px solid #eeeeee; border-bottom: 1px solid #eeeeee; padding:10px 0">
+{*	 <p class="red P10"> Note: Image Size should be above 234 x 234 </p>*}
+     
+     <p class="P10" style="color:#ccc;">We recommend upload an image that is no less than 234 pixels (width) x 234 pixels (height) for optimal resolution.  </p>
+      <img src="{if $UserInfo.Avatar}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}" id="image_edit" /><span id="profilePic"></span>
+      	<input type="hidden" name="x1" value="" id="x1" />
+        <input type="hidden" name="y1" value="" id="y1" />
+        <input type="hidden" name="x2" value="" id="x2" />
+        <input type="hidden" name="y2" value="" id="y2" />
+        <input type="hidden" name="w" value="" id="w" />
+        <input type="hidden" name="h" value="" id="h" /></div>
+        
+      </td>
+    </tr>
+    <tr>
+	    <td align="left" valign="top" nowrap="nowrap" id="cropedTxt"></td>
+    	<td colspan="2">
+        <div style="float:left; margin-top:5px; position:relative; overflow:hidden; width:{$smarty.const.USER_PROFILE_IMAGE_WIDTH}px; height:{$smarty.const.USER_PROFILE_IMAGE_HEIGHT}px; display:none;">
+        <img id="cropImage" src="{if $UserInfo.Avatar}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}" style="position: relative;" alt="Crop Image Preview" />        </div>        </td>
+    </tr>
+    <tr>
+       <td colspan="3" align="left"><span id="image_err"></span>&nbsp;</td>
+    </tr>
+  </table>
+ </div>
+  <!-- profile picture end here-->
+  
+  <!-- profile info start here-->
+  <div style="padding:15px; border-top:1px solid #cccccc;" id="profileInfo">
+  
+  
+  {if $confirm}
+  	<div class="clear"></div>    
+	<div class="alert_success good M15"><strong>Success!</strong> Profile saved! </div>
+  	<div class="clear">&nbsp;</div>        
+	{/if}
+
+{if $errs}
+	<div class="error M15">Errors were found with your profile edit. Please correct the highlighted fields below. </div>
+{/if}
+  
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td colspan="2"><h4>Profile Info</h4></td>
+      </tr>
+      <tr>
+        <td colspan="2"><strong>&nbsp;</strong></td>
+      </tr>
+      <tr>
+        <td width="11%" align="left" valign="top" nowrap="nowrap"><p style="line-height:32px;">First Name<span style="color:red;">*</span></p></td>
+        <td width="89%" align="left" valign="middle" ><label>
+          <input name="fm[FirstName]" id="first_name" value="{$fm.FirstName}" type="text" class="txtBox" size="72" maxlength="20" />
+          <span id="err_FirstName" class="err"></span></label></td>
+      </tr>
+      <tr>
+        <td align="left" valign="top" nowrap="nowrap"><p style="line-height:32px;">Last Name<span style="color:red;">*</span></p></td>
+        <td align="left" valign="middle" ><input type="text" class="txtBox" name="fm[LastName]" id="last_name" value="{$fm.LastName}" size="72" maxlength="20"/>
+          <span id="err_LastName" class="err P5"></span></td>
+      </tr>
+      <tr>
+        <td align="left" valign="top" nowrap="nowrap"><p style="line-height:32px;">User Name<span style="color:red;">*</span></p></td>
+        <td align="left" valign="middle" ><label>
+          <input type="text" class="txtBox" name="fm[Name]" id="name" value="{$fm.Name}" size="72" readonly="readonly" />
+          <span id="err_Name" class="err"></span></label></td>
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">Birth date</td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="2" class="xform">
+            <tr>
+              <td><select name="fm[mm]" id="select">
+                  <option value="">Month</option>
+                  
+                    {foreach key=k item=i from=$mm}
+                      
+                  <option value="{$k}" {if $k==$fm.mm} selected="selected"{/if}>{$i} </option>
+                  
+                    {/foreach}
+            
+                </select></td>
+              <td><select name="fm[dd]" id="select2">
+                  <option value="">day</option>
+                  
+                        {foreach key=k item=i from=$dd}
+                        
+                  <option value="{$k}"
+                        {if $k==$fm.dd} selected="selected"{/if}>{$i}</option>
+                  
+                        {/foreach}
+            
+                </select></td>
+              <td><select name="fm[yy]" id="select3">
+                  <option value="">year</option>
+                  
+                        {foreach key=k item=i from=$yy}
+                        
+                  <option value="{$k}"
+                        {if $k==$fm.yy} selected="selected"{/if}>{$i}</option>
+                  
+                        {/foreach}
+            
+                </select>
+                <span id="err_dob" class="err"></span></td>
+            </tr>
+          </table></td>
+      </tr>
+      <tr>
+        <td>Gender</td>
+        <td align="left" valign="middle" ><table border="0" cellspacing="0" cellpadding="2">
+            <tr>
+              <td><label>
+                <input name="fm[Gender]" class="radio" id="male"{if $fm.Gender==1} checked="checked"{/if} value="1" type="radio">
+                </label></td>
+              <td>Male</td>
+              <td><input name="fm[Gender]" class="radio" id="female"{if $fm.Gender==2} checked="checked"{/if} value="2" type="radio"></td>
+              <td>Female</td>
+              <td><input name="fm[Gender]" class="radio" id="disclose"{if !$fm.Gender} checked="checked"{/if} value="0" type="radio"></td>
+              <td>Prefer not to disclose &nbsp;&nbsp;<span id="err_Gender" class="err"></span></td>
+            </tr>
+          </table></td>
+      </tr>
+      <tr>
+        <td >Likes</td>
+        <td><input type="text" name="fm[Likes]" id="likes" value="{$fm.Likes}"  class="txtBox" size="72" />
+          <span id="err_Likes" class="err"></span></td>
+      </tr>
+      <tr>
+        <td >Phone</td>
+        <td><input type="text" name="fm[UserPhone]" id="user_phone" value="{$fm.UserPhone}"  class="txtBox" size="20" />
+          <span id="err_UserPhone" class="err"></span></td>
+      </tr>      
+      <tr>
+        <td valign="top">About Me</td>
+        <td align="left" valign="top"><textarea cols="55" rows="4" class="txtBox" name="fm[About]" id="about" style="height:auto">{$fm.About}</textarea></td>
+      </tr>
+
+    </table>
+    
+  </div>
+  
+   <!-- profile info end here-->
+   
+    <!-- band  info start here-->
+<div style="padding:15px;" id="bandInfo"> 
+<!--  <div style="padding:15px; border-top:1px solid #cccccc;"> -->
+  <table width="100%" border="0" cellpadding="5" cellspacing="0">
+    <tr>
+      <td colspan="2">
+        <h3><strong>Artist/Band Info</strong></h3>
+        </td>
+    </tr>
+    <tr>
+      <td colspan="2"><strong>&nbsp;</strong></td>
+    </tr>
+    <tr>
+      <td class="label_td"><label>Artist/band name</label></td>
+      <td><input type="text" name="fm[BandName]" id="band_name" value="{$fm.BandName}"  class="txtBox" size="72" maxlength="30"/>
+        <span id="err_band_name" class="err"></span></td>
+    </tr>
+    <tr>
+      <td class="label_td"><label>State</label></td>
+      <td >
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+        			<td class="xform"><select id="state" name="fm[State]">                
+              {foreach key=k item=i from=$statesList}                   
+                <option value="{$i.state_code}" {if $i.state_code == $fm.State} selected="selected"{/if}>{$i.state_name} </option>                
+              {/foreach}
+              
+              </select></td>
+                    
+                    <td><label>Years active</label></td>
+                    <td class="xform"><select name="fm[YearsActive]">
+                     {foreach key=k item=i from=$mem_act_tracks}
+       				       <option value="{$i}" {if $i == $fm.YearsActive} selected="selected"{/if}>{$i}</option>
+              		{/foreach}
+		            </select>
+                </td>
+               </tr>
+             </table>
+        <span id="err_years_active" class="err"></span></td>
+    </tr>
+    
+    <tr>
+      <td class="label_td"><label>Location </label></td>
+      <td><input type="text" name="fm[Location]" value="{$fm.Location}"  class="txtBox" size="72" />
+        <span id="err_location" class="err"></span></td>
+    </tr>
+	<tr>
+      <td  align="left" valign="top" nowrap="nowrap">Genre(s)<span class="red">*</span><br />
+        (You can select upto five)</td>
+      <td align="left" valign="middle" nowrap="nowrap"> {assign var="maxv" value=$genres|@count/2}
+        {assign var="maxv" value=$maxv|ceil}
+        <table border="0" cellspacing="0" cellpadding="2">
+          <tr> {foreach name=n key=k item=i from=$genres}
+            {if $smarty.foreach.n.index mod $maxv == 0}
+            <td> {/if}
+              <input type="checkbox" id="genres{$k}" name="fm[Genres][{$k}]" value="1"{if $fm.Genres.$k} checked="checked"{/if} />
+              <label for="genres{$k}">{$i}</label>
+              <br />
+              {assign var="nv" value=$smarty.foreach.n.index+1}
+              {if $nv mod $maxv == 0} </td>
+            {/if}
+            {/foreach} </tr>
+        </table>
+     <span id="err_Genres" class="err"></span></td> 
+    </tr>
+    <tr>
+      <td class="label_td"><label>Members</label></td>
+      <td >
+      		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="xform"> <select name="fm[Members]">
+              <option value="0">Select Members</option>
+              {foreach key=k item=i from=$mem_act_tracks}
+              <option value="{$i}" {if $i == $fm.Members} selected="selected"{/if}>{$i}</option>
+              {/foreach}
+            </select>
+            	</td>
+                
+                <td><label>Total Tracks Created</label></td>
+                <td class="xform"><select name="fm[Tracks]" style="float:right;">
+              <option value="0">Select Members</option>
+              {foreach key=k item=i from=$mem_act_tracks}
+              <option value="{$i}" {if $i == $fm.Tracks} selected="selected"{/if}>{$i}</option>
+              {/foreach}
+            </select>
+            </td>
+           </tr>
+         </table> 
+      </td>
+      <td>&nbsp;</td>
+    </tr>
+      
+    <tr>
+      <td class="label_td"><label>Website</label></td>
+      <td><span class="light">http://</span>
+        <input type="text" name="fm[Website]" value="{$fm.Website}" class="txtBox website_input" /></td>
+      <td id="err_website" class="err"></td>
+    </tr>
+    
+    <tr>
+      <td class="label_td"><label>Hash Tags</label></td>
+      <td nowrap="nowrap">#<input type="text" name="fm[HashTag]" value="{$fm.HashTag}"  class="txtBox2 website_input" size="72" /></td>
+      <td id="err_members" class="err"></td>
+    </tr>
+        
+    <tr>
+      <td class="label_td"><label>Bio</label></td>
+      <td colspan="2"><textarea name="fm[Bio]" cols="55" rows="2" class="txtBox2" style="height:auto">{$fm.Bio}</textarea></td>
+    </tr>
+    
+    <tr>
+      <td colspan="3">&nbsp;</td>
+    </tr>
+    <tr>
+      <td class="label_td"><label>Record label(s)</label></td>
+      <td colspan="2"><div class="rlabel"> {foreach name=n key=k item=i from=$fm.RecordLabel}
+          <div class="pitem" style="padding-bottom:5px;"> <span class="light">Record-Label:</span>
+            <input class="txtBox record_input" type="text" name="fm[RecordLabel][]" value="{$fm.RecordLabel.$k}" />
+            &nbsp;<span class="light">Website:</span>
+            <input class="txtBox record_input" type="text" name="fm[RecordLabelLink][]" value="{$fm.RecordLabelLink.$k}" />
+            &nbsp; <a href="javascript:void(0);" class="del_label" title="Delete Record Label"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a> </div>
+          {foreachelse}
+          <div class="pitem" style="padding-bottom:5px;"> <span class="light">Record-Label:</span>
+            <input class="txtBox record_input" type="text" name="fm[RecordLabel][]" value="" />
+            &nbsp;<span class="light">Website:</span>
+            <input class="txtBox record_input" type="text" name="fm[RecordLabelLink][]" value="" />
+            &nbsp; <strong> <a href="javascript:void(0);" class="del_label" title="Delete Record Label"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a> </strong> </div>
+          {/foreach} </div>
+        <div> <a href="javascript:void(0);" id="add_label"><strong>Add record label</strong></a> </div></td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center" valign="middle" nowrap="nowrap">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center" valign="middle" nowrap="nowrap"><input type="submit" class="button wblue" value="Save Changes" /></td>
+    </tr>
+  </table>
+  </div>
+</form>
+  <div class="clear"></div>
+  
+<div style="padding:15px; border-top:1px solid #cccccc;" id="changePassword">
+<form method="post" action="/artist/profile" id="settings_form">
+ <input type="hidden" name="do" value="pass" />
+ <table width="100%" border="0" cellpadding="5" cellspacing="0">
+    
+      <tr>
+        <td colspan="2"><h4>Change Password </h4></td>
+      </tr>
+       <tr>
+    <td>&nbsp;</td>
+    </tr>
+          <td colspan="5"><div class="alert_success good" style="display: none;">
+                    {* <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a> *}
+                    <strong>Success!</strong> <span id="pass_change"></span>
+          </div>
+          <div class="clear">&nbsp;</div>
+          </td>         
+      <tr>
+        <td width="11%" align="left" valign="middle" nowrap="nowrap">Old password</td>
+        <td width="89%" align="left" valign="middle" ><label>
+        <input type="password" class="txtBox" name="fm[old_pass]" value="" size="40" />
+        </label><span class="err" id="err_old_pass"></span></td>
+        
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">New password</td>
+        <td align="left" valign="middle" ><input class="txtBox" type="password" name="fm[new_pass]" size="40" /><span class="err" id="err_new_pass"></span>
+         <span class="wait button-wait" style="display:block;"></span>
+        </td>
+        
+      </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">Repeat new password</td>
+        <td align="left" valign="top" ><label> <input type="password" name="fm[new_pass2]" class="txtBox" size="40" /><span class="err" id="err_new_pass2"></span></label></td>
+        
+      </tr>
+        <tr><td>&nbsp;</td></tr>   
+      <tr>
+      	<td>&nbsp;</td>
+        <td colspan="2" align="left">
+			<input type="button" onclick="oProfile.ChangePassword(1);"  value="Save Changes"   class="button wblue" />        
+	    </td>
+     </tr>
+     <tr><td>&nbsp;</td></tr>
+    </table>
+  </form> 
+  
+</div>
+<div class="clear"></div>
+<!-- change email start -->
+<div style="padding:15px; border-top:1px solid #cccccc;" id="changeEmail">
+
+  <form method="post" action="/artist/profile" id="add_email_form">
+   <input type="hidden" name="do" value="do_email" />
+   <div  id="changed_email">
+        {include file="mods/profile/edit_artist/ajax/changed_mail.html"}
+      </div>  
+
+  </form>
+</div> 
+
+   <!-- band info end here-->
+ <div id="errorEmail"></div>
+ <div id="delDialog" title="Delete Tracks">
+<p>Please select tracks to delete</p>
+</div>
+<div id="delConfirm" title="Confirm Delete">
+<p>Are you sure you want to delete the Profile Picture ?</p>
+<input type="hidden" id="aId">
+<input type="hidden" id="status">
+</div>
+</div>
+<div class="loadingdiv"></div>
+{/strip}
+{/block}

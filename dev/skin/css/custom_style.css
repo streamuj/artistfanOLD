@@ -1,0 +1,10 @@
+.pricetag.freeEvents {
+    background: none repeat scroll 0 0 #4F8E25;
+    border: 1px dotted #53576C;
+    border-radius: 12px 12px 12px 12px;
+    font-size: 11px;
+    padding: 3px 6px;
+    text-transform: uppercase;
+	color:#FFFFFF;
+	font-weight:bolder;
+}

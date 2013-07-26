@@ -1,0 +1,43 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+
+{/block}
+
+{block name="my_cabinet"}
+
+<div class="header_block">
+    <div class="path">
+<!--        <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>-->
+    </div>
+    <div class="social">
+        <iframe src="//www.facebook.com/plugins/like.php?locale=en_US&amp;href=http://{$DOMAIN}/u/{$ui.Name}/photo&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px; text-align: right;" allowTransparency="true"></iframe>
+        <a href="https://twitter.com/share" data-text="{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} photos" data-url="http://{$DOMAIN}/u/{$ui.Name}/photo" data-size="medium" data-align="right" class="twitter-share-button">Tweet</a>
+        {literal}<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>{/literal}
+        <g:plusone href="http://{$DOMAIN}/u/{$ui.Name}/photo" size="medium" align="right"></g:plusone>
+    </div>
+    <h1>Fan photos</h1>
+</div>
+
+<div class="content_block photos">
+
+    <h2>Albums</h2>
+    
+    {if $albums}
+    <div class="photos-container">
+        {foreach name=ph key=k item=i from=$albums}
+        <div class="album">
+            <div class="cover">
+                <a href="/u/{$ui.Name}/photo/{$i.Id}"><span class="thumb" style="background-image: url('{if $i.Cover}/files/photo/thumbs/{$i.UserId}/{$i.Cover}{else}/dev/templates/images/nophoto.jpg{/if}');"></span></a>
+            </div>
+            <div class="title">
+                <a href="/u/{$ui.Name}/photo/{$i.Id}">{$i.Title}</a> ({$i.CountPhotos})
+            </div>            
+        </div>
+        {if ($smarty.foreach.ph.index+1) mod 2 == 0}<div class="cl"></div>{/if}
+        {/foreach}
+        {if $smarty.foreach.ph.total mod 2 != 0}<div class="cl"></div>{/if}
+    </div>
+    {/if}
+</div>
+{/block}

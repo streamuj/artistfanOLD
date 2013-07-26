@@ -1,0 +1,69 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/mdetect.js"></script>
+<script src="/sj/jwplayer/jwplayer.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+var uagent = navigator.userAgent.toLowerCase();
+var fileRoot;
+var suffix = '';
+$(document).ready(function(){
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		fileRoot = 'http://mobile.streamingmediahosting.com/artistfan/_definst_/';
+		suffix = '/playlist.m3u8';
+	} else {
+		fileRoot = 'rtmp://flash.streamingmediahosting.com/artistfan/';
+	}
+});
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+  <table width="100%" border="0" cellpadding="5" cellspacing="0">
+    <tr>
+      <td><strong class="font16"> <a href="/">
+      {if $UserInfo.BandName}{$UserInfo.BandName}
+      {else}{$UserInfo.FirstName} {$UserInfo.LastName}
+      {/if}</a> > </strong>
+      <strong class="font16"><a href="/artist/broadcasting">My Broadcasting </a></strong> 
+      </td>
+    </tr>
+    <tr>
+    	<td>
+        {if $video['e.Title']}
+        {$video['e.Title']}{if $video.Order > 1} - Part {$video.Order}{/if}
+        {else}{$UserInfo.Name|ucfirst} - {$video['Pdate']|date_format}
+        {/if}
+        </td>
+    </tr>
+    <tr>
+      <td align="left" valign="middle" nowrap="nowrap"><label></label>
+        <table border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+          <tr>
+            <td><br />
+              <br />
+              <div class="video-holder">
+                <div class="video" id="jwplayer"></div>
+                {strip}
+                <script type='text/javascript'>
+                            jwplayer('jwplayer').setup({
+                                controlbar: "bottom",
+                                file: fileRoot+"{$video.Video}"+suffix,
+                                width: 640,
+                                height: 360,
+                           });
+                           jwplayer().onReady(function(){ 
+                                jwplayer().play(); 
+                            });
+                </script>
+                {/strip} </div></td>
+          </tr>
+        </table></td>
+    </tr>
+  </table>
+</div>
+{/block}
