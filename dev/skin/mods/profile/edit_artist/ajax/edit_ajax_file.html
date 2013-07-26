@@ -1,6 +1,0 @@
-<td align="center" valign="top" bgcolor="#FFFFFF"><input type="checkbox" class="tracks" name="track[{$track.Id}]" id="track_{$track.Id}" value="{$track.Id}"/></td>
-  <td align="center" valign="top" nowrap="nowrap" bgcolor="#FFFFFF">{$siNo}</td>
-  <td align="left" valign="top" bgcolor="#FFFFFF">{$track.Title|truncate:50:'...'}</td>
-  <td align="center" valign="top" bgcolor="#FFFFFF">{if $track.TrackLength}{$track.TrackLength|date_format:"%M:%S"}{elseif $track.Status == 3}Error{else}In Process{/if}</td>
-  <td align="center" valign="top" bgcolor="#FFFFFF">{if $Genres} {$Genres} {else} {$track.Genre}{/if}</td>
-  <td align="center" valign="top" bgcolor="#FFFFFF">{if $track.Price > 0}${$track.Price|string_format:'%.2f'}{elseif $album['Price'] > 0}Bonus{else}Free{/if}</td>
