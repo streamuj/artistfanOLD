@@ -15,6 +15,7 @@ if($flows){
 		foreach($dirList as $key => $file){
 			if(!$file) continue;
 			$match = substr($file, 0, strlen($eventName)) == $eventName;
+			
 			if($match){
 				echo 'Match Found for Event: '. $eventId;
 				echo '<hr>';
@@ -26,3 +27,4 @@ if($flows){
 		BroadcastFlows::SetDownloadedFlow($flow['Id']);
 	}
 }
+
