@@ -75,3 +75,4 @@ function getFTPDirectoryList($directory)
 	$dirList=preg_split("/\r\n/",$result);
 	return $dirList;
 }
+
