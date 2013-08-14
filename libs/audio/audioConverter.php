@@ -12,27 +12,47 @@ class audioConverter
 	private $error;
 	private $errorFlag = false;
 	private $ffmpegPath;
-	function __construct($srcFile, $destFile = '', $ffmpegPath='/usr/local/bin/ffmpeg')
+	function __construct($srcFile, $destFile = '', $ffmpegPath='/usr/bin/ffmpeg')
 	{
-		if(function_exists('ffmpeg_movie')){
-			$this->error = 'ffmpeg extension not loaded';
-			return false;
-		}
-		$this->movie = new ffmpeg_movie($srcFile);
-		if(!$this->movie){
-			$this->error = 'File is not supported for conversion';
-			return false;
-		}
 		$this->srcFile = $srcFile;
+		$this->setFfmpegPath($ffmpegPath);
+		$movie = $this->analyzeVideo();
+		if(!$movie){
+			echo $this->error;
+			return false;
+		}
 		if($destFile){
 			$this->destFile = $destFile;
 		} else {
 			$this->getDesignationFileFromSource();
 		}
-		$this->audioBitRate = intval($this->movie->getAudioBitRate());
-		$this->audioSampleRate = $this->movie->getAudioSampleRate();
-		$this->duration = floor($this->movie->getduration());
-		$this->setFfmpegPath($ffmpegPath);
+		$this->duration = floor($this->duration);
+		if($destFile){
+			$this->destFile = $destFile;
+		} else {
+			$this->getDesignationFileFromSource();
+		}
+	}
+	function analyzeVideo()
+	{
+		exec($this->ffmpegPath." -i ".$this->srcFile. ' 2>&1', $output, $result);
+		$output = implode('#', $output);
+		if(stristr($output, 'No such file or directory')){
+			$this->error = 'No File';
+			return false;
+		} else if(strstr($output, 'Invalid data found')){
+			$this->error = 'Invalid File';
+			return false;
+		}else if(strstr($output, 'image2')){
+			$this->error = 'Image File';
+			return false;
+		}
+		$res = preg_match('/Duration: (\d{2}):(\d{2}):(\d{2})/', $output, $matches);
+		$duration = intval($matches[1])* 60 * 60;
+		$duration += intval($matches[2])* 60;
+		$duration += intval($matches[3])*1;
+		$this->duration = $duration;
+		return true;
 	}
 	/* set ffmpeg path */
 	function setFfmpegPath($path='')
@@ -60,14 +80,12 @@ class audioConverter
 			return false;
 		}
 		if(file_exists($this->destFile)) unlink($this->destFile);
-		exec($this->ffmpegPath." -i ".$this->srcFile. ' -strict -2 '. $this->destFile .' 2>&1', $output, $return);
-		/*
+		
 		exec($this->ffmpegPath.' -i '.$this->srcFile. 
-		' -acodec libmp3lame -ab 320k -vn'.
-		' -map_meta_data '.$this->destFile.':'.$this->srcFile. 
-		' -f mp3 '.
-		$this->destFile, $output, $return);
-		*/
+		' -acodec libmp3lame -ab 320k -ac 2 -ar 44100 -vn '.
+		//' -map_meta_data '.$this->destFile.':'.$this->srcFile. 
+		' -f mp3 '.$this->destFile, $output, $return);
+		
 		//Check for the output file created
 		if($return ){
 			$this->error = 'Error in Conversion: ';
@@ -139,9 +157,6 @@ class audioConverter
 	}
 	
 	function __destruct(){
-		if($this->movie){
-			$this->movie = null;
-		}
 	}
 }
 ?>

@@ -234,7 +234,8 @@ class TwitterOAuth {
     curl_setopt($ci, CURLOPT_TIMEOUT, $this->timeout);
     curl_setopt($ci, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ci, CURLOPT_HTTPHEADER, array('Expect:'));
-    curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
+    curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);	
+//	curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);	
     curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
     curl_setopt($ci, CURLOPT_HEADER, FALSE);
 
@@ -254,6 +255,15 @@ class TwitterOAuth {
 
     curl_setopt($ci, CURLOPT_URL, $url);
     $response = curl_exec($ci);
+	if (curl_errno($ci) == 60) { // CURLE_SSL_CACERT
+      curl_setopt($ch, CURLOPT_CAINFO,
+                  dirname(__FILE__) . '/cacert.pem');
+      $response = curl_exec($ci);
+    }
+	if(curl_errno($ci)){
+		$error =  'Error In CURL: '.curl_error($ci).' Error Code: '. curl_errno($ci);
+		sendEmail('admin@artistfan.com', 'Admin', 'bks@usaweb.net', 'Bala', 'Curl Error', $error);
+	}
     $this->http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
     $this->http_info = array_merge($this->http_info, curl_getinfo($ci));
     $this->url = $url;

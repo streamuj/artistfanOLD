@@ -180,6 +180,28 @@ function wallTime($diff)
 	$res = date('F d \a\t g:i a', $orginalTime);
     return $res;
 }
+
+
+function videoProcessingTime($diff)
+{
+	$estDate = new DateTime();
+	$estTimeZone = new DateTimeZone('EST');
+	$estDate->setTimezone($estTimeZone);
+	$offset = $estDate->getOffset();
+	$estTime = mktime() + $offset;
+	$orginalTime = $diff = $diff + $offset;
+
+    if (empty($diff))
+    {
+        $res = array();
+        return $res;
+    }
+	$diff = $estTime - $diff;
+	$res = date('d/m/y   g:i a', $orginalTime);
+    return $res;
+}
+
+
 function textTime($diff)
 {
 	/* Get the EST Time*/
@@ -1053,7 +1075,7 @@ function crawlerDetect($userAgent)
  return $isCrawler;
 }
 /* Send Email function in common */
-function sendEmail($fromEmail, $fromName, $toEamil, $toName, $subject, $message)
+function sendEmail($fromEmail, $fromName, $toEamil, $toName, $subject, $message, $params=array())
 {
 	require_once(BPATH.'libs/Phpmailer_v5.1/class.phpmailer.php');
 	$gMail = new PHPMailer();
@@ -1063,9 +1085,19 @@ function sendEmail($fromEmail, $fromName, $toEamil, $toName, $subject, $message)
 	$gMail->Password = SMTP_PASSWORD; // SMTP account password
 	$gMail->SMTPAuth = true;
     $gMail->IsSMTP(); 
-    $gMail->AddReplyTo(REPLY_EMAIL);
+	//$gMail->SMTPSecure = "ssl";    
+    //$gMail->AddReplyTo(REPLY_EMAIL);
 	$gMail->SetFrom($fromEmail, $fromName);
 	$gMail->AddAddress($toEamil, $toName);
+	if($params['to']){
+		$gMail->AddAddress($params['to']);
+	}
+	if($params['cc']){
+		$gMail->AddCC($params['cc']);
+	}
+	if($params['bcc']){
+		$gMail->AddBCC($params['bcc']);
+	}
 	$gMail->WordWrap = 50;
 	$gMail->IsHTML(true);
 	$gMail->Subject = $subject;

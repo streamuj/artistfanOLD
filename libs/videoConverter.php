@@ -20,54 +20,66 @@ class video
 	private $destDimension;
 	private $flvToolPath;
 	private $videoBitRate;
-	function __construct($srcFile, $destFile = '', $destWidth=0, $destHeight=0, $ffmpegPath='/usr/local/bin/ffmpeg', $flvToolPath='/usr/bin/flvtool2')
-	{
-		if(function_exists('ffmpeg_movie')){
-			$this->error = 'ffmpeg extension not loaded';
-			return false;
-		}
-		$this->movie = new ffmpeg_movie($srcFile);
-		if(!$this->movie){
-			$this->error = 'File is not supported for conversion';
-			return false;
-		}
+	function __construct($srcFile, $destFile = '', $destWidth=0, $destHeight=0, $ffmpegPath="/usr/bin/ffmpeg", $flvToolPath='flvtool2')
+	{		
 		$this->srcFile = $srcFile;
+		$this->setFfmpegPath($ffmpegPath);
+		$movie = $this->analyzeVideo();
+		if(!$movie){
+			echo $this->error;
+			return false;
+		}
 		if($destFile){
 			$this->destFile = $destFile;
 		} else {
 			$this->getDesignationFileFromSource();
 		}
-		$this->sourceWidth = $this->makeMultipleOfTwo($this->movie->getFrameWidth());
-		$this->sourceHeight = $this->makeMultipleOfTwo($this->movie->getFrameHeight());
-		$this->audioBitRate = intval($this->movie->getAudioBitRate());
-		$this->videoBitRate = intval($this->movie->getVideoBitRate());
-		$this->audioSampleRate = $this->movie->getAudioSampleRate();
-		$this->duration = floor($this->movie->getduration());
+		$this->sourceWidth = $this->makeMultipleOfTwo($this->sourceWidth);
+		$this->sourceHeight = $this->makeMultipleOfTwo($this->sourceHeight);
+		$this->duration = floor($this->duration);
 		if($destWidth && $destHeight){
 			$this->destDimension = $this->makeMultipleOfTwo($destWidth).'x'.$this->makeMultipleOfTwo($destHeight);
 		} else {
 			$this->destDimension = $this->sourceWidth.'x'.$this->sourceHeight;
 		}
-		$this->setAudioSampleRate();
-		if(!$this->audioBitRate){
-			$this->audioBitRate = $this->defaultAudioBitRate;
-		}
-		$this->setFfmpegPath($ffmpegPath);
-		$this->setFlvToolPath($flvToolPath);
+		
 	}
-	/* Set flv tool path*/
-	function setFlvToolPath($path='')
+	function analyzeVideo()
 	{
-		if($path){
-			$this->flvToolPath = $path;
-		} else {
-			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-				$this->flvToolPath = 'c:\\windows\\flvtool2.exe';
-			} else {
-				$this->flvToolPath = '/usr/bin/flvtool2';
-			}
+		echo $this->ffmpegPath." -i ".$this->srcFile; 
+		echo '<hr>';
+		exec($this->ffmpegPath." -i ".$this->srcFile. ' 2>&1', $output, $result);
+		
+		$output = implode('#', $output);
+		if(stristr($output, 'No such file or directory')){
+			$this->error = 'No File';
+			return false;
+		} else if(strstr($output, 'Invalid data found')){
+			$this->error = 'Invalid File';
+			return false;
+		}else if(strstr($output, 'image2')){
+			$this->error = 'Image File';
+			return false;
 		}
+		$res = preg_match('/Duration: (\d{2}):(\d{2}):(\d{2})/', $output, $matches);
+		$duration = intval($matches[1])* 60 * 60;
+		$duration += intval($matches[2])* 60;
+		$duration += intval($matches[3])*1;
+		echo 'Duration: '. $this->duration = $duration;
+		echo '<hr>';
+		$dimension = preg_match('/(\d+)x(\d+)/', $output, $dimArr);
+		echo 'Width: '.$this->sourceWidth = $dimArr[1];
+		echo '<hr>';
+		echo 'Height: '.$this->sourceHeight = $dimArr[2];
+		/*
+		if(!$this->sourceWidth){
+			$this->error = 'Invalid Video';
+			return false;
+		}
+		*/
+		return true;
 	}
+	
 	/* set ffmpeg path */
 	function setFfmpegPath($path='')
 	{
@@ -94,22 +106,36 @@ class video
 			return false;
 		}
 		if(file_exists($this->destFile)) unlink($this->destFile);
-		
-		/*
-		exec($this->ffmpegPath." -i ".$this->srcFile. 
+		echo $this->ffmpegPath." -i ".$this->srcFile. 
 		" -vcodec libx264".
-		" -vpre normal".
-		" -b 250k". //$this->videoBitRate .
-		" -bt 50k ".
-		" -acodec libfaac -ab 56k".
+		" -b:v 500k". 
+		" -acodec libfaac -ab 256k".
+		//" -acodec libvo_aacenc -ab 256k".
+		" -ar 44100 -ac 2 ".
+		" -aspect 4:3 ".
 		" -crf 22".
-		//" -threads 0".
-		//" -qmax 10 ".
-		" -s ".$this->destDimension.
+		" -f ".$this->destFileType.
+		" ".$this->destFile;
+		echo '<hr>';
+		
+		exec($this->ffmpegPath." -i ".$this->srcFile. 
+		" -vcodec libx264 ".
+		" -b:v 500k". 
+		" -acodec libfaac -ab 256k".
+		//" -acodec libvo_aacenc -ab 256k".
+		" -ar 44100 -ac 2 ".
+		" -r 30 ".
+		" -aspect 4:3 ".
+		" -crf 22".
 		" -f ".$this->destFileType.
 		" ".$this->destFile. " 2>&1", $output, $return);
-		*/
-		exec($this->ffmpegPath." -i ".$this->srcFile. ' -strict -2 '. $this->destFile .' 2>&1', $output, $return);
+		
+		echo '<hr>';
+		print_r($output);
+		echo '<hr>';
+		echo $return;
+		
+		//exec($this->ffmpegPath." -i ".$this->srcFile. ' -strict -2 '. $this->destFile .' 2>&1', $output, $return);
 		if($return ){
 			$this->error = 'Error in Conversion: ';
 			if(is_array($output)){
@@ -124,9 +150,6 @@ class video
 				$this->error = 'Error In Conversion';
 				return false;
 			} else {
-				//if($this->destFileType == 'flv') {
-				//exec($this->flvToolPath. ' -U '.$this->destFile);
-				//}
 				return true;
 			}
 			return true;				
@@ -164,7 +187,7 @@ class video
 		/* Calculate half time */
 		$duration = intval($this->duration/2);
 		$halfDuration = getHourString($duration); //sprintf('%02d:%02d:%02d',  $hour, $minute, $second);
-		exec($this->ffmpegPath." -i ".$this->srcFile." -s ".$imgDimension." -ss ".$halfDuration." -t 00:00:01 ".$imgName, $output, $return);
+		exec($this->ffmpegPath." -ss ".$duration." -i ".$this->srcFile." -vframes 1 ".$imgName, $output, $return);
 		if(file_exists($imgName)){
 			$size = sprintf("%u", filesize($imgName));
 			if(!$size) {
@@ -197,23 +220,6 @@ class video
 	{
 		return $val - ($val % 2);
 	}
-	/*Set the audio sample for the destination file */
-	function setAudioSampleRate()
-	{
-		$audioSampleRate = $this->audioSampleRate;
-		foreach($this->audioSampleRateArray as $sampleRate){
-			if($audioSampleRate > $sampleRate){
-				$audioSampleRate = $sampleRate;
-				break;
-			}
-		}
-		//If audion sample rate less than 11025 set
-		if(!in_array($audioSampleRate, $this->audioSampleRateArray)){
-			$audioSampleRate = $this->audioSampleRateArray[2];
-		}
-		//$this->audioSampleRate = $audioSampleRate;
-		$this->audioSampleRate = 44100;
-	}
 	/*Get error message*/
 	function getError()
 	{
@@ -232,9 +238,6 @@ class video
 	}
 	
 	function __destruct(){
-		if($this->movie){
-			$this->movie = null;
-		}
 	}
 	
 }
