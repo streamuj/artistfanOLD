@@ -1,6 +1,0 @@
-{foreach name=ph key=k item=i from=$photos }
-<li id="Photos_{$i.Id}"> <a rel="group1" id="popBox"  name="popBox" href="/base/profile/showPhotoOne?id={$i.Id}" class="tb M0"> <img id="photoid_{$i.Id}" src="{if $i.Image}{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.Image}{else}/si/nophoto.jpg{/if}" /> </a>
-</li>
-{foreachelse}
-<li> <span class="tb"><img src="{$SUB_DOMAIN}si/nophoto.jpg"  /></span> </li>
-{/foreach} 
