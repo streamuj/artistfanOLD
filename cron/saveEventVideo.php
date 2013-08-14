@@ -1,9 +1,13 @@
 <?php
+require_once('cronHeader.php');
 $dirList = getFTPDirectoryList('flash');
 $max = 10;
 $flows = BroadcastFlows::GetClosedFlows($max);
 if(count($dirList) ==1){
 	$dirList=preg_split("/[\r|\n]/",$dirList[0]);
+}
+if(!$dirList){
+	exit;
 }
 if($flows){
 	foreach($flows as &$flow){
@@ -15,7 +19,6 @@ if($flows){
 		foreach($dirList as $key => $file){
 			if(!$file) continue;
 			$match = substr($file, 0, strlen($eventName)) == $eventName;
-			
 			if($match){
 				echo 'Match Found for Event: '. $eventId;
 				echo '<hr>';
