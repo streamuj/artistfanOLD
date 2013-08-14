@@ -1,0 +1,17 @@
+/*Chat-All Users*/
+.chatAll{position:fixed; left:0px; bottom:0; width:200px; border:1px solid #666; border-bottom:0;}
+.chatUser {line-height:30px; display:block;}
+.chatUserName {border-bottom: 1px solid #666;padding-left:5px; background:#fff;}
+/*Chat-All Users*/
+
+/*Chat-Individual*/
+.chatWindow{ border:1px solid #666; background: #ffffff; float: left; text-align:left; right:0px; bottom:0px; position: fixed; width:230px;}
+.chatHead{ background:#666; padding: 6px 0 6px 5px; color:#fff; font-weight:bold;}
+.chatMin {width:16px; height:16px; float:right; background:url(../images/min_chat.png) no-repeat; display:block; cursor:pointer; font-size:18px; font-weight:bold; margin-right:5px; text-align:center; color:#333;}
+.chatMax {width:16px; height:16px; float:right; background:url(../images/max_chat.png) no-repeat; display:block; cursor:pointer; font-size:18px; font-weight:bold; margin-right:5px; text-align:center; color:#333;}
+.chatClose {width:16px; height:16px; background:url(../images/close_chat.png) no-repeat; float:right; display:block; cursor:pointer; font-size:16px; margin-right:5px; text-align:center; color:#333;}
+.chatArea{ background: #ffffff; height:150px; white-space:normal; overflow:auto;  padding:5px; font-size:12px; border-bottom:1px solid #666;}
+.chatText{ width:230px !important; height:30px !important; top:30px;}
+.chatMsg {width:220px; height:25px; font-size:11px;}
+.chatNew {background:url(../images/color-shift.gif) repeat;}
+/*Chat-Individual*/
