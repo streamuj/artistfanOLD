@@ -1,0 +1,96 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitPayout();
+    });
+</script> 
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/wallet">My wallet</a>
+    </div>
+    <h1>Transaction history</h1>
+</div>
+<div class="content_block wide">
+<h3>Current ballance: {if $UserInfo.Wallet}{$UserInfo.Wallet}{else}0{/if} point(s)</h3>
+{if $UserInfo.WalletBlock}
+<h3>Locked: {$UserInfo.WalletBlock} point(s)</h3>
+{/if}
+
+<div class="ttable">
+<table class="style_table">
+    <colgroup>
+        <col />
+        <col width="100%" />
+        <col />
+        <col />
+        <col width="10px" />
+        <col />
+    </colgroup>
+    <tr>
+        <th><a href="/artist/WalletHistory?sort=dt{if $sort=='dta'}{else}a{/if}"{if !$sort || $sort=='dta' || $sort=='dt'} class="active"{/if}>Date/Time</a></th>
+        <th>Description</th>
+        <th align="right"><a href="/artist/WalletHistory?sort=pd{if $sort=='pdd'}{else}d{/if}"{if $sort=='pd' || $sort=='pdd'} class="active"{/if}>Points</a></th>
+    	<th align="right"><a href="/artist/WalletHistory?sort=bd{if $sort=='bdd'}{else}d{/if}"{if $sort=='bd' || $sort=='bdd'} class="active"{/if}>Balance</a></th>
+        <th align="center">Status</th>
+        <th></th>
+    </tr>
+    {foreach key=k item=i from=$payments}
+    <tr>
+        <td class="datetime">{$i.Pdate|mdate:4}</td>
+        <td>
+            {if $i.Description.type=="points"}
+                {if $i.Ptype==1}
+                Points payout cancelled
+                {elseif $i.Ptype==0}
+                Points payout{* by {$methods[$i.Method]}*}
+                {/if}
+            {elseif $i.Description.type=="track"}
+                Track purchase:<br />
+                {$i.Description.title}
+            {elseif $i.Description.type=="album"}
+                Album purchase:<br />
+                <a href="/artist/music/{$i.Description.id}">{$i.Description.title}</a>
+            {elseif $i.Description.type=="video"}
+                Video purchase:<br />
+                <a href="/artist/video/{$i.Description.id}">{$i.Description.title}</a>
+            {elseif $i.Description.type=="event"}
+                {if $i.Ptype==1}
+                Online event access purchase:<br />
+                {elseif $i.Ptype==0}
+                Online event cancelled:<br />
+                {/if}
+                <a href="/artist/events/{$i.Description.id}">{$i.Description.title}</a>
+            {/if}
+            {if $i.UserFrom && $i.UserFrom != $UserInfo.Id}by {if $i.From.Name}<a href="/u/{$i.From.Name}">{$i.From.FirstName} {$i.From.LastName}</a>{else}{$i.UserFrom}{/if}
+            {elseif $i.UserFrom && $i.UserFrom == $UserInfo.Id && $i.To.Name}to <a href="/u/{$i.To.Name}">{$i.To.FirstName} {$i.To.LastName}</a>{/if}
+        </td>
+        <td class="amount"><span class="{if $i.Ptype==1}plus{else}minus{/if}">{$i.Money}</span></td>
+        <td class="amount">{$i.Balance}</td>
+        <td align="center">
+            <span class="label label-{if $i.Status==1}ok{elseif $i.Status==2}error{else}info{/if}" title="">{$statuses[$i.Status]}</span>
+        </td>
+        <td align="center">
+            {if !$i.Status && !$i.UserFrom && $i.Ptype==0}
+            <a href="javascript:void(0);" aid="{$i.Id}" class="cancel_payout">Cancel</a>
+            {/if}
+        </td>
+    </tr>
+    {foreachelse}
+    <tr>
+        <td colspan="6">No transactions</td>
+    </tr>
+{/foreach}
+</table>
+
+{$pagging}
+</div>
+</div>
+{/block}

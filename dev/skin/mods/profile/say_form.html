@@ -1,0 +1,101 @@
+{strip}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#mesg').autosize();
+	$('#animated').autosize({ append: "\n" });
+	$('#sayBtn1').hide();
+	$("#mesg").click(function() {
+		$("#sayBtn1").show();
+	});
+	$('.tab').hide();
+	$('.tab1').click(function(e){
+		e.preventDefault();
+		var tabId = $(this).attr('href');
+		$('.tab').hide();
+		$(tabId).show();
+		if(tabId == '#videoDialog')
+		{
+			$('#wallImg img').attr('src', '');
+			$('#wallImage').val('');
+			$('#err_image').html('');
+			$('#err_mesg').html('');
+			$('#err_mesg').removeClass('error');	
+		}
+		if(tabId == '#fileDialog')
+		{
+			$('#videoLink').val('');
+			$('#err_mesg').html('');
+			$('#err_mesg').removeClass('error');
+		}
+	});
+});
+</script>
+{/strip}
+{strip}
+<div class="RT say_form" id="ComposerStatus"> {if $IsAuth}
+  <div class="attach">
+    <table border="0" cellspacing="0" cellpadding="3">
+      <tr>
+        <td valign="middle" align="left">Attach:</td>
+        <td valign="middle" align="left"><a href="#fileDialog" id="tabPhoto1" class="picA tab1" title="Post Your Picture"></a></td>
+        <td valign="middle" align="left"><a href="#videoDialog" id="tabVideo1" class="vidA tab1" title="Post Your Video"></a></td>
+        <td valign="middle" align="left"><span class="upload_status"></span><span id="err_mesg" ></span></td>
+      </tr>
+    </table>
+    <div class="wait">&nbsp;</div>
+  </div>
+  <div class="clear"></div>
+  <div id="progress" class="font11" style="display:none"> <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="left" width="1%" nowrap="nowrap"> Progress <span id="progress-percent">0</span>%&nbsp;&nbsp;</td>
+    <td align="left"><div style="border:#dedede solid 1px;">
+        <div id="progress-value"></div>
+      </div></td>
+  </tr>
+</table>
+</div>
+<div class="clear"></div>  
+  <div id="fileDialog" class="tab">
+  <div style="border:1px solid #DDD;background:#f8f8f8; margin-bottom:-14px;  border-radius:5px; height:88px;" class="P5">   
+    <table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="left" valign="middle" nowrap="nowrap"><div class="LF P10"><div id="file-uploader">
+        <noscript>
+        <p>Please enable JavaScript to use file uploader.</p>
+        </noscript>
+      </div></div></td>
+    
+    <td align="left" valign="middle" style="border-left:1px solid #DDD; padding-left:15px;">
+    
+    <div style="min-width:80px; height:80px; background: url({$SUB_DOMAIN}si/placeholder.gif) no-repeat center center;">
+    <div  id="wallImg" style="display:none; background:#f8f8f8;"><img  src="" height="80" id="img12" /></div> </div></td>
+    
+    <td align="left" valign="middle"><div class="err P10" id="err_image"></div> </td>
+  </tr>
+</table>
+      <div class="clear"></div>
+    </div>
+    <div class="clear"></div>  
+    <input type="hidden" name="wallImage" id="wallImage" value="" />
+  </div>
+  <div id="videoDialog" class="tab" >
+   <div style="border:1px solid #DDD;background:#f8f8f8; border-radius:5px;  margin-bottom:-14px; height:50px;" class="P5">
+   <div id="video-uploader">
+   <table border="0" cellspacing="0" cellpadding="5">
+  <tr>
+    <td><p>Video URL:</p></td>
+    <td><input type="text" name="videoLink" id="videoLink" value="" class="required txtBox" title="Video Link" style="width:300px;" /></td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</div>
+    </div>
+  </div>
+  <div id="comBar">
+    <textarea onclick="if ($(this).val()=='Say something...') $(this).val('');" id="mesg" type="text" class="txtBox" onblur="javascript:if(this.value=='')this.value='Say something...'" onfocus="javascript:if(this.value=='Say something...')this.value=''">Say something...</textarea>
+    <div id="sayBtn1" style="display: block;">
+      <input class="btn" name="say something..." type="button" value="Post" onclick="oWall.Post();" />
+    </div>
+  </div>
+  {/if} </div>
+{/strip}

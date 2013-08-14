@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <!-- Uncomment this if you have PEAR Log installed -->
+  <!-- <log>
+    <type>file</type>
+    <name>/Users/ssergy/Sites/responder.local/propel.log</name>
+    <ident>propel-responder</ident>
+    <level>7</level>
+  </log> -->
+  <propel>
+    <datasources default="artistfan">
+      <datasource id="artistfan">
+        <adapter>mysql</adapter>
+        <connection>
+          <dsn>mysql:host=mysql51-020.wc2.dfw1.stabletransit.com;dbname=466649_artistfan</dsn>
+          <user>466649_artistfa</user>
+          <password>04Thursday</password>
+          <settings>
+              <setting id="charset">utf8</setting>
+          </settings>
+        </connection>
+      </datasource>
+    </datasources>
+  </propel>
+</config>

@@ -1,0 +1,71 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+<link rel="stylesheet" href="{$smarty.const.SUB_DOMAIN}ss/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/jquery.form.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Admin.js"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function()
+    {
+        $("#dfrom, #dto").datepicker({
+            dateFormat: 'mm/dd/yy'
+        });
+		oAdmin.ErrorList();
+    });
+</script>
+
+{/block}
+
+{block name="content"}
+
+<h1>Error Log</h1>
+<div class="blue_block">
+<table>
+    <tr>
+       <td colspan="2"><h6>Search Error</h6></td>
+    </tr>
+       <tr>
+        <td>Date :</td>
+        <td>
+            <input type="text" id="dfrom" value="{$dfrom}" class="text_input_small short" />
+            &ndash;
+            <input type="text" id="dto" value="{$dto}" class="text_input_small short" />
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input type="button" onclick="oAdmin.ErrorList();" value="Search" /></td>
+    </tr>
+</table>
+<br />
+</div>
+
+<div style="position:absolute;z-index:100;left:550px;display:none;" id="wait"><img src="/i2/wait.gif" alt="Wait..."></div>
+<br /><br />
+<table class="style_table f13">
+    <thead>
+        <tr style="color:#28B7F3;">
+            <th class="aleft">S.No</th>        
+            <th class="aleft">Date</th>
+            <th class="aleft">Url</th>
+            <th class="aleft">Message</th>
+        </tr>
+    </thead>
+    <tbody id="list">
+    {include file="mods/admin/error/ajax/_list_ajax.html"}
+    </tbody>
+</table>
+<div></div>
+<div id="pagging"></div>
+<div style="float:left;">
+    <select name="pcnt" id="pcnt" onchange="oAdmin.ErrorList();">
+        <option value="10"{if $pcnt==10} selected="selected"{/if}>10</option>
+        <option value="30"{if $pcnt==30} selected="selected"{/if}>30</option>
+        <option value="50"{if $pcnt==50} selected="selected"{/if}>50</option>
+        <option value="70"{if $pcnt==70} selected="selected"{/if}>70</option>
+        <option value="100"{if $pcnt==100} selected="selected"{/if}>100</option>
+        <option value="1000000000"{if $pcnt==1000000000} selected="selected"{/if}>all</option>
+    </select>
+</div>
+{/block}

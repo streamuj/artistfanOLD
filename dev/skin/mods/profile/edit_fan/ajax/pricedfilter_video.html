@@ -1,0 +1,52 @@
+<table border="0" align="left" cellpadding="0" cellspacing="0">
+        {foreach key=k item=i from=$videos}
+        
+      	{if $i@index%4 == 0}<tr>{/if}
+          <td id="video_{$i.Id}">
+              <table border="0" cellspacing="0" cellpadding="5">
+              <tr><td><strong>{$i.Title|truncate:20}</strong></td></tr>
+                  <tr>
+                    <td> <a href="/fan/video/{$i.Id}">
+                         <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}"width="170" height="170" alt="" /></a></td>
+                  </tr>
+                  <tr>
+                    <td align="center" valign="top">
+                        <table>
+                            <tr>
+                                    <td><a href="/fan/video/{$i.Id}" class="btn1 play_button">Play&nbsp;&nbsp;&nbsp;</a></td>
+                                    <td><a href="javascript:void(0);" onclick="oPlay.DeleteVideo('{$i.Id}', '');"  class="btn1">Delete &nbsp;&nbsp;&nbsp; </a></td>           
+                            </tr>
+                   		 </table>
+                      </td>
+                  </tr>
+              </table>
+          </td>
+          
+        {if $i@iteration%4 == 0} </tr>{/if}
+        {foreachelse}
+        <tr><td><p>No videos</p></td></tr>
+          {/foreach}
+          
+ {if $recordings}
+    <div class="cl"></div>
+    <h2>Broadcast recordings</h2>
+    <table class="style_table">
+        <col />
+        <col width="70%" />
+        <col />
+        {foreach key=k item=i from=$recordings}
+        <tr>
+            <td>
+                <span class="muted">{$i.Pdate|mdate:4}</span>
+            </td>
+            <td>
+                <a href="/fan/events/{$i.EventId}">{$i['e.Title']}{if $i.Order > 1} - Part {$i.Order}{/if}</a>
+            </td>
+            <td>
+                <a href="/fan/video/b{$i.Id}">Review</a>
+            </td>
+        </tr>
+        {/foreach}
+    </table>
+    {/if}
+      </table>

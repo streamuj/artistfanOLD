@@ -1,0 +1,42 @@
+<div style="background-color:#FFFFFF;height:200px;">
+  <meta property="og:title" content="ArtistFan Music"/>
+  <meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}"/>
+  <meta property="og:type" content="movie"/>
+  <meta property="og:description" content="{$event.Title}"/>
+  <meta property="og:image" content="http://{$smarty.const.DOMAIN}{if $event.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}{else}/i/ph/album-96x96.png{/if}"/>
+  <link rel="image_src" type="image/jpeg" href="http://{$smarty.const.DOMAIN}{if $event.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}{else}/i/ph/album-96x96.png{/if}"/>
+  <script type='text/javascript' src='https://platform.twitter.com/widgets.js?ver=3.5.1'></script>
+  <script type="text/javascript" src="http://assets.pinterest.com/js/pinit.js"></script>
+  <input type="hidden" id="dialog_mid" value="{$event.Id}" />
+  <input type="hidden" id="dialog_price" value="{$event.Price}" />
+  <div class="alert alert_success" style="display: none;"> <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a> <strong>Success!</strong> <span id="music_success"></span> </div>
+  <div class="alert alert_error" style="display:none;"> <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a> <strong>Error!</strong> <span id="music_err"></span> </div>
+  <div class="album_img"> <a href="/u/{$ui.Name}/events"> {if $event.EventPhoto} <img width="200" height="115" src="{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}" alt=""> {else} <img width="200" src="/i/ph/album-96x96.png" alt=""> {/if} </a> </div>
+  <div>
+    <h4>{$event.Title|wordwrap:35}</h4>
+    <div > by <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a> </div>
+    <div> <span > {assign var="numg" value=0}
+      
+      {foreach name=n key=k item=i from=$genres}
+      {if $ui.Genres.$k}{$i}{assign var="numg" value=$numg+1}{if $numg < $ui.Genres|@count},{/if} {/if}
+      {/foreach} </span>
+      <table style="margin-top:15px;">
+        <tr> {*
+          <td><div class="fb-like" data-href="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}" data-send="false" data-layout="button_count" data-width="50" data-show-faces="false"></div></td>
+          *}
+          <td><a href="javascript:void(0);" class="fbShare" RedirectUrl="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}" fbLink="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}" Picture="{if $event.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}{else}/i/ph/album-96x96.png{/if}" DialogTitle="{$event.Title}" Title="http://{$smarty.const.DOMAIN}" Description="{$event.Descr}" ><img height="25" src="{$SUB_DOMAIN}si/fb-share.png"> </a></td>
+          <td><a href="//pinterest.com/pin/create/button?url=http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}&media={if $event.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}{else}/i/ph/album-96x96.png{/if}&description={$event.Title}" data-pin-do="buttonPin" data-pin-config="beside"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png" /></a> {*<a data-pin-config="beside" href="https://pinterest.com/pin/create/button?url=http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}&media={if $event.EventPhoto}{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}{else}/i/ph/album-96x96.png{/if}&description={$event.Title}" data-pin-do="buttonBookmark" > <img src="https://assets.pinterest.com/images/pidgets/pin_it_button.png" /></a>*}</td>
+		<td>
+<a href="https://twitter.com/share" class="twitter-share-button" data-text="{$event.Title} - {$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}" data-url="{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}" data-via="{$smarty.const.TWITTER_VIA}" data-hashtags="{$smarty.const.TWITTER_HASH}">Tweet</a>
+
+<script>!function(d,s,id){ var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){ js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs); } }(document, 'script', 'twitter-wjs');</script>          
+        
+        </td>                        
+                        
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="cl"></div>
+  <div class="line"></div>
+  <span class="priceMusicShow"></span> <span class="wait" style="display:none;"></span> </div>

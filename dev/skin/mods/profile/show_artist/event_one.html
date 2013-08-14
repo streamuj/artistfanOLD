@@ -1,0 +1,126 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="meta"}
+    {strip}
+        <meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/events/{$event.Id}" />
+        <meta property="og:title" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} - Event -  {$event.Title}"/>
+        <meta property="og:description" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} - Event - {$event.Title}"/>
+        {if $event.EventPhoto}
+        <meta property="og:image" content="{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}"/>
+        {else}
+        <meta property="og:image" content="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+        {/if}
+    {/strip}
+{/block}
+{block name="javascript"}
+{strip}
+	<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            {if !$UserInfo.Status}
+            oProfile.InitEventActionsForGuests();
+            {else}
+            oProfile.InitEventActions();
+            oPopup.InitPurchase();				
+            {/if}
+        });
+    </script>
+{/strip}
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+<div>
+<div class="header_block">   
+</div>
+<div class="clear"></div>
+<div class="content_block">
+                  {if $event_added}
+                    <div class="alert alert_success">
+                        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+                        <p><strong>Event added!</strong> Your newly created event is now visible in your upcoming events list.</p>
+                        <p>To announce your newly created event on your wall, use the button below<br />
+                            <a href="/artist/EventAnnounce?id={$event_added}" class="btn1">Announce</a></p>
+                        <p>Also, please use our <a href="#">Events FAQ</a> if you have questions.</p>
+                    </div>
+                {/if}
+	{if $smarty.get.thanks}
+	<p class="alert alert_success" align="center"> Thank you for purchasing {$event.Title|truncate:25:'...'} </p>
+    {/if}
+<div style="width:100%; border-bottom:1px solid #cccccc;" class="Vidlarge">
+<div style=""><img   alt="event" src="{$SUB_DOMAIN}{if $event.EventPhoto}photo/slide/{$event.UserId}/{$event.EventPhoto}{else}si/noEventPhoto.jpg{/if}"></div>
+<div class="clear"></div>
+<div class="boBox">
+<div class="desBox LF boBox">
+<a href="/u/{$event.Name}" class="nameTxt">{if $event.BandName} {$event.BandName}  {else} {$event.FirstName|cat:''|cat:$event.LastName} {/if}</a>
+<p class="titleTxt pink">{$event.Title}</p>
+<div class=" clear"></div>
+</div>
+{if $IsOther && $UserInfo.Status && !$event['EventPurchase']['Id']}    
+    {if $event.Price>0 && $event.Status < 3}    
+        {if !$event.EventDate|ispast}
+        <a href="javascript:void(0);" style="background:#EC2C45;" {if !$IsFollow1}onclick="oPopup.connectinevent('{$event.UserId}','{$UserInfo.Status}');"{/if} class="RT white font16 P15 {if !$IsFollow1}{else}BuyEvents{/if} bold"mid="{$event.Id}" price="{$event.Price}" >
+        
+        <table cellspacing="0" cellpadding="5" border="0">
+          <tbody><tr>
+            <td>$ {$event.Price|string_format:'%.2f'}</td>
+            <td><img alt="c" src="{$SUB_DOMAIN}si/ic-cart-w.png"></td>
+          </tr>
+        </tbody></table>
+        
+        </a>
+        {/if}
+    {/if}
+{/if}
+<div class="RT">
+ <div class="RT M15">{if $event.Status == 4}<span class="good"> Event Finished !</span>{/if}
+    {if $event.Status == 3}<span class="good"> Event Cancelled !</span>{/if}</div>
+
+
+<ul class="RT icBox M15">
+    <li><a href="javascript:void(0);" class="shareEvents black" albumtitle="{$event.Title}" mid="{$event.Id}"><span class="LF">SHARE</span><img src="{$SUB_DOMAIN}si/share-ic-w.png" height="18" hspace="5"></a></li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+<table cellspacing="0" cellpadding="5" border="0">
+  <tbody>
+ <tr>      
+      <td width="750" valign="top" align="left"><table cellspacing="0" cellpadding="5" border="0">
+        <tbody>
+        <tr>
+          <td nowrap="nowrap" class="eventListBox" style="box-shadow:none;"><span><span class="evDate">{$event.EventDate|date_format}</span> <strong>{$event.EventDate|date_format:"%A"} at {$event.EventDate|date_format:'%l:%M  %p'} EST</strong></span>          
+          </td>
+          <td nowrap="nowrap">&nbsp;</td>
+        </tr>
+        {if $event['EventPurchase']['Id']}
+        <tr>
+        	<td colspan="2">
+            	
+						<p><span class="bold">This Event Broadcast URL:</span>
+                        	<a href="http://{$DOMAIN}/broadcasting/{if $event.Id}{$event.Id}{else}{$UserInfo.Name}/live{/if}/" target="_blank">
+                            	http://{$DOMAIN}/broadcasting/{if $event.Id}{$event.Id}{else}{$UserInfo.Name}/live{/if}/
+                            </a> 
+                        </p>
+			</td>
+        </tr>
+        {/if}
+        
+        <tr>
+          <td colspan="2">
+            <p>{$event.Descr}</p></td>
+        </tr>
+      </tbody></table></td>
+      </tr>
+  </tbody>
+</table>
+<div class="clear"></div>
+</div>
+</div>
+{/strip}
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

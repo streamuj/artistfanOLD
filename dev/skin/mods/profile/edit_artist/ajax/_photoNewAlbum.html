@@ -1,0 +1,12 @@
+<li id="PhotoAlbums_{$Append_AlbumId}"> <a href="/artist/editphotoalbum?id={$Append_AlbumId}" class="tb"> <img id="photoid_{$Append_AlbumId}" class="phto-clu-img" src="{if $Append_IscoverPhotoName}{$SUB_DOMAIN}photo/thumbs/{$Append_UserId}/{$Append_IscoverPhotoName}{else}/si/nophoto.jpg{/if}"  /> </a>
+  <ul class="font12 block relative">
+    <li class="block font14" id="AlbumName_{$Append_AlbumId}">{$Append_AlbumTitle}</li>
+    <li class="LF">{$Append_Date|date_format:"%b%d at %l:%M%p"}</li>
+    <li class="RT">1 Photos</li>
+    <li class="clear"></li>
+    <li class="belw editTool">{if $Append_PhotoTitle !=$smarty.const.BANNER_IMAGES && $Append_PhotoTitle!=$smarty.const.PROFILE_PICTURES} <span class="DeleteAlbum LF" PhId="{$Append_AlbumId}" ><img src="/si/remvIconGry.png">&nbsp;Remove</span> <span class="RT P0"  onclick="oPhotoEdit.TopAdd({$Append_AlbumId},'{$Append_AlbumTitle}');"><img src="/si/addBtnBk.png">&nbsp;Add</span> <span class="RT edit" onclick="oPhotoEdit.albumNameEdit({$Append_AlbumId});" ><img src="/si/addBtnBk.png">&nbsp;Edit</span> {else}
+      &nbsp;
+      {/if} </li>
+    <li class="clear"></li>
+  </ul>
+</li>

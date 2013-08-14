@@ -1,0 +1,46 @@
+{extends file="mails/base_mail.html"}
+{block name="content"}
+<table width="100%" border="0" cellspacing="0" cellpadding="0"> 
+<tr>
+    <td align="center" valign="top" bgcolor="#F4F4F4"><table width="650" border="0" align="center" cellpadding="20" cellspacing="0">
+  
+  <tr>
+    <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><h1 style="color:#202020; font-family: Helvetica,Arial, sans-serif; margin:0; padding:6px 0; font-size:36px">Hello {$name}!</h1></td>
+      </tr>
+      
+      <tr>
+        <td align="left" valign="top"><p style="color:#505050; font-family:Helvetica; font-size: 16px; text-align: left; margin:10px 0; padding:0; line-height:1.7em; font-size:14px" >Thank you for your purchase from ArtistFan! <br/>		
+		Below is a summary of your purchase:          
+       </p>
+       </td>
+      </tr>
+      
+      <tr>
+        <td><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:15px 0;">
+          <tr>
+            <td width="1%" align="left" valign="top"><img src="{if $FromYt}http://i.ytimg.com/vi/{$Video}/0.jpg{elseif $videorawdatas.Video}{$smarty.const.SUB_DOMAIN}video/thumbnail/{$artistId}/s_{$videorawdatas.Video}.jpg{else}{$smarty.const.SUB_DOMAIN}si/ph/video-96x96.png{/if}" width="320" /></td>
+            <td width="89%" align="left" valign="middle" style="padding-left:45px"><h2 style="font-size:20px; font-weight:normal; margin:10px 0; padding:0; font-family:Helvetica; "><a href="{$smarty.const.ROOT_HTTP_PATH}/u/{$artistName}" style="color: #D90E25; text-decoration:none;" > {if $artistFLName}{$artistFLName}{/if}</a><strong><br />
+              <a href="{$smarty.const.ROOT_HTTP_PATH}/u/{$artistName}/video/{$videorawdatas.Id}" style="color: #D90E25; text-decoration:none;" >{$videorawdatas.Title}</a></strong>            </h2>
+              <p style="color: #505050; font-family:Helvetica; font-size: 16px; text-align: left; margin:0; padding:0;"><strong> {$artistLocation}, {$artistState}  </strong></p>
+              
+               <p style="margin:0; padding:0;">&nbsp;</p>
+                
+                <table border="0" cellspacing="0" cellpadding="0" align="left" style="background:#ccc; padding:8px 14px">
+  <tr>
+    <td valign="middle" align="center"><a href="{$smarty.const.ROOT_HTTP_PATH}/u/{$artistName}/video/{$videorawdatas.Id}" style="color: #D90E25; text-decoration:none;  font-family:Arial, Helvetica, sans-serif; font-size:14px;">Watch Now</a></td>
+  </tr>
+</table>              </td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+</table></td>
+  </tr>
+  
+  
+</table>
+    
+{/block}

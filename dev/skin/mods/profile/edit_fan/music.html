@@ -1,0 +1,122 @@
+{extends file="mods/profile/cabinet_fan.html"}
+{block name="meta"}
+{strip}
+	<meta property="og:title" content="ArtistFan Music"/>
+    <meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/music/{$albums.Id}"/>
+    <meta property="og:type" content="movie"/>
+    <meta property="og:description" content="{$albums.Title}"/>
+    <meta property="og:image" content="http://{$smarty.const.DOMAIN}{if $albums.Image}/{$albums.Image}{else}/i/ph/album-96x96.png{/if}"/>
+    <link rel="image_src" type="image/jpeg" href="http://{$smarty.const.DOMAIN}{if $albums.Image}/{$albums.Image}{else}/i/ph/album-96x96.png{/if}"/>
+{/strip}
+{/block}
+
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Music.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Player.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        {if !$UserInfo.Status}
+        oProfile.InitPurchaseForGuests();
+        {else}
+        oProfile.InitPurchase();
+        {/if}
+        oPlay.InitPlayButtons();
+		oPopup.InitPurchase();	   						
+		oMusic.InitMusicButtons();					
+    });
+</script>
+
+<script type="text/javascript">
+		$(document).ready(function(){
+		$('#sayBtn1').hide();
+		$("#normal").click(function() {
+				$("#sayBtn1").show();
+			});
+			
+
+	 $('.musicList .shList') .click(function(){
+	 	var curTrackList = $(this).parents('.musicList').find('.trackList');
+		$('.trackList').removeClass('current');
+		curTrackList.addClass('current');
+		curTrackList.slideToggle();
+		$('.trackList').each(function(){
+			if(!$(this).hasClass('current')) $(this).slideUp();
+		});
+	 	
+
+	 });		
+	
+});
+</script>
+{/strip}
+
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+<div>
+  <h2 class="P15">Music</h2>
+  <div class="subTab"></div>
+
+{if $albums}
+    {foreach key=k item=i from=$albums}
+  
+   <div  class="musicList"><table width="100%" border="0" align="left"cellpadding="8" cellspacing="0">
+    <tbody>
+      <tr>
+        <td width="104" rowspan="2" align="left" valign="top"><a href="javascript:void(0);" class="shList tb"><img src="{if $i.image}/{$smarty.const.TRACK_IMG_PATH}/{$i.user_id}/m_{$i.image}{else}{$SUB_DOMAIN}si/ph/album-96x96.png{/if}" width="150" height="150" /></a></td>
+        <td align="left" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td align="left" valign="top"><h4 class="M2 shList"><a title="Click to view tracks" href="javascript:void(0);">{$i.title|truncate:40:'...'}</a></h4>
+               <p class="M2 decTxt">{$i.descr|truncate:125|wordwrap:70:"\n"}</p>
+              <p class="font14 M2">{if $i.totalTracks > 1} {$i.totalTracks} Tracks {else} {$i.totalTracks} Track {/if}</p>              </td>
+              <td width="1%" align="right" valign="top">
+              		 <a href="javascript:void(0);" class="button wblue RT">{if $i.price} $ {$i.price|string_format:'%.2f'}{else}FREE{/if}</a> </td>
+            </tr>
+            <tr>
+              <td colspan="2" align="right" valign="bottom">&nbsp; </td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td align="left" valign="bottom" nowrap="nowrap">
+        		<ul class="icBox">
+                 <li><a href="javascript:void(0);" class="share" style="padding-top:7px;"  mid="{$i.album_id}"  albumtitle="{$i.title}"><span class=" LF">SHARE</span><img src="{$SUB_DOMAIN}si/share-ic-w.png" width="18" hspace="3"/> </a></li>
+                </ul>
+           </td>
+      </tr>
+    </tbody>
+</table>
+        <div class="clear"></div>
+        <ul class="trackList none">
+        {if $i.TrackList}
+         {foreach key=k item=track name=track from=$i.TrackList}  
+            <li class="track">
+            <a href="javascript:void(0)"  class="floatL button play round play_track" mid="{$track.MusicId}"><img class="icon" src="{$SUB_DOMAIN}si/ic-playGrey.png"></a>
+            <span class="P10">{$smarty.foreach.track.iteration}</span>
+            <a class="trackLink trackTitle" href="javascript:void(0)">{$track.Title|truncate:60:'...'}</a>
+           <a href="javascript:void(0)" class="button RT">{if $track.Price>0 } ${$track.Price|string_format:'%.2f'} {elseif $album.Price >0} Bonus {else} FREE {/if}</a>
+           <span class="RT trackLink">{if $track.TrackLength} {$track.TrackLength|date_format:"%M:%S"} {else} In process {/if}</span>
+
+        </li>
+          {/foreach}
+      {else}
+           <li class="track track"><p align="center">No Track List</p></li>
+      {/if}      
+        </ul>
+        </div>
+   
+   {/foreach}
+   {else}
+   		<p class="noBar">No Albums</p>
+ {/if}
+</div>
+{/strip}
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

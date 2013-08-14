@@ -1,0 +1,50 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript" src="/dev/skin/js/cls/Profile.js"></script>
+{/block}
+
+
+{block name="my_cabinet"}
+
+
+<div style="padding:15px;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" id="fanList">
+      <tr>
+        <td bgcolor="#FFFFFF"><table border="0" cellspacing="0" cellpadding="5">
+          <tr>
+           <td colspan="1"><h3>Invite Friends</h3></td>
+          </tr>
+        </table>
+          <label> </label></td>
+         
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF">
+        {if $smarty.session.system_uid}
+            {if $smarty.session.facebook_id}
+            <table width="80%" border="0" style="border-radius:5px; margin:0px auto; padding:20px 0; margin-bottom:20px; background:#fff;" cellspacing="0" cellpadding="10">
+              <tr>
+                <td align="center" valign="top"><a href="getFbContacts.php"><img src="images/facebook-wd.jpg" width="262" height="40" alt="" /></a></td>
+              </tr>
+            </table>
+           {/if}
+           
+        	<table width="80%" border="0" style="border-radius:5px; margin:0px auto; padding:20px 0; margin-bottom:20px; background:#fff;" cellspacing="0" cellpadding="10">
+          <tr>
+            <td width="37%" align="center" valign="top">
+            		<a href="/artist/googleInvite"><img src="/si/gmail.jpg" width="125" height="54" alt="" /></a>
+            </td>
+            <td width="30%" align="center" valign="top"><img src="/si/yahoo.jpg" width="71" height="61" alt="" /></td>
+            <td width="33%" align="center" valign="top"><img src="/si/microsoft-hotmail.jpg" width="82" height="63" alt="" /></a></td>
+          </tr>
+    </table>
+        {/if}
+       </td>
+      </tr>
+    </table>
+    <div class="clear"></div>
+    <div align="center">&nbsp;</div>
+</div>
+{/block}

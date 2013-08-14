@@ -1,0 +1,61 @@
+.new_pag_tes {
+	background:#bababa !important;
+	margin:99px 0px 0px auto;
+	padding:0px;
+	width:1024px;
+}
+.lef_sid {
+	float:left;
+	width:228px;
+	margin:0px;
+	padding:0px;
+	font-family:'Antenna-Regular',Arial,Helvetica,sans-serif;
+	font-size:12px;
+	font:normal;
+}
+.lef_menu {
+	margin:0px;
+	padding:0px;
+	width:228px;
+}
+.lef_menu li {
+	background:url(../si/tes_lef_men_bg.png) repeat-x top left;
+	height: 34px;
+    margin: 0;
+    padding: 14px 0 0 21px;
+    width: 228px;
+}
+.lef_menu li a{
+	margin:0px;
+	padding:0px;
+	border-radius:5px;
+	font-family:'Antenna-Regular',Arial,Helvetica,sans-serif;
+	font-size:14px;
+	font:normal;
+	text-transform:uppercase;
+	color:#fff;
+}
+.lef_menu li a:hover{
+	opacity: 0.8;
+}
+	
+.righ_sid {
+	float:right;
+	background:#FFF;
+	width:729px;
+	margin:0px;
+	padding:15px 23px 0px;
+	font-family:'Antenna-Regular',Arial,Helvetica,sans-serif;
+	font-size:12px;
+	font:normal;
+	color:#53576C;
+	
+}
+.tes_note {
+	margin:10px 0px 10px;
+	padding:0px;
+	font-family:'Antenna-Regular',Arial,Helvetica,sans-serif;
+	font-size:12px;
+	font:normal;
+	color:#53576C;
+}

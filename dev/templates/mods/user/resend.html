@@ -1,0 +1,77 @@
+{extends file="base.html"}
+{block name="body_class"} {/block}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/templates/js/cls/Errors.js"></script>
+<script language="javascript">
+    $(document).ready(function()
+    {
+        oUsers.InitResend();
+    });
+</script>
+{/block}
+
+{block name="login_box"}
+<div class="header_right">
+    <div class="header_user sign_right">
+        You do not have an account? <a href="/base/user/registration">Sign up</a>
+    </div>
+    <div class="header_icon">
+        <a href="#" class="help_icon" title="help"><span>help</span></a>
+    </div>
+</div>
+{/block}
+
+
+{block name="content"}
+<!--content_block-->
+<div class="content_block big_content">
+    <h1>Resend confirmation email</h1>
+
+    <div class="alert" style="display: none;">
+        <strong></strong> <span id="resend_msg"></span>
+    </div>
+
+    <form action="/base/user/resendemail" method="post" id="resend_form" class="big_form">
+        <fieldset>
+            <br /><br />
+            <div>
+            <table class="form_table">
+                <tr>
+                    <td class="label_td"><label>Email address</label></td>
+                    <td><input type="text" class="text_input" name="email" id="email" value="" /></td>
+                    <td id="err_email"></td>
+                </tr>
+            </table>
+            <table class="form_table">
+                <tr>
+                    <td class="label_td"></td>
+                    <td>
+                        <input type="button" id="resend_subm" class="button yellow_button" value="Send" />
+                    </td>
+                </tr>	
+            </table>
+            </div>
+            <!--
+<div class="line"></div>
+            <div class="form-add">
+                Don't have an account? <a href="/base/user/registration">Sign up free!</a>
+            </div>
+-->
+        </fieldset>
+    </form>
+</div>
+<!--/content_block-->
+<!--sitebar_02-->
+<div class="sitebar sitebar_02">
+    <!--
+<div class="r_social">
+        <p>Alternatively, you can use your existing account on Facebook or Twitter to sign up to Artistsfan</p>
+        <a href="javascript:void(0);" onclick="oUsers.FBLoginCustom();"><img src="/i/facebook.gif"  alt="" /></a>
+        <a href="javascript:void(0);" onclick="oUsers.TwtGetAuthUrl();"><img src="/i/twitter.gif"  alt="" /></a>
+    </div>
+-->
+</div>
+<!--/sitebar_02-->                
+{/block}
+

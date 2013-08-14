@@ -1,0 +1,74 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+
+{block name="my_cabinet"}
+
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+    </div>
+    <h1>My broadcasting</h1>
+</div>
+
+<div class="content_block wide">
+
+    {if $event_finished}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <p><strong>Your event is finished!</strong></p>
+
+        <p>Broadcast recording is published to all attending fans as a part of their purchase. <br />
+            <a href="/artist/events/{$event_finished}">Review recording</a>
+        </p>
+    </div>
+    {/if}
+    
+    <p><b>How to broadcast</b></p>
+    <table class="form_table">
+        <tr>
+            <td><input type="button" onclick="Go('/artist/StartBroadcasting');" value="Start ad-hoc broadcast" class="button" /></td>
+        </tr>
+    </table>
+    
+    
+    <div class="cl"></div><br /><br />
+    <h2>Announced events with streaming option</h2>
+    <div class="albums_container" style="width: 687px;">
+        <select name="fm[event]" id="event_id" style="width:400px;">
+            {foreach key=k item=i from=$events}
+            <option value="{$i.Id}">{$i.Title} ({$i.EventDate|mdate})</option>
+            {/foreach}
+        </select>    
+        <input type="button" onclick="Go('/artist/StartBroadcasting/' + $('#event_id').val());" value="Start broadcast" class="button" />
+    </div>
+
+    <div class="cl"></div><br /><br />
+    
+    <h2>Broadcast recordings</h2>
+    <table class="style_table">
+        <col />
+        <col width="70%" />
+        <col />
+        {foreach key=k item=i from=$recordings}
+        <tr>
+            <td>
+                <span class="muted">{$i.Pdate|mdate:4}</span>
+            </td>
+            <td>
+                <a href="/artist/events/{$i.EventId}">{$i['e.Title']}{if $i.Order > 1} - Part {$i.Order}{/if}</a>
+            </td>
+            <td>
+                <a href="/artist/video/b{$i.Id}">Review</a>
+            </td>
+        </tr>
+        {foreachelse}
+        <tr>
+            <td colspan="3">No recordings</td>
+        </tr>
+        {/foreach}
+    </table>
+
+    {$pagging}
+
+</div>
+{/block}

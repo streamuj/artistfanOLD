@@ -1,0 +1,137 @@
+{strip}
+<div id="MusicTrack_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="MusicAlbum_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="Video_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="Photo_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="Event_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;" ></div>
+<div id="Whatiscvv_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;">
+<div id="Connect_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="Connectinplayer_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="connectinvideo_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="connectinphoto_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="connectinevent_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="Indexadd_video" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="MailToViewer_Dialog" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="IndexAddAlbum" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="ViewersReportList" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="Share_Dialog_Box" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="ShareVideo_Dialog_Box" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="shareEvents_Dialog_Box" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="MusichideCancel" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="MusichideCancel" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="dialog-confirm" style="display:none;background-image:url({$SUB_DOMAIN}si/loading.gif);background-repeat:no-repeat;background-position:center;"></div>
+<div id="dialog-video-publish" style="display:none;background-repeat:no-repeat;background-position:center;"></div>
+<p><img src="{$SUB_DOMAIN}images/cvv.png" title="What is cvv?" alt="What is cvv?"></p>
+</div>
+<div id="Whatiscvv_Content" style="display:none;"></div>
+<div id="buy_music_dialog" title="Please confrim your purchase" style="display: none;">
+    <input type="hidden" id="dialog_mid" value="" />
+    <div class="alert alert_success" style="display: none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> <span id="music_success"></span>
+    </div>
+    <div class="alert alert_error" style="display:none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Error!</strong> <span id="music_err"></span>
+    </div><div id="add_success"></div>
+<div id="hideSuccess">                        
+    <div class="album_img" id="MusicAlbum_Image">
+        <a href="/u/{$ui.Name}/music"><img width="96" height="96" src="{$SUB_DOMAIN}si/ph/album-96x96.png" alt=""></a>
+    </div>
+    <div class="track_block">
+        <div class="track_name">
+        </div>
+        <div class="track_author">
+            by   <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+        </div>
+        <div class="track_album">
+            <span class="track_genres">
+            {assign var="numg" value=0}
+            {foreach name=n key=k item=i from=$genres}
+				{if $ui.Genres.$k}{$i}{assign var="numg" value=$numg+1}{if $numg < $ui.Genres|@count},{/if} {/if}
+			{/foreach}
+			</span>
+            <br /> <span class="track_count"></span>
+        </div>
+    </div>
+    <div class="cl"></div>
+    <div class="line"></div> 
+    <span class="priceMusicShow"></span>
+    <span class="wait" style="display:none;"></span>
+    <div class="price">$<strong></strong></div>    <small id="track_savings" style="display: none;">Album Savings: <span class="red"></span> compared to buying all songs</small>
+    <input class="btn1 yellow_button music_buy_btn" type="button" value="Buy" /></div>    
+    <input class="btn1 reset_button" type="reset" value="Cancel" /> 
+
+</div>
+
+<div id="buy_video_dialog" title="Please confrim your purchase" class="FreeTitle" style="display: none;">
+    <input type="hidden" id="dialog_vid" value="" />
+    <div class="alert alert_success" style="display: none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> <span id="video_success"></span>
+    </div>
+    <div class="alert alert_error" style="display:none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Error!</strong> <span id="video_err"></span>
+    </div>
+           <div id="add_success">
+           </div>
+    
+<div id="hideSuccess">                        
+    <div class="album_img" id="Video_AlbumImage" >
+        <a href="/u/{$ui.Name}/video">
+            <img width="96" height="96" src="{$SUB_DOMAIN}si/ph/video-350x210.png" alt="">
+        </a>
+    </div>
+    <div class="track_block">
+        <div class="track_name">
+
+        </div>
+        <div class="track_author" id="Video_AlbumTrackAuthor">
+            by <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+        </div>
+    </div>
+    <div class="cl"></div>
+    <div class="line"></div>
+    <span class="priceMusicShow"></span>
+    <span class="wait" style="display:none;"></span>
+    <div class="price">$<strong></strong></div>
+    <div style="clear:both;"></div>
+    <input class="btn1 yellow_button video_buy_btn" id="Video_Album_Buy" type="button" value="Buy" />  
+	</div>    
+  <input class="btn1 reset_button" type="reset" id="Video_Album_Reset" value="Cancel" />     
+      
+</div>
+    
+
+<div id="buy_access_dialog" title="Please confrim your purchase" style="display: none;">
+    <div class="alert alert_success" style="display: none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> <span id="access_success"></span>
+    </div>
+    <div class="alert alert_error" style="display:none;">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Error!</strong> <span id="access_err"></span>
+    </div>
+    <div class="album_img">
+        <a href="/u/{$ui.Name}">
+            <img width="96" height="96" src="{$SUB_DOMAIN}{if $ui.Avatar}images/avatars/s_{$ui.Avatar}{else}si/ph/user-96x96.png{/if}" alt="">
+        </a>
+    </div>
+
+    <div class="track_block">
+        <div class="track_name">
+
+        </div>
+        <div class="track_author">
+            <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+        </div>
+    </div>
+    <div class="cl"></div>
+    <div class="line"></div>
+    <input class="btn1 yellow_button access_buy_btn" type="button" value="Buy" />	
+    <input class="btn1 reset_button" type="reset" value="Cancel" />
+    <span class="wait" style="display:none;"></span>
+    <div class="price"> $ <strong></strong></div>
+</div>
+{/strip}

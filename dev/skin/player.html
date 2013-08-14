@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Player</title>
+{strip}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/styles.css?{mktime()}" type="text/css" />
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/slider.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Player.js?v{mktime()}"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Users.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/main.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/Search.js"></script>
+<script language="javascript" type="text/javascript">   
+
+var width = 687;
+var height = 636;
+window.onresize = function() {  window.resizeTo(width,height);  } 
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+      	oPopup.InitPurchase();		   		
+    });	
+</script>
+<script type="text/javascript">
+            var playitem = {$playitem};
+</script>
+{/strip}
+{include file="jwplayer.html"}
+        {strip}
+<script type='text/javascript'>
+		var uagent = navigator.userAgent.toLowerCase();
+		var fileRoot;
+		var suffix = '';
+		if (DetectSmartphone() || DetectTierTablet())
+		{
+			fileRoot = '{$smarty.const.STREAMING_HTML5_VOD}';
+			suffix = '/playlist.m3u8';
+		}  else {
+			fileRoot = '{$smarty.const.STREAMING_FLASH_VOD}mp3:';
+		}
+		$(document).ready(function(){
+			if($('#list tr').length == 1) {
+			$('.player_control').hide();
+			}
+			{*
+			$('#sliderTime').slider({
+				slide: function(event, ui) {
+					position = Math.round((ui.value/ 100) * myListener.duration);
+					console.log(position);
+					setPosition(position);
+				}
+			});
+			*}
+		});
+		</script>
+{/strip}
+</head>
+<body class="main_body" style="margin:0; padding:0;">
+{strip}
+<div class="player_container" id="demo">
+  <div id="blueBarHolder" style="position:relative; width:687px">
+    <div id="pageHead" style="width:100%;"> <a href="/" style="margin-left:10px;" id="logoH"></a> {if !$IsAuth}
+      <div id="AccountH"> <a href="/base/user/login" title="login" class="login-ic"></a> </div>
+      {else}
+      <div id="profileH" class="floatR" style="padding-right:10px;">
+        <div  id="Cpic" class="relative"> <span class="proPic">{if $UserInfo.Avatar}<img src="{$SUB_DOMAIN}images/avatars/x_{$UserInfo.Avatar}" width="24" height="24" alt="" />{else} <img class="icon" src="{$SUB_DOMAIN}si/ph/user300x300.jpg" width="24" height="24"> {/if} </span> </div>
+        <a href="{if $UserInfo.Status==1}/fan/feed{else}/artist/feed{/if}">
+        <div id="title">{if $UserInfo.BandName}{$UserInfo.BandName|truncate:30:'...'}{else}{$UserInfo.FirstName|cat:' '|cat:$UserInfo.LastName|truncate:30:'...'}{/if}</div>
+        </a> </div>
+      {/if} </div>
+  </div>
+  <div class="player">
+    <div class="album_img" style="display: none;"> <a href=""> <img width="150" height="150"  alt="" src="{$SUB_DOMAIN}si/ph/album-96x96.png"> </a> </div>    
+    <div class="clear"></div>    
+    <div class="track_block" style="padding-left:17px;">
+      <div class="track_name ttl"> </div>
+      <div class="track_author"> by <a href="#" class="artist"></a> </div>
+      <div class="track_album" style="display: none;">Album: <a href="#"></a> </div>
+      <div class="track_buttons" style="display: none;"> 
+      
+      {if $UserInfo.Id != $ui.Id}  
+        {if $tracks[0].Price}
+       		{if !$tracks[0].MusicPurchase}	            
+                      <a href="javascript:void(0);" class="button wblue buy_music" 
+            {if $fellow}  onClick="{if $UserInfo.Status}oPopup.MusicTrackPlayer($(this).attr('mid')); {else}oProfile.PurchaseRedirect('track', $(this).attr('mid'), 1);{/if}" mid="" {else} onClick="oPopup.connectinplayer('{$tracks[0].UserId}');" mid="{$tracks[0].Id}" {/if} price=""> Buy track</a> 
+            {else}
+            	<span class="good">Purchased</span>
+            {/if} 
+            
+        <a href="javascript:void(0);" class="button yellow_button buy_album"  {if $fellow} onClick="{if $UserInfo.Status}oProfile.InitBuyAlbum(this);{else}oProfile.PurchaseRedirect('album', $(this).attr('mid'), 1);{/if}" mid="{$tracks[0].AlbumId}" savings="" tracks="" {else} onClick="oPopup.connectinplayer('{$tracks[0].UserId}');" mid="{$tracks[0].AlbumId}" {/if}  price="{$tracks[0].AlbumPrice}"  >  <font color="#EF5D6D">   Buy album! {if $tracks[0].AlbumPrice} $ {$tracks[0].AlbumPrice} {/if} </font></a> 
+
+        {else} 
+        	{if !$tracks[0].MusicPurchase}
+            	{if $fellow}
+                	<a  href="javascript:void(0);" class="button wblue buy_music"   onClick="{if $UserInfo.Status}oProfile.InitAddMusic(this);{else}oProfile.PurchaseRedirect('track', $(this).attr('mid'), 1);{/if}" mid="{$tracks[0].Id}" artist_band="{$tracks[0].Band}" artist_genres="{$tracks[0].Genres}" price="0"> Add track</a> 
+                  {else}
+                    		<a  href="javascript:void(0);" class="button wblue buy_music" onClick="oPopup.connectinplayer('{$tracks[0].UserId}');" mid="{$tracks[0].Id}" price="0">  Add track</a> 
+                  {/if}         
+            	
+            {else}
+            	<span class="good">Purchased</span>
+            {/if}
+      
+        <a href="javascript:void(0);" class="button yellow_button buy_album"  {if $fellow} onClick="{if $UserInfo.Status}oProfile.InitBuyAlbum(this);{else}oProfile.PurchaseRedirect('album', $(this).attr('mid'), 1);{/if}" mid="{$tracks[0].AlbumId}" savings="" tracks="" {else} onClick="oPopup.connectinplayer('{$tracks[0].UserId}');" mid="{$tracks[0].AlbumId}" {/if}  price="{$tracks[0].AlbumPrice}"  >  <font color="#EF5D6D">  Add album ! {if $tracks[0].AlbumPrice} $ {$tracks[0].AlbumPrice} {/if} </font></a> 
+         
+        {/if}
+     {/if} 
+     
+     </div>
+    
+    </div>
+      
+    <div class="cl"></div>
+  </div>
+  <div id="jwplayer"></div>
+  {strip}
+  <script type='text/javascript'>
+			jwplayer('jwplayer').setup({
+				controlbar: "bottom",
+				file: fileRoot+"{if $tracks[0].TrackPreview && $i.Price>0 && $tracks[0].IsOther && !$tracks[0]['MusicPurchase']['Id']}{$tracks[0].TrackPreview|substr:6}{else}{$tracks[0].Track|substr:6}{/if}"+suffix,
+				width: 690,
+				height: 140,
+		   });
+		   jwplayer().onReady(function(){ 
+		   		jwplayer().play(); 
+				updateTrackBlock({$tracks[0].Id}); 
+			});
+			jwplayer().onTime(function(obj){
+				myListener.update(obj)
+			});
+			jwplayer().onPlay(function() {
+				myListener.isPlaying = true;
+			});
+			jwplayer().onPause(function(){
+				myListener.isPlaying = false;
+				$('.player_control').find('.track_play').show(); 
+				$('.player_control').find('.track_pause').hide(); 
+			});
+			jwplayer().onComplete(function(){
+				next();
+			});
+			jwplayer().onError(function(){
+				next();
+			});
+		   </script>
+  {/strip}
+  {strip}
+  <style>
+  .btn1old{ 
+color: #363636;
+font-weight: bold;
+font-size: 11px;
+display: inline-block;
+border: 1px solid #c6c6c6;
+border-radius: 4px;
+padding: 4px 12px;
+box-shadow: 0 2px 2px #dad5ce;
+background: url(/i/button_bg.gif) 0 100% repeat-x;
+text-shadow: 0px 1px 0px #fff;
+  }
+ .yellow_button_old {
+ background: #fff082 url(/i/yellow_button.jpg) 0 0 repeat-x !important;
+ } 
+  </style>
+  {/strip}
+  {strip}
+  <div class="track_list">
+    <table class="tracks_table">
+      <col width="24px" />
+      <col width="400px" />
+      <col />
+      <col width="60px" />
+      <col width="140px" />
+      <tbody id="list">
+      {foreach key=k item=i from=$tracks}
+      <tr track="{if $i.TrackPreview && $i.Price>0 && $i.IsOther && !$i['MusicPurchase']['Id']}{$i.TrackPreview|substr:6}{else}{$i.Track|substr:6}{/if}" tid="{$i.Id}">      
+        <td><a href="javascript:void(0);" onClick="play($(this).parents('tr').attr('track'), $(this).parents('tr').attr('tid'));"> <img  alt="" src="{if $i.PlayerImage}/{$i.PlayerImage}{else}{$SUB_DOMAIN}si/ph/track-96x96.png{/if}" width="22" height="22" /> </a><span class="albumttl" mid="{$i.AlbumId}" price="{$i.AlbumPrice}" savings="{$i.AlbumSavings}" tracks="{$i.AlbumTracks}" buyed="{if $i['MusicPurchase']['WithAllAlbum']}1{else}0{/if}" active="{if $i.AlbumActive && !$i.AlbumDeleted}1{else}0{/if}" style="display:none;">{$i.AlbumTitle}</span></td>
+        
+        <td><strong><a href="javascript:void(0);" onClick="play($(this).parents('tr').attr('track'), $(this).parents('tr').attr('tid'));" class="ttl">{$i.Title} </a></strong> <br />
+          by <a href="/u/{$i.Name}" class="artist" genres="{$i.Genre}">{$i.Band}</a><br></td>
+          
+        <td><span class="track_time">{if $i.TrackPreview && $i.Price>0 && $i.IsOther && !$i['MusicPurchase']['Id']}{$i.TrackPreviewLength}{else}{$i.TrackLength}{/if}</span></td>
+        
+        <td class="number"> {if $i.TrackPreview || $i.TrackLength}
+          {if $i.Price>0 && $i.IsOther && $UserInfo.Status && !$i['MusicPurchase']['Id']}$ {$i.Price} {elseif $i.Price==0 && $i.IsOther && $UserInfo.Status && !$i['MusicPurchase']['Id']}
+          
+          <span class="pricetag free">FREE</span>
+          
+          {elseif ($IsAuth && !$i.IsOther) || $i['MusicPurchase']['Id']}<span class="pricetag own">&#10004;</span>{/if}
+          {else}{/if} </td>
+          
+        <td> {if $system_status}
+          {else}
+          {/if}          
+          {*if $i.TrackPreview || $i.TrackLength*}
+          {if $i.Status == 0}
+          {if $fellow}
+          
+          {if $i.Price>0 && $i.IsOther && $UserInfo.Status && !$i['MusicPurchase']['Id']} 
+          
+          <a href="javascript:void(0);" class="button wblue buy_music" onClick="{if $UserInfo.Status}oPopup.MusicTrackPlayer({$i.Id});{else}oProfile.PurchaseRedirect('track', $(this).attr('mid'), 1);{/if}" mid="{$i.Id}" price="{$i.Price}">$ {$i.Price|string_format:'%.2f'}</a>               
+            
+
+          {elseif $i.Price==0 && $i.IsOther && $UserInfo.Status && !$i['MusicPurchase']['Id'] && $albumPrice==0} 
+          
+          <a href="javascript:void(0);" class="button wblue  add_music" onClick="{if $UserInfo.Status}oPopup.InitAddMusic(this,{$i.Id});{else}oProfile.PurchaseRedirect('track', $(this).attr('mid'), 1);{/if}" mid="{$i.Id}" price="0" artist_band="{$i.Band}" artist_genres="{$i.Genres}" >FREE</a>
+          
+           {*<a href="javascript:void(0);" class="button wblue add_music" onClick="{if $UserInfo.Status}oProfile.InitBuyMusic(this,{$i.Id},{$i.Band},{$i.});{else}oProfile.PurchaseRedirect('track', $(this).attr('mid'), 1);{/if}" mid="{$i.Id}" price="0">Add to My music</a>*}
+          {elseif $i.Price==0 && $i.IsOther && $UserInfo.Status && !$i['MusicPurchase']['Id'] && $albumPrice>0}
+<a href="javascript:void(0);" class="button wblue RT bonusalbum"  mid="{$i.Id}" price="0" artist_band="{$i.Band}" artist_genres="{$i.Genres}" >BONUS</a>
+          
+          
+          {elseif ($IsAuth && !$i.IsOther) || $i['MusicPurchase']['Id']}
+          {* <a href="/{$i.Track}" class="button">Download</a> *}
+          {/if}
+          
+          {else}
+              {if $owner}
+              
+              {else}          
+                  {if !$i['MusicPurchase']['Id']}                                     
+                      {if $i.Price>0} 
+                            <a price="{$i.Price}" mid="{$i.Id}" onClick="oPopup.connectinplayer('{$i.UserId}');" class="button wblue yellow_button" id="page-help">$ {$i.Price|string_format:'%.2f'}</a> 
+                      {else}
+                            <a href="javascript:void(0);" onClick="oPopup.connectinplayer('{$i.UserId}');" class="button wblue yellow_button" mid="{$i.Id}">ADD</a>
+                      {/if}              
+                  {/if}
+              {/if}              
+          
+          {/if}
+          {else if $i.Status == 1}
+          <p class="alert alert_note">Your music file is undergoing processing on our servers at the moment.</p>
+          {else if $i.Status == 3}
+          <p class="alert alert_error">Error in processing File</p>
+          {/if} </td>
+          
+        <td>{*<a href="#" class="del">*}</a></td>
+      </tr>
+      {/foreach}
+      </tbody>
+      
+    </table>
+  </div>
+{/strip}  
+</div>
+
+{include file="mods/profile/blocks/_buy_block.html"}
+
+
+</body>
+</html>

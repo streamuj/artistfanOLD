@@ -1,0 +1,143 @@
+{extends file="mods/admin/index.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/j/jquery.form.js"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function()
+    {
+        oUsers.StartReload();
+        $('#bsearch').click(function() {
+            oUsers.UsersFilter();
+        });
+    });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('body').on('click', '.switchActive', function(){
+		var divParent = $(this).parent('tr');
+		var Id = $(this).attr('id').split('_')[1];
+		$('#active').val(Id);
+		var thisObj = $(this);
+		if($(this).hasClass('act_ico')){
+			active = 0;
+		} else {
+			active = 1;
+		}
+		thisObj = $(this);
+		$.ajax({
+			type:'post',
+			url: '/base/user/AdminArtistActivate',
+			dataType:'json',
+			data: { 'id': Id, 'active': active},
+			success: function(response){
+			  	if(thisObj.hasClass('act_ico')){
+					thisObj.removeClass('act_ico');
+					thisObj.addClass('in_act_ico');
+				} else {
+					thisObj.removeClass('in_act_ico');
+					thisObj.addClass('act_ico');
+				}
+			}
+		})
+		
+	});
+});
+
+</script>
+
+{/block}
+
+{block name="content"}
+
+<h1>Artists list</h1>
+
+<ul class="tabs-panel">
+    <li{if $status==1} class="act"{/if}><a href="/base/user/indexadmin" class="submit">Fans list</a></li>
+    <li{if $status==2} class="act"{/if}><a href="/base/user/indexadmin?status=2" class="submit">Artists list</a></li>
+</ul>
+<div class="clear"></div>
+
+<form action="/base/user/AdminUsersList" method="post" id="ulist">
+    <input type="hidden" id="flist" value="" />
+    <input type="hidden" name="status" id="status" value="{$status}" />
+    <input type="hidden" name="page" id="page" value="1" />
+    <input type="hidden" name="uid" id="uid" value="{$ui.Id}">
+<div class="blue_block">
+<table>
+    <tr>
+       <td colspan="2"><h6>Search users</h6></td>
+    </tr>
+    <tr>
+        <td>E-mail</td>
+        <td><input type="text" name="s[email]" value="{$s.email}" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Name </td>
+        <td><input type="text" name="s[name]" class="text_input_small mid" /></td>
+    </tr>
+    <tr>
+        <td>Location</td>
+        <td><input type="text" name="s[location]" value="{$s.location}" class="text_input_small mid" /></td>
+    </tr>
+    {if $status==2}
+    <tr>
+        <td>Featured only</td>
+        <td><input type="checkbox" name="s[featured]" value="1" {if $s.featured==1} checked="checked"{/if} /></td>
+    </tr>
+   
+    <tr>
+        <td>Pending profile </td>        
+        <td> <input type="checkbox" name="s[emailConfirmed]" value="1" {if $s.emailConfirmed==0 && $s.emailConfirmed !=''}checked="checked"{/if} /> </td>
+    </tr>
+     {/if}
+    <tr>
+        <td></td>
+        <td><input type="button" id="bsearch" value="Search" class="submit_01" /></td>
+    </tr>
+</table>
+<br />
+</div>
+
+<div style="position:absolute;z-index:100;left:550px;display:none;" id="wait"><img src="/i2/wait.gif" alt="Wait..."></div>
+<br />
+
+<table class="style_table f13">
+    <colgroup>
+        <col width="50px" />
+        <col width="150px" />
+        <col />
+        <col width="150px" />
+        <col width="100px" />
+        <col width="100px" />
+    </colgroup>
+    <thead>
+        <tr style="color:#28B7F3;">
+            <th></th>
+            <th class="aleft">Username</th>
+            <th class="aleft">Name / BandName</th>
+           {if $status==2} <th class="aleft">Phone</th> {/if}           
+            <th class="aleft">Status</th>            
+            <th class="aleft">E-mail</th>
+            <th class="aleft">Location</th>
+            <th class="aleft">Birth date</th>
+        </tr>
+    </thead>
+    <tbody id="list">
+    {include file="mods/admin/users/ajax/_list_ajax.html"}
+    </tbody>
+</table>
+<div id="pagging"></div>
+<br />
+<div style="float:left;">
+    <select name="pcnt" id="pcnt" onchange="oUsers.UsersList(1);">
+        <option value="10"{if $pcnt==10} selected="selected"{/if}>10</option>
+        <option value="30"{if $pcnt==30} selected="selected"{/if}>30</option>
+        <option value="50"{if $pcnt==50} selected="selected"{/if}>50</option>
+        <option value="70"{if $pcnt==70} selected="selected"{/if}>70</option>
+        <option value="100"{if $pcnt==100} selected="selected"{/if}>100</option>
+        <option value="1000000000"{if $pcnt==1000000000} selected="selected"{/if}>all</option>
+    </select>
+</div>
+</form>
+{/block}

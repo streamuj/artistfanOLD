@@ -1,0 +1,89 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'/ssi/' });
+	});
+</script>
+{include file="mods/profile/fanfinder_map.html"} 
+{/strip}
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+<div class="P15">
+    <h2>My Broadcasting </h2>    
+<div class="clear"></div><br />
+  <div class="albums_container_ALT" style="width: 687px;">
+    <table>
+    	<tr>        	
+            <td><input type="button" onclick="Go('/artist/StartBroadcasting/' + $('#event_id').val());" value="Start broadcast" class="button" /><br /></td>	
+            <td>&nbsp;</td>	
+            <td class="xform">
+                <select name="fm[event]" id="event_id" style="width:400px;">
+                    {foreach key=k item=i from=$events}
+                    <option value="{$i.Id}">{$i.Title|truncate:40} ({$i.EventDate|mdate})</option>
+                    {/foreach}
+                </select>    
+            </td>	
+        </tr>
+    </table>
+    </div>
+<div class="clear"></div><br />
+   <div class="subTab">
+      <ul>
+         <li> <a href="/artist/broadcasting">Live Stream Recordings</a> </li>
+         <li> <a href="/artist/broadcastviewers" class="active">Activity Reports</a></li>
+      </ul>
+  </div>
+{if $viewers}
+    <table cellpadding="10" cellspacing="0" width="100%">
+        <tr> 
+        	<td class="tblhead" width="20%"><strong>Date / Time</strong></td>
+        	<td class="tblhead"width="20%"><strong>Event Title</strong></td>            
+        	<td class="tblhead"width="20%"><strong>Viewers Count</strong></td>
+        	<td class="tblhead" width="20%"><strong>Ticket Price</strong></td>
+        	<td class="tblhead" width="20%"><strong>Total</strong></td>            
+        </tr>        
+        {foreach key=k item=i from=$viewers}
+        {if $i.Price}
+        <tr>
+            <td><a href="javascript:void(0);" onclick="oUsers.ReportViewersList('{$i.EId}','{$i.UserId}','{$i.Title}');">{$i.Pdate|date_format:"%m/%d/%Y<br/> %l:%M  %p"}</a></td>
+            <td><a href="javascript:void(0);" onclick="oUsers.ReportViewersList('{$i.EId}','{$i.UserId}','{$i.Title}');">{$i.Title}</a></td>            
+            <td><a href="javascript:void(0);" onclick="oUsers.ReportViewersList('{$i.EId}','{$i.UserId}','{$i.Title}');">{$i.Count}</a></td>
+            <td>$ {$i.Price|string_format:'%.2f'}</td>
+            <td>$ {$i.Total|string_format:'%.2f'}</td>            
+        </tr>
+        {/if}
+        {/foreach}
+        {if $totalPrice}
+        <tr>
+        	<td colspan="2">&nbsp;</td>
+            <td colspan="2" align="right">Total Price :</td>
+            <td > $ {$totalPrice|string_format:'%.2f'}</td>
+        </tr>  
+        <tr>
+        	<td colspan="5"><a href="/artist/exportbroadcastviewersreport" class="RT button" style="width:231px;">Download Report (CSV format)</a> </td>
+        </tr>      
+        {/if}                                
+    </table>
+    
+{*<p class="alert alert_success">Note: Click Date/Time or Count For More Viewer</p>      *}
+{else}
+	<p class="noBar">{$smarty.const.NO_VIEWERS}</p>
+{/if}
+      
+<div>
+    {$pagging}
+</div>
+
+
+</div>   
+{/strip}
+{include file="mods/profile/blocks/_buy_block.html"}    
+{/block}

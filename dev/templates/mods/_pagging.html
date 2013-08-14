@@ -1,0 +1,17 @@
+{if $pages}
+<div class="page">
+    <a href="{if $lprev}{$lprev}{else}javascript:void(0);{/if}" class="button{if !$lprev} noactive{/if}">« Prev</a>
+    {section name=i loop=$pages}
+    {if $page == $pages[i].page}
+    <b>{$pages[i].page}</b>
+    {else}
+    <a href="{$pages[i].link}">{$pages[i].page}</a>
+    {/if}
+    {/section}
+    {if $last_page}
+    <span>...</span>
+    <a href="{$last_page_link}">{$last_page}</a>
+    {/if}
+    <a href="{if $lnext}{$lnext}{else}javascript:void(0);{/if}" class="button{if !$lnext} noactive{/if}">Next »</a>
+</div>
+{/if}		

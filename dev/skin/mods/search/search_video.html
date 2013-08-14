@@ -1,0 +1,49 @@
+{extends file="mods/search/cabinet_search.html"}
+
+{block name="my_cabinet"}
+{strip}
+<div class="srcResult">
+<h2 class="P15">Search Results</h2>
+<div class="titleBox P15">
+  <h4 class="LF">Video Results </h4>
+  <div class="clear"></div>
+  {if $videoCount>0}
+  {$videoCount} Videos Match
+  {/if}
+</div>
+<div class="clear"></div>
+
+{if $video}
+    	<div class="listBox tbVid"> 
+         <ul class="vidBoxi">
+       {foreach key=k item=i from=$video}
+       			{if $i.FromYt}
+                	{assign var="imgLink" value="http://i2.ytimg.com/vi/{$i.Video}/0.jpg"}                    
+                {elseif $i.Status == 2}
+                	{assign var="imgLink" value="{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/x_{$i.Video}.jpg"}
+                {else}
+   	             	{assign var="imgLink" value="{$SUB_DOMAIN}si/ph/video-22x22.png"}
+                {/if}
+       
+		    <li>
+		     <div class="imgBox">
+              	<a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}">
+                <span class="playIC"></span>                
+                <img src="{$imgLink}"/></a>
+                
+		     </div>
+             <div class="clear"></div> 
+			<a href="/u/{$i.Name}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:35}</a> 
+            <a href="/u/{$i.Name}" class="nameTxt">{$i.artist}</a> </li>            
+            </li>
+                 	{/foreach}
+        </ul><div class="clear"></div>
+    	</div>
+
+{else}
+        <h3 class="noBar M0"><br />No Videos Found<br /><br /></h3>
+{/if}
+</div>
+<div class="clear"></div>
+{/strip}
+{/block}

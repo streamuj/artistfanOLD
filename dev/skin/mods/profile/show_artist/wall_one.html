@@ -1,0 +1,34 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="javascript"}
+
+{strip}
+	<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Profile.js"></script>
+    <script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Popup.js"></script>
+    <script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Wall.js"></script>
+    <script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Errors.js"></script>
+{/strip}
+
+{if $fans}    
+{include file="mods/profile/fanfinder_map.html"}
+{/if}
+
+{strip}
+<script language="javascript">
+    var user_id = {$ui.Id};
+    $(document).ready(function()
+    {
+        oWall.Reload();
+        oProfile.InitPurchase();
+        oPlay.InitPlayButtons();
+		oPopup.InitPurchase();		
+    });
+</script>
+{/strip}
+
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+	 <div style="padding:15px;">{$content}</div> 
+{/strip}
+{/block}

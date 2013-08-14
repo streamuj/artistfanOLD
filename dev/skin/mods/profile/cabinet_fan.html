@@ -1,0 +1,45 @@
+{extends file="base.html"}
+{block name="javascript"}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.slimscroll.js"></script>
+{/block}
+{block name="body_class"}<body class="" >{/block}
+{block name="body_class"}
+<body class="" >
+{/block}
+{block name="content"}
+{strip}
+<div class="leftColContainer">
+  <div class="colSide">
+    <div class="profilePic"> <a href="/u/{$UserInfo.Name}"> <img src="{if !$UserInfo.Avatar}/i/ph/user-144x144.png{else}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{/if}" id="image" alt="" /> </a> </div>
+    <div>
+      <div class="proInfo">
+        <h2><a href="/fan/profile"> {if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName|cat:' '|cat:$UserInfo.LastName}{/if} </a> </h2>
+       {if $UserInfo.Country || $UserInfo.Location}
+        <p class="LF font11"> <a href="/fan/profile">{if $UserInfo.Country} {$UserInfo.Country} , {/if} {$UserInfo.Location} </a></p>
+        {/if} </div>
+    </div>
+    <ul class="SideNav">
+      <li {if $module == 'feed'}class="active" {/if}> <a href="/fan/feed"><span class="newsIc"></span>News Feed</a></li>      
+      <li {if $module == 'artists'}class="active" {/if}> <a href="/fan/artists"><span class="fansIc"></span>My Artists</a></li>
+      <li {if $module == 'music'}class="active" {/if}> <a href="/fan/music"><span class="musicIc"></span>Music</a></li>
+      <li {if $module == 'photo'}class="active" {/if}> <a href="/fan/showAllPhotosById"><span class="photosIc"></span>Photos</a></li>    
+      <li {if $module == 'video'}class="active" {/if}> <a href="/fan/video"><span class="videosIc"></span>Videos</a></li>        
+      <li {if $module == 'events'}class="active" {/if}> <a href="/fan/events"><span class="eventsIc"></span>Live Streams</a></li>                    
+      <li {if $module == 'fans'}class="active" {/if}> <a href="/fan/fans"><span class="fansIc"></span>Friends</a></li>                          
+      <li {if $module == 'profile'}class="active" {/if}> <a href="/fan/profile"><span class="settingsIc"></span>My Profile</a></li>                                
+      {if $smarty.session.facebook_id}                 
+      <li {if $module == 'fbfriends'}class="active"  {/if}> <a href="/base/invite/InviteFriends"><span class="fansIc"></span>Invite FB Friends</a></li>
+      {/if}
+      {if $smarty.session.twitter_id}         
+      <li {if $module == 'twfriends'}class="active"  {/if}> <a href="/base/invite/InviteTwitterFriends"><span class="fansIc"></span>Invite Twitter Friends</a></li>
+      {/if}       
+    </ul>
+    <div class="clear"></div>
+  </div>
+</div>
+{/strip}
+<div class="contentCol">
+ 
+  {block name="my_cabinet"}
+  {/block} </div>
+{/block}

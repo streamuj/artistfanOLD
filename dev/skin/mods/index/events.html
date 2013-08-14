@@ -1,0 +1,138 @@
+{extends file="base.html"}
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript" src="/sj/cls/Popup.js"></script>
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/jquery.tinycarousel.min.js"></script>
+<script type="text/javascript">
+var eventTime;
+var eventGenre;
+   $(document).ready(function() {  
+		 $("body").on({
+			ajaxStart: function() { 
+				$(this).addClass("loading"); 
+			},
+			ajaxStop: function() { 
+				$(this).removeClass("loading"); 
+			}    
+		});
+				
+		$('.evShow').tinycarousel({ display: 1 });		
+		$('.xform').jqTransform({ imgPath:'/ssi/' });
+        {if !$UserInfo.Status}
+        oProfile.InitEventActionsForGuests();
+        {else}
+        oProfile.InitEventActions();
+        {/if}
+    });
+</script>
+{if $indexevent|@count >= 1}
+
+<script type="text/javascript" language="javascript" src="/sj/slide360.js"></script>
+<link rel="stylesheet" href="/ss/slider360.css" type="text/css" media="screen"/>
+<script type="text/javascript" language="javascript">
+			$(function() {	
+				$('#evShow').carouFredSel({
+					auto: false,
+					prev: '#prev2',
+					next: '#next2',
+					mousewheel: true,
+					width: 850,
+					height:315,
+					swipe: { onMouse: true, onTouch: true},
+					visible: { min: 1,max: 1},
+					auto: { pauseOnHover: 'resume',progress: '#timer1',timeoutDuration: 5000},
+				});
+			});
+</script>
+
+{/if}
+{/strip}
+{/block}
+{block name="content"}
+{strip}
+<div>
+  <div class="contentArea">
+    <div class="P15" style="border-bottom:1px solid #ccc;">
+      <table cellspacing="0" cellpadding="3" border="0">
+        <tbody>
+          <tr>
+            <td valign="middle" align="left"><span class="font21 caps ">Live Events</span></td>
+            <td valign="middle" align="left" class="xform"><select name="df" id="df" onchange="oProfile.genresEventList();" >
+                <option value="all">All</option>
+                <option value="td"{if $df=="td"} selected="selected"{/if}>Today</option>
+                <option value="twd"{if $df=="twd"} selected="selected"{/if}>This weekend</option>
+                <option value="tw"{if $df=="tw"} selected="selected"{/if}>This week</option>
+                <option value="nw"{if $df=="nw"} selected="selected"{/if}>Next week</option>
+              </select></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="clear"></div>
+    <div class="leftColContainer" style="width:154px;">
+      <div class="colSide"> 
+        <table border="0" cellspacing="0" cellpadding="5" class="xform caps">
+          <tr>
+            <td align="left" valign="top" class="jqTransformChecked "><input name="genresList" type="radio" class="" id="genresList" onclick="oProfile.genresEventList();" value="All" checked="checked" /></td>
+            <td align="left" valign="middle" class="P0 M0">All</td>
+          </tr>
+          {foreach key=k item=i from=$genresList}
+          <tr>
+            <td align="left" valign="top"><input type="radio" name="genresList" id="genresList" value="{$k}" {if $genresId=="{$k}"} selected="selected" {/if}  onclick="oProfile.genresEventList('{$k}');" /></td>
+            <td align="left" valign="middle" class="P0 M0">{$i}</td>
+          </tr>
+          {foreachelse}
+          <tr>
+            <td colspan="6" align="center" ><strong>
+              <p class="alert alert_error">{$smarty.const.NO_EVENTS}</p>
+              </strong></td>
+          </tr>
+          {/foreach}
+        </table>
+        <div class="clear"></div>     
+        <div class="clear"></div>
+      </div>
+    </div>
+    <div class="contentCol" style="width:850px;">    
+    <div class="slide360 relative">
+				<ul id="evShow">
+                 {foreach key=k item=i from=$indexevent}
+              {if $UserInfo.Id == $i.UserId}
+              {assign var="link" value="/artist/"}
+              {else}
+              {assign var="link" value="/u/{$i.Name}/"}
+              {/if}<li>
+                    <a href="{$link}events/{$i.Id}"><img src="{$SUB_DOMAIN}photo/slide/{$i.UserId}/{$i.EventPhoto}" /></a>
+                    <div class="decBox white">               
+                  <span class="icDate_ALT LF block"  style="margin-bottom:15px"><a href="{$link}events/{$i.Id}" class="white"><strong>{{$i.EventDate|date_format} } </strong> {$i.EventDate|date_format:"%A"}</a> at {$i.EventDate|date_format:'%l:%M  %p'} EST</span>
+                  <a href="{$link}events/{$i.Id}" class="nameTxt white block"> 
+                  {if $i.BandName}{$i.BandName|capitalize}{else}{$i.FirstName|capitalize} {$i.LastName|capitalize}                 {/if}</a>
+                 <a href="{$link}events/{$i.Id}" class="titleTxt white block font16 M0">{if $i.Title}{$i.Title}{/if}</a>
+                 <a href="{$link}events/{$i.Id}" class="decTxt white block" style="margin-top:15px;">{if $i.Descr} {$i.Descr|truncate:130:"..."} {/if}</a>
+                 <a href="javascript:void(0);" class="buyBtn IndexEvents" onclick="oPopup.IndexEvents('{$i.EventId}','{$i.UserId}',{$i.Status});" mid="{$i.Id}" price="{$i.Price}" ><span class="LF">$ {$i.Price|string_format:'%.2f'}</span><span class="ic"></span></a>
+                </div>
+				  </li>
+                  {/foreach} 
+				</ul>
+				<div class="navi"><a id="prev2" class="prev buttons" href="#"></a>
+				<a id="next2" class="next buttons" href="#"></a></div>
+			</div>    
+    <div class="clear"></div>    
+      <div id="eList" style="display:none;"></div>
+      <div id="edefault"> {include file="mods/index/ajax/eventList.html"} </div>
+    </div>
+    <div align="right">
+      <p style="display:block">{$pagging}</p>
+    </div>
+  </div>
+  <div class="clear"></div>
+</div>
+<div class="clear"></div>
+<div class="loadingdiv"></div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/strip}
+{/block}

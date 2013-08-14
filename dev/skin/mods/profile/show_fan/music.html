@@ -1,0 +1,105 @@
+{extends file="mods/profile/cabinet_artist_public.html"}
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Player.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        {if !$UserInfo.Status}
+        oProfile.InitPurchaseForGuests();
+        {else}
+        oProfile.InitPurchase();
+        {/if}
+        oPlay.InitPlayButtons();
+    });
+</script>
+{/strip}
+{/block}
+
+{block name="my_cabinet"}
+<!--content_block-->
+{strip}
+<div class="header_block">
+    <div class="path">
+        <a href="/u/{$ui.Name}">{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}</a>
+    </div>
+    <div class="social">
+        <iframe src="//www.facebook.com/plugins/like.php?locale=en_US&amp;href=http://{$DOMAIN}/u/{$ui.Name}/music&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px; text-align: right;" allowTransparency="true"></iframe>
+        <a href="https://twitter.com/share" data-text="{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} music" data-url="http://{$DOMAIN}/u/{$ui.Name}/music" data-size="medium" data-align="right" class="twitter-share-button">Tweet</a>
+        {literal}<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>{/literal}
+        <g:plusone href="http://{$DOMAIN}/u/{$ui.Name}/music" size="medium" align="right"></g:plusone>
+    </div>
+    <h1>Artist music</h1>
+</div>
+
+<div class="content_block">
+    {if $albums}
+    <h2>Albums</h2>
+    <div class="albums_container">
+        {foreach key=k item=i from=$albums}
+        <div class="album_block">
+            <div class="art">
+                <a href="/u/{$ui.Name}/music/{$i.Id}"><img src="{if $i.Image}/{$i.Image}{else}{$SUB_DOMAIN}si/ph/album-96x96.png{/if}" alt="" /></a>
+                <a href="javascript:void(0);" class="button play_button play_album" mid="{$i.Id}"><span>Play all</span></a>
+            </div>
+            
+            <div class="album_title"><a href="/u/{$ui.Name}/music/{$i.Id}" class="ttl">{$i.Title}</a></div>
+            {if $i.Price > 0}
+            <span class="pricetag" title="Price: $ {$i.Price}">{$i.Price}</span>
+            {else}
+            <span class="pricetag free" title="This album is free!">Free</span>
+            {/if}
+            {if $IsOther && $UserInfo.Status!=2 && $i.Price > 0}
+            <a href="javascript:void(0);" mid="{$i.Id}" price="{$i.Price}" savings="{$i.Savings}" tracks="{$i.Tracks}" class="button yellow_button buy_album"> Buy album</a>
+            <a href="javascript:void(0);" mid="{$i.Id}" price="{$i.Price}" savings="{$i.Savings}" tracks="{$i.Tracks}" class="button yellow_button pay_more_urlmusic_buy_album"> Pay More</a>            
+
+<!--<a href="javascript:void(0);" mid="{$i.Id}" price="{$i.Price}" savings="{$i.Savings}" tracks="{$i.Tracks}"  class="button yellow_button pay_more_urlmusic_buy_album">Pay More</a>-->
+            {elseif $IsOther && $UserInfo.Status!=2 && !$i.Price}
+            <a href="javascript:void(0);" mid="{$i.Id}" tracks="{$i.Tracks}" class="button yellow_button add_album">Add to My music</a>
+            {/if}
+        </div>
+        {/foreach}
+        <div class="cl"></div>
+    </div>
+    {/if}
+
+    <h2>Tracks</h2>
+
+    <table class="tracks_table">
+        <colgroup>
+            <col width="24px" />
+            <col />
+            <col width="40px" />
+            <col width="40px" />
+            <col />
+        </colgroup>
+        {foreach key=k item=i from=$tracks}
+        <tr>
+            <td><img width="22" height="22" alt="" src="{if $i.Image}/{$i.Image}{else}{$SUB_DOMAIN}si/ph/track-22x22.png{/if}" /></td>
+            <td class="ttl">{$i.Title}</td>
+            <td><span class="track_time">{$i.TrackLength}</span></td>
+            <td class="number">{if $i.Price>0}<span class="pricetag" title="Price: $ {$i.Price}">{$i.Price}</span>{else}<span class="pricetag free" title="This track is free!">Free</span>{/if}</td>
+            <td align="right">
+                <a href="javascript:void(0);" class="button play_button play_track" mid="{$i.Id}"><span>Play</span></a>
+                {if $IsOther && $UserInfo.Status!=2 && !$i['MusicPurchase.Id']}
+                {if $i.Price>0}<a href="javascript:void(0);" class="button yellow_button buy_music" price="{$i.Price}" mid="{$i.Id}">Buy</a>
+                {else}<a href="javascript:void(0);" class="button yellow_button add_music" mid="{$i.Id}">Add</a>{/if}
+                {/if}
+                {if !$i.Price || !$IsOther || $i['MusicPurchase.Id']}<a href="/{$i.Track}" class="button yellow_button">Download</a>{/if}
+            </td>
+        </tr>
+        {foreachelse}
+        <tr>
+            <td colspan="4">No tracks</td>
+        </tr>
+        {/foreach}
+    </table>
+</div>
+{include file="mods/profile/blocks/_buy_block.html"}
+{/strip}
+{/block}

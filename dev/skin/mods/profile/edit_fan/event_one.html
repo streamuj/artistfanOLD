@@ -1,0 +1,124 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitEventActions();
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+
+<div style="padding-left:15px;">
+ <div class="clear">&nbsp;</div>
+	{if $smarty.get.thanks}
+	<h2 align="center"> Thank you for purchasing {$event.Title} </h2>
+    {/if}
+ <div class="clear">&nbsp;</div>    
+ <div class="content_block wide">
+{*Start*}
+<div class="eventListBox">
+<table border="0" cellspacing="0" cellpadding="8">
+  <tr>
+    <td rowspan="2" align="left" valign="top"><a href="javascript:void(0);" class="tb LF" style="width:201px; height:115px; display:block;"><img src="{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}" width="200" height="115" /></a>    </td>
+    <td align="left" valign="top">
+	<a href="javascript:void(0);" class="timTxt"><span><span class="evDate">{$event.EventDate|date_format}</span> <span><strong>{$event.EventDate|date_format:"%A"} at {$event.EventDate|date_format:'%l:%M  %p'} EST</strong></span></a>
+	</td>
+    <td rowspan="2" align="center" valign="top" >
+{if $event.EventType!=1}{if $event.Price>0}<p class="button wblue free P5 bold">${$event.Price|string_format:'%.2f'}</p>{else}<p class="pricetag event free P5 bold">Free</p>{/if}{/if}        
+    {if $event.EventApp == $smarty.const.EVENT_APPROVED or $event.EventType==1}    
+    {if !$event.EventDate|ispast && $event.Status<3}
+    {if $event.Status==1}{*<a href="javascript: void(0);" class="btn2_EVENTS_ALT announce_event button M2" mid="{$event.Id}">Announce</a>*}{elseif $event.Status==2}
+    {*<div class="good status-good">Announced</div>*}
+    {/if}
+    {if $event.EventType>1}{* <a href="/artist/StartBroadcasting/{$event.Id}" class="btn2_EVENTS_ALT buy_access button M2">Broadcast</a> *}{/if}
+    {/if}
+    {if $event.Status==3}
+    {*<div class="good status-good">Cancelled</div>*}
+    {elseif $event.Status==4 || $event.EventDate|ispast}
+    {*<div class="good status-good">Finished</div>*}
+    {/if}
+    
+    {elseif $event.EventApp == $smarty.const.EVENT_PENDING} Pending
+    {else} {*<span style="color:red;">Denied</span> *} {/if}</td>
+  </tr>
+  <tr>
+    <td align="left" valign="bottom"><a href="javascript:void(0);" class="titleTxt">{$event.Title|truncate:95}</a>
+	<a href="javascript:void(0);" class="decTxt">{$event.Descr|truncate:130:"..."}</a>&nbsp;</td>
+  </tr>
+  <tr>
+  	<td colspan="3"> 
+        <table>
+        {if $event.Status < 3}
+        {if $event.EventType==1}
+        <tr>
+          <td><p><b>This event will only be accessible live on location</b></p></td>
+        </tr>
+        <tr>
+          <td><div class="good status-good">You're going</div></td>
+        </tr>
+        
+        {elseif $event.EventType==2}
+            {if !$event['EventPurchase']['Id']}
+        <tr>
+          <td><p><b>This event can be attended live by purchasing a ticket or on our site by purchasing access to online stream</b></p></td>
+        </tr>
+        <tr>
+          <td><p>Access price: {if $event.Price}{$event.Price} credit(s){else}free{/if}</p></td>
+        </tr>
+        {if !$event['EventAttend']['Id'] && !$event.EventDate|ispast}<a href="javascript:void(0);" class="button attend_event" mid="{$event.Id}">I will go!</a>{elseif $event['EventAttend']['Id']}
+        <div class="good status-good">You're going</div>
+        {/if}
+            {else}
+        <tr>
+          <td><p><b>How to access video streaming for this event:</b></p></td>
+        </tr>
+        <tr>
+          <td><p>Video stream will be available at the time of event at this page:</p></td>
+        </tr>
+        <tr>
+          <td><strong><p><a href="http://{$DOMAIN}/broadcasting/{$event.Id}/" style="color:#0099FF">http://{$DOMAIN}/broadcasting/{$event.Id}/</a></p></strong></td>
+        </tr>
+        
+        {/if}
+        {elseif $event.EventType==3}
+            {if !$event['EventPurchase']['Id']}
+        <tr>
+          <td>This event can be attended live by purchasing a ticket or on our site by purchasing access to online stream</td>
+        </tr>
+        <tr>
+          <td>Access price: {if $event.Price}{$event.Price} credit(s){else}free{/if}</td>
+        </tr>
+        {else}
+        <table>
+          <tr>
+            <td>You can access the live stream on {$event.EventDate|date_format} at {$event.EventDate|date_format:'%l:%M  %p'} by </td>
+          </tr>
+            
+          <tr>
+            <td> accessing this link - <a href="http://{$DOMAIN}/broadcasting/{$event.Id}/">http://{$DOMAIN}/broadcasting/{$event.Id}/</a></td>
+          </tr>
+          
+        </table>
+        {/if}
+        {/if}
+        <table>
+          {elseif $event.Status==3}
+          <div class="good">Event cancelled</div>
+          {elseif $event.Status==4}
+          <div class="good">Event finished</div>
+          {/if}
+         
+        </table>
+    </td>
+  </tr>
+</table>
+</div>
+{*End*}    
+
+</div>
+{/block}

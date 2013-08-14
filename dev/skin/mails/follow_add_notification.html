@@ -1,0 +1,51 @@
+{extends file="mails/base_mail.html"}
+{block name="content"}
+{strip}
+<table width="650" border="0" cellspacing="20" cellpadding="0" align="center">
+      <tr>
+        <td><h1 style="color:#202020; font-family: Helvetica,Arial, sans-serif; margin:0; padding:6px 0; font-size:36px;">Hello {if $touser.BandName}
+                    {$touser.BandName}
+                    {else}
+                    {$touser.FirstName} {$touser.LastName}
+                    {/if}!</h1></td>
+      </tr>
+      
+      <tr>
+        <td align="left" valign="top"><p style="color:#505050; font-family:Helvetica; font-size: 14px; text-align: left; margin:0; padding:10px 0; line-height:1.7em" ><a href="{$smarty.const.ROOT_HTTP_PATH}/u/{$fromuser.Name}" style="color: #D90E25; text-decoration:none;">{if $fromuser.BandName}
+                    {$fromuser.BandName}
+                    {else}
+                    {$fromuser.FirstName} {$fromuser.LastName}
+                    {/if}                      
+                    </a> started {if $fromuser.Status==1}following{else}connecting{/if} you! Check out their profile and stay connected!</p></td>
+      </tr>
+      
+      <tr>
+        <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:18px 0 0;">
+          <tr>
+            <td width="1%" align="left" valign="top"><img src="{$smarty.const.SUB_DOMAIN}{if $avatar}/images/avatars/s_{$avatar}{else}/si/ph/user-144x144.png{/if}" alt="nope" width="280" style="border:3px #fff solid" /></td>
+            <td width="89%" align="left" valign="middle" style="padding-left:45px"><img src="{$SUB_DOMAIN}si/{if $fromuser.Status==$smarty.const.USER_FAN}headphone-IC.png{else}mic-IC.png{/if}" vspace="5" />
+                <h2 style="font-size:20px; font-weight:normal; margin:0; padding:10px 0; font-family:Helvetica; "><a href="{$smarty.const.ROOT_HTTP_PATH}/u/{$fromuser.Name}" style="color: #D90E25; text-decoration:none;" >{if $fromuser.BandName}
+                    {$fromuser.BandName}
+                    {else}
+                    {$fromuser.FirstName} {$fromuser.LastName}
+                    {/if} </a> </h2>
+              <p style="color: #505050; font-family:Helvetica; font-size: 14px; text-align: left; margin:0; padding:0; line-height:150%">{if $fromuser.Status == $smarty.const.USER_FAN} Fan since: {$touser.RegDate|date_format:"%Y"}{else} Artist since: {$artistSince}{/if}<br />
+               {if $touser.Location || $touser.Country} {$touser.Location}, {$touser.Country} {/if}<br />
+                {$purcahsedMusicAlbumCount} Playlist<br />
+	            Following {$uFollowersCount} Artist{if $uFollowersCount gt 1}s{/if} 
+                </p>
+                  <p style="margin:0; padding:0;">&nbsp;</p>
+                
+                <table border="0" cellspacing="0" cellpadding="5" align="left" style="background:#ccc;">
+  <tr>
+    <td valign="middle" align="center"><a href="{$smarty.const.ROOT_HTTP_PATH}/u/{$fromuser.Name}" style="color: #D90E25; text-decoration:none;  font-family:Arial, Helvetica, sans-serif; font-size:14px;">View Profile</a></td>
+  </tr>
+</table></td>
+          </tr>
+        </table></td>
+      </tr>
+      
+      
+    </table>
+{/strip}
+{/block}

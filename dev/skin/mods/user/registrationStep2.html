@@ -1,0 +1,472 @@
+{extends file="base_login.html"}
+
+{block name="javascript"}
+{strip}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+<script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.Jcrop.css" />
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+
+{* Start *}
+		<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.checkbox.css" />
+		<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.safari-checkbox.css" />
+		<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.checkbox.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('input.socialmediaonoff').checkbox();								
+			});
+		</script>
+{* End *}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
+<script language="javascript">
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'{$SUB_DOMAIN}ssi/' });
+	});
+</script>
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+        oUsers.InitRegistrationStep2();
+		var jcrop_api;
+		var orginalImage = '{if !$fm.Avatar}/i/ph/user-234x234.png{else}{$SUB_DOMAIN}images/avatars/s_{$fm.Avatar}{/if}';
+		var uploader = new qq.FileUploader({
+		
+            element: $('#file-uploader')[0],
+            action: '/base/user/UploadAvatarAjax',
+            params: { 'rand_id': $('#rand_id').val() },
+            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+            sizeLimit: 5120000, /* max size*/
+            debug: false,
+            onSubmit: function(id, fileName){
+                oErrors.SetWaitFld('image');
+				var loadImage = "{$SUB_DOMAIN}si/loading.gif";
+				$('#HideAvator').show();
+				$('#Avatar').attr('src', loadImage);
+            },
+            onProgress: function(id, fileName, loaded, total){},
+            onComplete: function(id, fileName, responseJSON){
+                oErrors.SetClearFld('image');
+				if(responseJSON.success == 0){
+					$('.jcrop-holder').hide();
+				    $('#Avatar').attr('src', orginalImage).css({ 'visibility': 'visible', width:'auto', height : 'auto'}).show();
+					
+					$('#profilePicSucess').hide();
+					$('#image_err').addClass('error').html(responseJSON.message);
+					return;
+				}
+                if (responseJSON.success==1) {
+
+                    $('#image_err').removeClass('error').html( '' );
+                    var img = '/'+responseJSON['image'];
+					imgWidth = responseJSON['width'];
+					imgHeight = responseJSON['height'];
+                    oErrors.SetOkFld('image', 'Image uploaded!');
+					$('#profilePicSucess').show();
+					$('#profilePicSucess').addClass('good').html('Profile Picture Uploaded');
+					if(jcrop_api){
+						jcrop_api.setImage(img);
+						jcrop_api.release();
+					}
+										
+					$('#Avatar').load(function () {
+						$(this).Jcrop({
+							onChange: showPreview,
+							onSelect: showPreview,
+							aspectRatio: 1,
+							onSelect: updateCoords,
+							setSelect: [ 0, 0, 100, 100 ]
+							}, function(){
+							  jcrop_api = this;
+						});
+						
+					}).attr('src', img);
+					
+					$('.jcrop-holder').show();
+					$('#saveAvatar').show();
+					$('#cropImage').attr('src', img );
+                }
+            },
+            onCancel: function(id, fileName){
+                oErrors.SetClearFld('image');
+            },
+            multiple: false,
+            autoSubmit: true,
+            messages: {
+            },
+            showMessage: function(message){
+                oErrors.SetBadFld('image', message);
+            }
+        });
+		
+    });
+	
+		
+	function updateCoords(c)
+	{
+		$('#x1').val(c.x);
+		$('#y1').val(c.y);
+		$('#x2').val(c.x+c.w);
+		$('#y2').val(c.y+c.h);
+		$('#w').val(c.w);
+		$('#h').val(c.h);
+	};
+	$imgpos = {
+		width	: 300,
+		height	: 300
+	};
+	function showPreview(coords)
+	{
+		if (parseInt(coords.w) > 0)
+		{
+			var rx = (100 / coords.w);
+			var ry = (100 / coords.h);
+			$('#cropImage').css({
+				width: Math.round(rx * imgWidth) + 'px', 
+				height: Math.round(ry * imgHeight) + 'px',
+				marginLeft: '-' + Math.round(rx * coords.x) + 'px', 
+				marginTop: '-' + Math.round(ry * coords.y) + 'px' ,
+			});
+		}
+	};	
+</script>
+{/strip}
+{/block}
+
+{block name="profile"}
+{strip}
+<div class="profBox">
+  <div id="signUparea">
+  <form method="post" id="reg_step2" class="reg_step2"  action="/base/user/RegistrationStep2">
+  	<input type="hidden" name="fm[Status]" value="{$fm.Status}" />    
+    <input type="hidden" name="fm[BandName]" value="{$fm.BandName}" />
+    <input type="hidden" name="fm[FirstName]" value="{$fm.FirstName}" />
+    <input type="hidden" name="fm[LastName]" value="{$fm.LastName}" />    
+    <input type="hidden" name="fm[Avatar]" value="{$fm.Avatar}" />
+    <h2 class="red P10" align="center">Almost Done!</h2>
+    <div class="userPic" align="center">
+      <div style="width:100px; height:100px; overflow:hidden"> <img id="cropImage" src="{if !$fm.Avatar}/i/ph/user-234x234.png{else}{$SUB_DOMAIN}images/avatars/s_{$fm.Avatar}{/if}"  style="border-radius:0;"/> </div>
+      <input type="hidden" name="x1" value="" id="x1" />
+      <input type="hidden" name="y1" value="" id="y1" />
+      <input type="hidden" name="x2" value="" id="x2" />
+      <input type="hidden" name="y2" value="" id="y2" />
+      <input type="hidden" name="w" value="" id="w" />
+      <input type="hidden" name="h" value="" id="h" />
+      <input type="hidden" id="rand_id" name="rand_id" value="{$rand_id}" />
+      <input type="hidden" id="user_id" name="user_id" value="{$fm.Id}" />
+      <h5 class="red P10" align="center"> {if $fm.Status == 2} {if $fm.BandName}{$fm.BandName}{else}{$fm.FirstName} {$fm.LastName}{/if} {else} {$fm.FirstName} {$fm.LastName} {/if} </h5>
+      
+      <div align="center"><span id="profilePicSucess" style="display:none"></span></div>      
+    </div>
+    <br />
+    <span id="image_err"></span><br />    
+    <span id="profilePic"></span>    
+    <input type="button" value="Save" class="button black RT" id="saveAvatar" style="display:none"/>
+    <div class="clear"></div>
+    <p>Hi! &nbsp;<span style="color:red">{if $fm.BandName}{$fm.BandName}{else}{$fm.FirstName} {$fm.LastName}{/if} </span></p>
+    {if $fm.Status == 2}
+    <p>Our account team will review your information and contact you shortly. In the meantime, please setup your Artist Profile.</p>
+    <br />
+    {else}
+    <p>Just a few more steps to creating a complete profile.</p>
+    <br />
+    <h5 style="border-bottom: 1px solid #ececec; padding-bottom:5px">Location</h5>
+    <div style="border-radius: 3px; background-color: #ececec; margin-bottom:20px;" class="P20 boBox">
+      <table cellspacing="0" cellpadding="3" border="0">
+        <tbody>
+          <tr>
+            <td valign="middle" align="left">Country </td>
+            <td valign="middle" align="left"  colspan="3"><select name="fm[country]" id="country" class="txtBox drop">                
+                         {foreach key=k item=i from=$countries}                         
+                <option value="{$i.Iso2}" {if $i.Iso2==$fm.country} selected="selected" {elseif $i.Iso2==$GeoIp.country} selected="selected"{/if}>{$i.Name}</option>                
+                        {/foreach}                       
+              </select>
+              </label> 
+              <span id="err_country"></span> </td>
+          </tr>
+          <tr>
+            <td valign="middle" align="left">City</td>
+            <td><input type="text" class="txtBox" value="{if $fm.city}{$fm.city}{else}{$GeoIp.city}{/if}" style="width: 170px;" id="city" name="fm[city]" maxlength="30">
+              &nbsp; &nbsp;Zip :
+              <input type="text" class="txtBox" value="{if $fm.zip}{$fm.zip}{else}{$GeoIp.zip}{/if}" style="width: 50px;" id="zip" name="fm[zip]" maxlength="10">
+              <span style="float:right;" class="err" id="err_zip"></span> </td>
+          </tr>
+          <tr>
+            <td valign="middle" align="left">&nbsp;</td>
+            <td valign="middle" align="left" colspan="3"><label></label>
+              <table cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox" name="fm[hide_loc]" value="1" id="loc"{if $fm.hide_loc} checked="checked"{/if}></td>
+                    <td><span class="smtxt">Don't publish my location on my page</span></td>
+                  </tr>
+                </tbody>
+              </table></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    {/if}
+    
+    {if $fm.Status == 2}
+    <h5 style="border-bottom: 1px solid #ececec; padding-bottom:5px"> Artist/Band info </h5>
+    {/if}
+    <div style="border-radius: 3px; background-color: #ececec; margin-top:20px; margin-bottom: 20px;" class="boBox P10">
+      <p class="LF P5">{if $fm.Status == 2} Upload Artist or Band photo for your profile {else} Upload photo for your profile{/if}</p>
+      <label>
+      <div id="file-uploader" class="RT">
+        <noscript>
+        <p>Please enable JavaScript to use file uploader.</p>
+        </noscript>
+      </div>
+      </label>
+      <br/>
+      <div class="clear"></div>
+      <div align="center" class="M10" id="HideAvator" style="display:none;"> <img src="{if $UserInfo.Avatar}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}" id="Avatar" /></div>
+      <div class="clear"></div>
+    </div>
+    </div>
+    <h5 style="padding-bottom:5px">Birth Date</h5>
+    <table width="100%" cellspacing="0" cellpadding="1" border="0"  style="margin-top:5px;">
+      <tbody>
+        <tr>
+          <td><p>Month</p></td>
+          <td><p>Day</p></td>
+          <td><p>Year</p></td>
+        </tr>
+        <tr>
+          <td><select name="fm[mm]" id="month" class="txtBox drop" style="min-width:100px;">
+              <option value="">month</option>
+              
+                {foreach key=k item=i from=$mm}
+                
+              <option value="{$k}"{if $k==$fm.mm} selected="selected"{/if}  >{$i}</option>
+              
+                {/foreach}
+               
+            </select></td>
+          <td><select name="fm[dd]" id="date"  class="txtBox drop" style="min-width:100px;">
+              <option value="">day</option>
+              
+                {foreach key=k item=i from=$dd}
+                
+              <option value="{$k}"{if $k==$fm.dd} selected="selected"{/if}>{$i}</option>
+              
+                {/foreach}
+            </select></td>
+          <td><select name="fm[yy]" id="year"  class="txtBox drop" style="min-width:100px;">
+              <option value="">year</option>
+              
+                {foreach key=k item=i from=$yy}
+                
+              <option value="{$k}"{if $k==$fm.yy} selected="selected"{/if}>{$i}</option>
+              
+                {/foreach}
+            </select></td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <div class="clear"></div>
+    <h5 style="padding-bottom:5px">Gender</h5>
+    <table border="0" cellspacing="0" cellpadding="2">
+      <tr>
+        <td><label>
+          <input type="radio" id="male" value="1" name="fm[gender]"{if $fm.gender==1} checked="checked"{/if} />
+          </label></td>
+        <td>Male</td>
+        <td><label>
+          <input type="radio" id="female" value="2" name="fm[gender]"{if $fm.gender==2} checked="checked"{/if} />
+          </label></td>
+        <td>Female</td>
+        <td><label>
+          <input type="radio" id="disclose" value="0" name="fm[gender]"{if !$fm.gender} checked="checked"{/if} />
+          </label></td>
+        <td>Prefer not to disclose </td>
+      </tr>
+    </table>
+    <br />
+    <div class="clear"></div>
+    <h5 style="padding-bottom:5px">First Name</h5>
+	<input type="text" class="txtBox2"  id="first_name" name="fm[first_name]" value="{$fm.first_name}" maxlength="20">
+	<div id="err_first_name"></div>    
+    <h5 style="padding-bottom:5px">Last Name</h5>
+	<input type="text" class="txtBox2"  id="last_name" name="fm[last_name]" value="{$fm.last_name}"  maxlength="20">
+    <div id="err_last_name"></div>
+    {if $fm.Status == 2}
+    <h5 style="padding-bottom:5px">Phone</h5>
+    <input type="text" name="fm[UserPhone]" id="user_phone" value="{$fm.UserPhone}"  class="txtBox" size="20" />
+    </span>
+    <div id="err_UserPhone"></div>
+    <br/>
+    <h5 style="padding-bottom:5px">Social Identify</h5>
+    <p style="margin-bottom:10px;">Hashtags<span style="color:red;"></span></p>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="1%">#&nbsp;</td>
+    <td><input type="text" class="txtBox2 website_input" value="{if $fm.HashTag}{$fm.HashTag}{/if}" id="fm[HashTag]" name="fm[HashTag]"></td>
+  </tr>
+</table>
+<div id="err_HashTag"></div>
+    <br/>
+    <h5 style="padding-bottom:5px">Biography</h5>
+    <textarea class="txtBox2" style="height: 89px;" name="fm[bio]">{if $fm.bio}{$fm.bio}{/if}</textarea>
+     <div id="err_Bio"></div>
+    <br/>
+    <h5 style="padding-bottom:5px">Band name</h5>
+    <input type="text" name="fm[band_name]" id="band_name" value="{$fm.band_name}" class="txtBox" />
+    <div id="err_BandName"></div>
+    <table width="100%" cellspacing="0" cellpadding="1" border="0"  style="margin-top:15px;">
+      <tbody>
+        <tr>
+          <td><p> Total Band Members</p></td>
+          <td><p> Years Active</p></td>
+          <td><p>Total Tracks Created</p></td>
+        </tr>
+        <tr>
+          <td ><select name="fm[band_member]" class="txtBox drop" style="min-width:100px;">
+              <option value="0">Select Members</option>
+              {foreach key=k item=i from=$mem_act_tracks}
+              <option value="{$i}" {if $i == $fm.band_member} selected="selected"{/if}>{$i}</option>
+              {/foreach}
+            </select></td>
+          <td ><select name="fm[years_active]" class="txtBox drop" style="min-width:100px;">
+              <option value="0">Select Years Active</option>
+              {foreach key=k item=i from=$mem_act_tracks}
+              <option value="{$i}" {if $i == $fm.years_active} selected="selected"{/if}>{$i}</option>
+              {/foreach}
+            </select></td>
+          <td ><select name="fm[tracks_created]" class="txtBox drop" style="min-width:100px;">
+              <option value="0">Select Tracks Created</option>
+              {foreach key=k item=i from=$mem_act_tracks}
+              <option value="{$i}" {if $i == $fm.tracks_created} selected="selected"{/if}>{$i}</option>
+              {/foreach}
+            </select></td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <h5 style="padding-bottom:5px; border-bottom: 1px solid #ececec; ">Artist/Band Origin</h5>
+    <table width="100%" cellspacing="0" cellpadding="1" border="0" style="padding-top:5px;">
+      <tbody>
+        <tr>
+          <td><p>State</p>
+            <div id="err_location"></div></td>
+          <td><p>City</p>
+            <div id="err_city"></div></td>
+        </tr>
+        <tr>
+          <td ><div style="z-index:1; position:relative;">
+              <select id="state" name="fm[state]" class="txtBox drop" style="min-width:100px;">
+                
+              {foreach key=k item=i from=$statesList} 
+                  
+                <option value="{$i.state_code}" {if $i.state_code == $fm.state} selected="selected"{/if}>{$i.state_name}</option>
+                
+              {/foreach}
+              
+              </select>
+            </div></td>
+          <td><input type="text" class="txtBox" value="{if $fm.city}{$fm.city}{/if}" id="city" name="fm[city]" >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    {/if}
+    <!--Start -->
+<div style="border-radius: 3px; background-color: #ececec; margin-top:20px; margin-bottom: 20px;" class="boBox P10">
+      <p class="LF P5">Linked Social Network</p>
+      <label>      
+      </label>
+      <br/>
+      <div class="clear"></div>
+      <div align="left" class="M10" id="HideAvator">
+      <table width="100%">
+      <tr><td>Facebook</td><td>Twitter</td><td>Instagram</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>      
+      <tr><td><input type="checkbox" class="socialmediaonoff" name="fm[fb]" id="fb" {if $checkfb} checked="checked" {else} disabled="disabled" {/if}  ></td><td><input type="checkbox"  class="socialmediaonoff" name="fm[tw]"  id="tw" {if $twAuth_name} checked="checked" {else} disabled="disabled" {/if}  ></td><td><input type="checkbox" class="socialmediaonoff" name="fm[ig]" id="ig" disabled="disabled" ></td></tr>            
+      </table>       
+       </div>
+      <div class="clear"></div>
+    </div>    
+    <br/>    
+    <!--End -->
+
+    <h5 style="padding-bottom:5px; border-bottom: 1px solid #ececec; ">{if $fm.Status == 2} Music Genre Tags {else} Choose your favorite genres {/if}</h5>
+    <div id="err_genres"></div>
+    <p style="margin-top:20px; margin-bottom:10px;">Select Genres that best describe your music <span style="color:red">(only up to 3)</span></p>
+    <div class="genreCheck"> {assign var="maxv" value=$genres|@count/4}
+      {assign var="maxv" value=$maxv|ceil} 
+      {foreach name=n key=k item=i from=$genres}
+      {if $smarty.foreach.n.index mod $maxv == 0}
+      <ul>
+        {/if}
+        <li>
+          <label>
+          <input type="checkbox" id="genres{$k}" class="genres" name="fm[genres][{$k}]" value="1"{if $fm.genres.$k} checked="checked"{/if} />
+          </label>
+          <label for="genres{$k}">{$i}</label>
+        </li>
+        {assign var="nv" value=$smarty.foreach.n.index+1}
+        {if $nv mod $maxv == 0}
+      </ul>
+      {/if}
+      {/foreach} </div>
+    <br />
+    {if $fm.Status == 2}
+    <h5 style="border-bottom: 1px solid #ececec; padding-bottom:5px; margin-bottom:10px;">Related Links</h5>
+    <p>Website</p>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="1%">http://&nbsp;</td>
+    <td>
+  <input type="text" class="txtBox2 website_input" value="{if $fm.website}{$fm.website}{/if}" id="website" name="fm[website]" placeholder="www.yourwebsitename.com">
+</td>
+  </tr>
+</table>
+    <div id="err_website"></div>
+    <div class="clear">&nbsp;</div>
+    <h5 style="border-bottom: 1px solid #ececec; padding-bottom:5px;">Label Affiliations</h5>
+    <div class="clear">&nbsp;</div>
+    <table cellspacing="0" cellpadding="2" border="0" align="left" width="100%">
+      <tbody>
+        <tr>
+          <td colspan="2"><div class="rlabel"> {foreach name=n key=k item=i from=$fm.record_label}
+              <div class="pitem"  style="margin:2px 0"> <span class="light">Record-Label:&nbsp;</span>
+                <input type="text" name="fm[record_label][]" value="{$fm.record_label.$k}" class="txtBox record_input" style="width:135px" />
+                &nbsp;<span class="light">Website:&nbsp;</span>
+                <input type="text" name="fm[record_label_link][]" value="{$fm.record_label_link.$k}" class="txtBox record_input"  style="width:135px" />
+                &nbsp;
+                &nbsp;<a href="javascript:void(0);" class="del_label"><img src="{$SUB_DOMAIN}si/remove_gray.png" width="13"/></a> </div>
+              {foreachelse}
+              <div class="pitem" style="margin:2px 0"> <span class="light">Record-Label:&nbsp;</span>
+                <input type="text" name="fm[record_label][]" value="" class="txtBox record_input"  style="width:135px" />
+                &nbsp;<span class="light">Website:&nbsp;</span>
+                <input type="text" name="fm[record_label_link][]" value="" class="txtBox record_input"   style="width:135px"/>
+                &nbsp; <a href="javascript:void(0);" class="del_label"><img src="{$SUB_DOMAIN}si/remove_gray.png" width="13"/></a> </div>
+              {/foreach} </div>
+            <div style="margin-top:7px"><a href="javascript:void(0);" id="add_label">Add record label</a></div></td>
+        </tr>
+      </tbody>
+    </table>
+    {/if}
+    <div class="clear"></div>
+    <table cellspacing="0" cellpadding="5" border="0" align="center">
+      <tbody>
+        <tr>
+          <td><input type="submit" name="button" id="button" value="Save to Profile" style="padding: 7px 10px;" class="button wblue"/>
+          </td>
+          <td><a href="/base/user/RegistrationConfirm?status={$fm.Status}" class="button  bgrey">Cancel</a> </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+</div>
+{/strip}
+{/block}
+{block name="background"}style="display:none"{/block}

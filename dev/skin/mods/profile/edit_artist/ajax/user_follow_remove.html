@@ -1,0 +1,35 @@
+{strip}
+        <div id="followList">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td bgcolor="#FFFFFF"><table border="0" cellspacing="0" cellpadding="5">
+                  <tr>
+                    <td><strong class="font16">My Friends </strong><label></label></td>
+                  </tr>
+                </table>
+                  <label></label></td>
+              </tr>
+              <tr>
+                <td bgcolor="#FFFFFF">
+                <ul class="fGrid">
+               {foreach key=k item=i from=$follow_list}        
+                  <li>
+                  <a href="/u/{$i.Name}">
+                  <img src="{if $i.Avatar}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{else}/si/pic-100x100.jpg{/if}" /> {if $i.IsOnline == 1}<span class="online"></span> {/if}
+                   <p align="center"><strong>{$i.FirstName|cat:$i.LastName|truncate:8:''}</strong></p>
+                  </a>
+                  <a href="javascript:void(0);" onclick="oProfile.UserFollowRemove('{$i.FollowId}');"> <span style="color:#CC0000;font-size:small;font-weight:bolder;text-align:center"> Remove </span></a>
+                  </li> 
+        
+                  {foreachelse}            
+                     <p class="alert alert_error">No Fans Found</p>      
+                  {/foreach}
+                </ul>
+               </td>
+              </tr>
+              
+            </table>
+            <div class="clear"></div>
+            <div align="center">&nbsp;</div>
+        </div>
+{/strip}

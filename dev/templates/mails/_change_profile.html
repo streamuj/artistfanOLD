@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Your profile data on site {$SITE_NAME} was changed</title>
+</head>
+<body>
+
+Hello, {$name}!<br /><br />
+
+Your profile data on site {$DOMAIN} was changed.<br /><br />
+{if $email}
+E-mail is changed to {$email}.<br />
+{/if}
+{if $pass}
+Your new password is "{$pass}".<br />
+{/if}
+
+<br /><br />
+{$SITE_NAME} Team.<br />
+http://{$DOMAIN}
+<br /><br />
+
+</body>
+</html>

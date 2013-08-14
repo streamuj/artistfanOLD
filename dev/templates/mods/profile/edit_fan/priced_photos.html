@@ -1,0 +1,93 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/dev/skin/js/cls/Profile.js"></script>
+{/block}
+
+{block name="my_cabinet"}
+     
+
+
+<div style="padding:15px;">
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="100%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><a href="/fan/editphoto" class="floatL btn1">Add Photo</a>&nbsp;&nbsp;
+            {foreach name=ph key=k item=i from=$albums }
+             {if ($smarty.foreach.ph.index+1) == 1}
+            <a class="btn1" href="/fan/pricedphotos/{$i.UserId}">Priced Photos</a>
+            {/if}
+	        {/foreach}            
+            </td>
+
+            <td><a href="/fan/editphotoalbum" class="floatR btn1">Create New Album</a></td>
+            
+          </tr>
+        </table>
+          <label></label></td>
+      </tr>
+      <tr style="display:none;">
+        <td align="left" valign="middle" nowrap="nowrap"><label></label>
+          <table border="0" align="center" cellpadding="3" cellspacing="0">
+            <tr>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+              <td><img src="images/placeholder-170x170.gif" width="171" height="171" /></td>
+            </tr>
+          </table></td>
+        </tr>
+      <tr>
+        <td align="left" valign="middle" nowrap="nowrap">        
+        <table border="0" align="center" cellpadding="8" cellspacing="0">
+          <tr>
+
+          {foreach name=ph key=k item=i from=$albums }
+	      {if $i@index%3 == 0}<tr>{/if}
+          <!--Loop Start Here -->
+          
+            <td>        
+            <table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td><div style="padding:10px; border:1px solid #ccc;">
+                <table border="0" cellspacing="0" cellpadding="1">
+                    <tr>
+                      <td>
+                       <a href="/fan/editphotoalbum?id={$i.Id}">
+                      <img src="{if $i.Cover}/files/photo/thumbs/{$i.UserId}/{$i.Cover}{else}/dev/templates/images/nophoto.jpg{/if}" style="width:197px;height:162px;" />
+                      </a>
+                      </td>
+                    </tr>                
+                </table></div></td>
+              </tr>
+              <tr>
+                <td><table width="100%" border="0" cellpadding="2" cellspacing="0">
+                    <tr>
+                      <td valign="top"><a href="/fan/editphotoalbum?id={$i.Id}">{$i.Title}</a> ({$i.CountPhotos})</td>
+                      <td align="right"><a href="javascript:void(0);" onclick="oProfile.photo_setting();" ><img src="/si/ic-settings-15x15.png"  style="display:none;"width="15" height="15" /></a></td>
+                      
+                     <div id="hideme" style="display:block;">  
+                       
+                     </div>
+                    </tr>
+                    <tr><td><a href="/fan/editphotoalbum?id={$i.Id}" class="btn1">Edit album</a></td><td><a href="/fan/editphoto?album={$i.Id}" class="btn1">Add photo</a></td></tr>
+                </table></td>
+              </tr>
+            </table>
+            </td>
+            <!--Loop End Here -->
+          {if ($smarty.foreach.ph.index+1) mod 3 == 0}
+          <tr>          
+          {/if}            
+        {/foreach}              
+            </tr>
+        </table>
+        <!--Album End Here -->
+          </td>
+        </tr>
+    </table>
+  </div>
+
+
+{/block}

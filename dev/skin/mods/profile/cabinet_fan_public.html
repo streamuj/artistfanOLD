@@ -1,0 +1,55 @@
+{extends file="base.html"} 
+{block name="meta"}
+{strip}
+<meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}" />
+<meta property="og:title" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} "/>
+<meta property="og:description" content="Artistfan"/>
+<meta property="og:image" content="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+<meta name="title" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}" />
+<link rel="image_src" type="image/jpeg" href="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+{/strip}
+{/block}
+
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/photobuy.js"></script>
+
+{block name="body_class"}<body class="" >{/block}
+
+{block name="content"}
+{strip}
+<div class="leftColContainer">
+  <div class="colSide">
+    <div class="profilePic">
+    		<a href="/u/{$ui.Name}"><img src="{$SUB_DOMAIN}{if !$ui.Avatar}si/ph/user-144x144.png{else}images/avatars/s_{$ui.Avatar}{/if}" id="image"  alt="" /></a>
+            <a href="/u/{$ui.Name}"><big>{if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName|cat:' '|cat:$ui.LastName}{/if}</big></a></div>
+        
+       <div id="proInfoBox">
+
+                    <div class="proInfo">
+                      <h2><a href="/u/{$ui.Name}/profile"> {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName|cat:' '|cat:$ui.LastName}{/if}</a></h2>
+                   {if $ui.Country || $ui.Location}  
+                      <p class="LF font11"><a href="/u/{$ui.Name}/profile">{if $ui.Country}{$ui.Country} , {/if}  {if $ui.Location}{$ui.Location}{/if}</a></p>
+                   {/if}
+                    </div>
+   </div>
+            
+            
+        <ul class="SideNav">
+           <li {if $module == 'wall'}class="active" {/if}><a href="/u/{$ui.Name}"><span class="newsIc" ></span>Wall</a></li>
+           <li {if $module == 'profile'}class="active" {/if}><a href="/u/{$ui.Name}/profile"><span class="settingsIc"></span>Profile</a></li>          
+           <li {if $module == 'fans'}class="active" {/if}><a href="/u/{$ui.Name}/fans"><span class="fansIc"></span>Friends</li>
+           <li {if $module == 'artists'}class="active" {/if}><a href="/u/{$ui.Name}/artists"><span class="fansIc"></span>Artists</li>
+           <li {if $module == 'video'}class="active" {/if}><a href="/u/{$ui.Name}/video"><span class="videosIc"></span>Videos</a></li>
+           <li {if $module == 'photo'}class="active" {/if}><a href="/u/{$ui.Name}/photo?allPhoto=1"><span class="photosIc"> </span>Photos</a></li>
+                
+        </ul>
+    	<div class="mod">   </div>
+    <div class="clear"></div>
+  </div> 
+</div>
+<div class="contentCol">
+	 <div style="height:10px;"></div>
+  {block name="my_cabinet"}  
+  {/block}
+ </div>
+{/strip}
+{/block}

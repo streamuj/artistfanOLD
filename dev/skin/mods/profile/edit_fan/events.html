@@ -1,0 +1,131 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitEventActions();   
+        oPopup.InitPurchase();		
+    		
+    });
+</script>
+<script type="text/javascript" language="javascript">
+	$(function(){
+		$('.xform').jqTransform({ imgPath:'{$SUB_DOMAIN}ssi/' });
+	});
+</script>
+{/strip}
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+<div class="P15">   
+  <div>
+  <h2 class="LF">My Events</h2>
+  </div>   
+  <div class="clear">&nbsp;</div>
+  <div class="subTab">
+      <ul>
+         <li><a href="/fan/events"  class="active">Live Streams</a></li>
+      </ul>
+  </div>
+  <div class="clear"></div>
+  <div  id="pagging1">{$pagging}</div>
+  <div class="clear"></div>
+  <div style="background:#F6F6F6; padding-bottom:15px;">
+  <div class="RT">
+  <span class="floatL xform P10">
+  <span class="LF" style=" padding-right:10px; line-height:28px;">Show</span>
+      <strong>  
+        <select name="df" onchange="Go('/fan/events?df='+$(this).val());">
+            <option value="up" {if $df=="up"} selected="selected"{/if}>All</option>    
+            <option value="tw"{if $df=="tw"} selected="selected"{/if}>This week</option>
+            <option value="nw"{if $df=="nw"} selected="selected"{/if}>Next week</option>
+            <option value="tm"{if $df=="tm"} selected="selected"{/if}>This month</option>
+            <option value="nm"{if $df=="nm"} selected="selected"{/if}>Next month</option>
+            <option value="pa"{if $df=="pa"} selected="selected"{/if}>Finished</option>                        
+	    </select>
+        </strong>  
+   </span>
+  </div>
+  <div class="clear"></div>
+  <div id="event_list">
+{if $follower_events}    
+ {foreach key=k item=i from=$follower_events} 
+<div class="eventListBox">
+<table border="0" cellspacing="0" cellpadding="8">
+  <tr>
+    <td align="left" valign="top">
+    
+    <a href="/u/{$i['u.Name']}/events/{$i.Id}" class="tb LF" style="width:201px; height:115px; display:block;">
+    <img src="{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.EventPhoto}" width="200" height="115" />
+    </a>
+    </td>
+    <td align="left" valign="top">
+	<a href="/u/{$i['u.Name']}/events/{$i.Id}" class="timTxt"><span><span class="evDate">{$i.EventDate|date_format}</span>&nbsp;{$i.EventDate|date_format:"%A"} at {$i.EventDate|date_format:'%l:%M  %p'} EST</span></a>
+	<a href="/u/{$i['u.Name']}" class="nameTxt">{if $i.BandName}{$i.BandName|truncate:50:'...'}{else}{$i.FirstName|cat:' '|cat:$i.LastName|truncate:50:'...'}{/if}</a>
+	<a href="/u/{$i['u.Name']}/events/{$i.Id}" class="titleTxt">{$i.Title|truncate:95}</a>
+	<a href="/u/{$i['u.Name']}/events/{$i.Id}" class="decTxt">{$i.Descr|truncate:160:"..."}</a>
+</td>
+<td align="center" valign="top">
+{if !$i.EventDate|ispast && $i.Status<3}	
+    	{if $i.EventType!=1}
+            {if $i.Price>0}
+                {*<span class="event free">$ {$i.Price|string_format:'%.2f'}</span>*}
+            {else}
+            	<span class="pricetag event free">Free</span>
+        	{/if}
+        {/if}  
+              
+         {if $i.Status<3}
+            {if $i.EventPurchase}
+                {*<a href="/fan/events/{$i.Id}" class="btn-megenta-announce"></a>*}
+            {elseif $i.EventAttend}
+                <div class="good status-good">You're going</div>
+            {/if}
+         {elseif $i.Status==3}
+                 <div class="good status-good">Cancelled</div>
+         {elseif $i.Status==4}
+                <div class="good status-good">Finished</div>
+         {/if}                 
+         
+         
+  {if $i.EventType>1}
+  	{if !$i.EventPurchase && !$i.EventAttend}
+        {if $i.Status!=4 && $i.Status!=3}
+    		<a href="javascript:void(0);" class="button wblue event freeEvents M2 BuyEvents" mid="{$i.Id}" price="{$i.Price}">{if $i.Price>0}$&nbsp;{$i.Price|string_format:'%.2f'}{else}Get{/if}</a>
+    	{/if}
+     {else}
+		 <div class="good status-good"> Purchased</div>                                	        
+    {/if}    
+  {/if}
+{elseif $i.Status==3}  
+	<div class="good status-good">Cancelled</div>
+{else}
+	<div class="good status-good">Finished</div>
+{/if}
+      </td>
+    </tr>
+</table>
+</div>
+                        {/foreach}
+        {else}
+<p align="center" class="noBar"> No Events</p>
+{/if}
+  </div>
+   <div class="clear"></div>
+  </div>
+   <div class="clear"></div>
+  <div  id="pagging">{$pagging}</div>
+
+</div>
+{/strip}
+{include file="mods/profile/blocks/_buy_block.html"}
+{/block}

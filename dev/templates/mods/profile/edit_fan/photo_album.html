@@ -1,0 +1,75 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/sj/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" href="/ss/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="/sj/cls/Errors.js"></script>
+<script type="text/javascript" src="/sj/cls/Profile.js"></script>
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div style="padding:15px;">
+  <!--alert Message Start -->
+  {if $photo_added || $photo_updated || $photo_removed || $album_removed || $album_added || $album_updated}
+  <div class="alert alert_success"> <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a> <strong>Success!</strong> {if $photo_added}Photo added!{elseif $photo_updated}Photo updated!{elseif $photo_removed}Photo removed!{elseif $album_removed}Album removed!{elseif $album_added}Album added!{elseif $album_updated}Album updated!{/if} </div>
+  {/if}
+  <!--Alert Message End -->
+  <form method="post" action="/fan/editphotoalbum" id="album_form" class="big_form">
+    {if $id}
+    <input type="hidden" value="{$id}" name="id" />
+    {/if}
+    <table width="100%" border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td colspan="2"><strong class="font16">New Album</strong>
+          <label></label></td>
+      </tr>
+      <tr>
+        <td width="11%" align="left" valign="middle" nowrap="nowrap">Album Title</td>
+        <td width="89%" align="left" valign="middle" ><label>
+          <input type="text" name="fm[Title]" value="{$fm.Title}" id="Title" class="txtBox"  size="72" />
+          </label>
+          <span class="err" id="err_Title"> </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td align="left" valign="middle"><table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td><input type="button" onclick="oProfile.EditPhotoAlbum();" class="floatR btn1" value="{if $id}Save changes{else}Create album{/if}" />
+                {if $id}
+                <input type="button" onclick="CGo('/fan/removephotoalbum?id={$id}', 'Do you realy want to remove album with all its photos?')" class="floatR btn1" value="Remove album" />
+                {/if} </td>
+              <td>&nbsp;</td>
+              <td style="display:none;"><input type="button" class="btn1" value="Cancel" /></td>
+            </tr>
+          </table></td>
+      </tr>
+    </table>
+  </form>
+  {if $id} <br />
+  <br />
+  <div class="photos-container">
+    <h2>Photos in this album </h2>
+    <br/>
+    <div style="float:left">
+    <ul>
+    {foreach name=ph key=k item=i from=$photos}
+    <li style="width:205px; float:left; margin:5px 5px;">
+    <a href="/fan/photo/{$i.AlbumId}?ph={$i.Id}"> <img src="/files/photo/thumbs/{$i.UserId}/{$i.Image}" width="203" height="168"> </a>
+    <a href="/fan/editphoto?id={$i.Id}" class="floatL btn1">Edit</a> <a href="javascript:void(0);" onclick="CGo('/fan/removephoto?id={$i.Id}', 'Do you realy want to remove this photo?')" class="floatR btn1">Remove</a> 
+    </li>
+    {/foreach}
+    </ul>
+    </div>
+    
+  </div>
+	<div style="clear:both;"></div>
+  <div class="tools"> <a href="/fan/editphoto?album={$fm.Id}" class="floatL btn1">Add photo</a> </div>
+  {/if} </div>
+{/block}

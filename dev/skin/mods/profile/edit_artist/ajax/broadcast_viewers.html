@@ -1,0 +1,48 @@
+
+<div class="subTab">
+  <ul>
+    <li><a href="javascript:void(0);" onclick="oProfile.ViewersReport('{$event.Id}', 1, 0);" >Live Stream Recordings</a> </li>
+    <li><a href="javascript:void(0);" onclick="oProfile.ViewersReport('{$event.Id}', 2, 0);" class="active">Activity Reports</a></li>
+  </ul>
+</div>
+<table class="style_table">
+  {if $viewers}
+  <tr>
+    <td align="center" colspan="2"> {if $title}
+      Event Title : {$title}<br/>
+      {/if}
+      
+      {if $Pdate}
+      Event Time : {$Pdate|date_format:"%m/%d/%Y | %l:%M %p"}<br/>
+      {/if}
+      
+      {if $totalPrice}
+      Event total : $ {$totalPrice|string_format:'%.2f'} (Total income of the event )<br/>
+      {/if} </td>
+  </tr>
+  <tr>
+    <td width="30%"><b>Viewer</b></td>
+    <td width="70%"><b>Ticket Price {*| Pay What You Like*} </b></td>
+  </tr>
+  {foreach key=k item=i from=$viewers}
+  <tr>
+    <td width="30%"><a href="/u/{$i.Name}">{if $i.BandName}{$i.BandName|truncate:25:'':true}{else}{$i.FirstName|cat:' '|cat:$i.LastName|truncate:25:'':true}{/if}</a></td>
+    <td width="70%">$ {$i.Price|string_format:'%.2f'} 
+      
+      {if $i.Price gt $i.OriginalPrice}    
+      &nbsp;|&nbsp;{*
+      {$i.Price - $i.OriginalPrice}
+      *}
+      {/if} </td>
+  </tr>
+  {/foreach}
+  <tr>
+    <td colspan="2"><a href="/artist/exportviewersreport?id={$event.Id}" class="button wblue" style="width:130px;" >Download as CSV</a></td>
+  </tr>
+  {else}
+    <tr>
+    <td colspan="2" class="noBar">No Activity Reports Available</td>
+  </tr>
+  {/if}  
+  
+</table>

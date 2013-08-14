@@ -1,0 +1,43 @@
+{if $categories}
+	<tr><td><strong>Category List</strong></td></tr>
+	<tr>
+      <td  class="mngHometxt">
+       	<table class="style_table f13">
+        <thead>
+            <tr style="color:#28B7F3;">
+                <th class="aleft">S.No</th>
+                <th class="aleft">Category Name</th>
+                <th>&nbsp;</th>                
+                <th class="aleft">Order</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach key=k item=i from=$categories name="catg"}
+            	{if $i.CatId != $smarty.const.MUSIC_SLIDE_CAT_ID}
+                <tr class="f11" id="category_{$i.CatId}">
+                	<td width="10%">{$k+1} </td>
+                    <td width="30%"><span id="pCatView_{$i.CatId}">{$i.CatName} <a href="javascript:void(0);" class="edit_icon" onclick="oHome.CatInLineEdit('{$i.CatId}','{$i.CatName}')"></a></span></td>
+                    <td width="10%"><a href="javascript:void(0);" onclick="oHome.DeleteCat({$i.CatId})" title="Delete"><img src="/ssi2/icon_delete.gif" /></a>&nbsp;</td>
+                   	<td width="40%"><input type="text" value="{$i.CatOrder}" size="2" id="{$i.CatId}" onblur="oHome.SaveCatOrder(this.id, this.value);" /></td>
+
+                </tr>
+                {/if}
+            {/foreach}
+		</tbody>
+	        <tr>
+            	<td ><b>Add New :</b></td>
+                <td >&nbsp;<input type="text" size="10" id="newCatName" /><a href="javascript:void(0);" class="save_icon" onclick="oHome.AddNewCat()"></a></td>                
+                <td >&nbsp;</td>
+				<td >&nbsp;<input type="text" size="2" id="newCatOrder" /></td>                
+            </tr>
+            <tr >
+   				<td >&nbsp;</td>
+				<td >&nbsp;</td>				
+				<td >&nbsp;</td>
+				<td ><a href="javascript:void(0);" onclick="oHome.CategoryList()" class="str_submit"><span><b>Save Order</b></span></a></td>                
+            </tr> 
+                            
+        </table>
+	  </td>
+    </tr>     
+{/if}

@@ -1,0 +1,87 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{if $music.Status != 0}
+<script type="text/javascript" src="/dev/templates/js/cls/Profile.js"></script>
+{/if}
+{if $music.Status == 0}
+<script type="text/javascript" src="/j/mdetect.js"></script>
+<script type="text/javascript" src="/j/swfobject.js"></script>
+<script type="text/javascript" src="/j/smh.swobject.js"></script>
+{/if}
+<script type="text/javascript">
+  $(document).ready(function(){
+  	var uagent = navigator.userAgent.toLowerCase();
+	{if $music.Status != 0 }
+        oProfile.GetMusicStatus(1, {$music.Id});
+	{/if}
+	
+	{if $music.Status == 0}
+	var video = "{$music.Track|substr:6}";
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		var mobile = {};
+		mobile.account  = "artistfan";
+		mobile.media    = video;
+		mobile.autoplay = "false";
+		mobile.mimetype = "audio/mp3";
+		mobile.width    = "640";
+		mobile.target   = "player";
+		mobile.maxwidth = "525";
+		bootStrap(mobile);
+	} else {
+		var flashvars = { account: "artistfan", media: video, autoplay: "false"};
+		var params = { };
+		params.quality = "high";
+		params.bgcolor = "#000000";
+		params.allowscriptaccess = "sameDomain";
+		params.allowfullscreen = "true";
+		var attributes = {};
+		attributes.id = "Player";
+		attributes.name = "Player";
+		attributes.align = "middle";
+		swfobject.embedSWF("/j/smh.player.swf","player", "640", "360", "10.1.0", false, flashvars, params, attributes);
+	}
+	{/if}
+  });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+    <div class="path">
+        <a href="/">{if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName} {$UserInfo.LastName}{/if}</a>
+        <a href="/artist/music">My Musics</a>
+        {if $music.AlbumId}<a href="/artist/music/{$music.AlbumId}">{$music.AlbumTitle}</a>{/if}
+    </div>
+    <h1>{$music.Title}</h1>
+</div>
+
+<div class="content_block wide">
+    {if $music_updated || $music_added}
+    <div class="alert alert_success">
+        <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a>
+        <strong>Success!</strong> {if $music_added}Music added!{elseif $music_updated}Music updated!{/if}
+    </div>
+    {/if}
+    
+    {if $music.Status == 1}
+    <div class="alert alert_note">
+        <strong>Please wait:</strong> Your video is undergoing processing on our servers at the moment. This may take a while (usually about 10-15 minutes).<br />
+        After processing this page will reload and your video will be available to you and your fans.
+    </div>
+    {/if}
+
+    <div class="video-holder">
+        {if $music.Status == 0}
+        <div class="video">
+            <a href="javascript:void(0);" style="display:block;width:640px;height:360px" id="player"></a>
+        </div>
+        {elseif $music.Status == 1}
+        <br /><br /><br />
+        <img src="/i/icon-wait.png" alt="" />
+        <br /><br /><br />
+        {/if}
+    </div>
+</div>
+{/block}

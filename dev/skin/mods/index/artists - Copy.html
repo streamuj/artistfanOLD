@@ -1,0 +1,57 @@
+{extends file="base.html"}
+
+{block name="javascript"}
+{/block}
+
+{block name="content"}
+        <div class="content_block big_content">
+                <h1>Artists <span>&ndash; {if !$alpha}All{elseif $alpha!="num"}{$alpha}{else}#{/if}</span></h1>
+
+                <table class="abc">
+                    <tr>
+                        <td{if !$alpha} class="active"{/if}><a href="/base/index/artists">All</a></td>
+                        <td{if $alpha=="num"} class="active"{/if}><a href="/base/index/artists?alpha=num">#</a></td>
+                        {foreach key=k item=i from=$alphabet}
+                        <td{if $alpha==$i} class="active"{/if}><a href="/base/index/artists?alpha={$i}">{$i}</a></td>
+                        {/foreach}
+                    </tr>
+		</table>
+                
+
+                {if $artists}
+
+                    <ul>
+                        {foreach key=k item=i from=$artists}
+                        <li>
+                            <div class="item">
+                                <div class="pic">
+                                    <a href="/u/{$i.Name}"><img src="{if !$i.Avatar}/i/ph/user-96x96.png{else}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{/if}" width="96" height="96" alt="" /></a>
+                                </div>
+                                <div class="info">
+                                    <h3><a href="/u/{$i.Name}">{if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a></h3>
+                                    <div class="desc">{foreach name=m key=kk item=ii from=$i.Genres}
+                                {$ii}{if !$smarty.foreach.m.last}, {/if}
+                                {/foreach}</div>
+                                </div>
+                            </div>
+                        </li>
+                        {/foreach}
+                    </ul>
+
+
+                {$pagging}
+                
+                {/if}
+	</div>
+	<!--/content_block-->
+	<!--sitebar_02-->
+	<div class="sitebar sitebar_02">
+		<h2>Featured artists</h2>
+                <ul class="featured_artists_list">
+                    {foreach key=k item=i from=$featured}
+                        <li><a href="/u/{$i.Name}"><img src="{if !$i.Avatar}/i/ph/user-48x48.png{else}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{/if}" width="48" height="48" alt=""> {if $i.BandName}{$i.BandName}{else}{$i.FirstName} {$i.LastName}{/if}</a></li>
+                    {/foreach}
+                </ul>
+	</div>
+	<!--/sitebar_02-->
+{/block}

@@ -1,0 +1,60 @@
+{extends file="mods/profile/cabinet_fan_public.html"}
+
+
+{block name="my_cabinet"}
+<!--content_block-->
+<div class="header_block">
+    <div class="path">
+        <a href="/u/{$ui.Name}">{$ui.FirstName} {$ui.LastName}</a>
+    </div>
+    <div class="social">
+        <iframe src="//www.facebook.com/plugins/like.php?locale=en_US&amp;href=http://{$DOMAIN}/u/{$ui.Name}/profile&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px; text-align: right;" allowTransparency="true"></iframe>
+        <a href="https://twitter.com/share" data-text="{$ui.FirstName} {$ui.LastName} profile" data-url="http://{$DOMAIN}/u/{$ui.Name}/profile" data-size="medium" data-align="right" class="twitter-share-button">Tweet</a>
+        {literal}<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>{/literal}
+        <g:plusone href="http://{$DOMAIN}/u/{$ui.Name}/profile" size="medium" align="right"></g:plusone>
+    </div>
+    <h1>Fan profile</h1>
+</div>
+
+<div class="content_block">
+    <div class="artist_profile">
+        <table class="profile_table">
+            <tr>
+                <td class="light"><big>Fan name</big></td>
+                <td><big>{$ui.FirstName} {$ui.LastName}</big></td>
+            </tr>
+            {if $ui.Gender}
+            <tr>
+                <td class="light">Gender</td>
+                <td>{if $ui.Gender==1}Male{else if $ui.Gender==2}Female{/if}</td>
+            </tr>
+            {/if}
+            {if $ui.Likes}
+            <tr>
+                <td class="light">Likes</td>
+                <td>{$ui.Likes}</td>
+            </tr>
+            {/if}
+            {if $ui.CountryName}
+            <tr>
+                <td class="light">Country</td>
+                <td>{$ui.CountryName}</td>
+            </tr>
+            {/if}
+            {if !$ui.HideLoc && $ui.Location}
+            <tr>
+                <td class="light">Location</td>
+                <td>{$ui.Location}</td>
+            </tr>
+            {/if}
+        </table>
+
+        {if $ui.About}
+        <h2>About</h2>
+        {$ui.About|nl2br}
+        {/if}
+
+    </div>
+</div>
+<!--/content_block-->
+{/block}

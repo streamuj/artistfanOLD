@@ -1,0 +1,19 @@
+{extends file="base_login.html"}
+
+{block name="profile"}
+{strip}
+<div class="profBox" style="min-height:800px;">
+ 
+ <div class="clear"></div>
+<div class="colLeft M10" style="width:458px;" align="center">   
+<div class="clear">&nbsp;</div>
+	<div style="color:#009900;"><h4><strong>Thank You!</strong></h4></div>
+<div class="clear">&nbsp;</div>
+    <div class="alert_success" style="background:none; color:#009900; width:458px;">
+     	{if $status == 2} {$smarty.const.ARTIST_REGISTRATION_CONFIRM} {else} {$smarty.const.FAN_REGISTRATION_CONFIRM} {/if}
+    </div>
+ </div>
+</div>
+{/strip}
+{/block}
+{block name="background"}style="display:none"{/block}

@@ -1,0 +1,404 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/swfobject.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+{*
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/chatRoom.js"></script>
+*}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.countdown.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+ <style type="text/css">
+
+ </style>
+<script type="text/javascript">
+	var eventCode ="{if $event}{$event.Code}{else}u{$UserInfo.Name}{/if}";	
+	var name = '{$UserInfo.Name}';
+	var avatar = '{$UserInfo.Avatar}';
+	
+{*	var chat = new Chat(eventCode);
+	chat.init();
+*}
+
+	var eTime = {if $eTime}{$eTime}{else}15{/if};	
+	var grace_time = 5*60;	
+	var eId = {if $event.Id}{$event.Id}{else}0{/if};
+	
+	eTime = eTime * 60;
+	reTime = {if $reTime}{$reTime}{else}0{/if};
+
+	
+	//MINUTES  CONVERTED AS SECONDS AFTER IF CHECK EXISTING BROADCAST	
+	
+	if(eTime < reTime) 
+	{
+		var finished_time = (eTime - reTime) + grace_time
+	}
+	
+	if(finished_time < 0) {
+		$.ajax({
+			type:'POST',
+			dataType:'json',
+            data:{ 'timeOut':1,'eId' :eId },
+            url:'/base/artist/broadcasting',
+			success: function (data)
+            {
+				if(data.q == 'ok')
+				window.location.href = '/artist/broadcasting';
+			}
+		});
+		//window.location.href = '/artist/broadcasting?to=1&eid={$event.Id}';
+	}	
+	{literal}
+	var flashvars = {};
+	flashvars.system_code = eventCode;
+	flashvars.server = {/literal}"{$smarty.const.STREAMING_LIVE_SERVER}";
+	flashvars.server_uri="http://{$smarty.const.DOMAIN}";{literal}
+	flashvars.grace_time =   grace_time;//Math.ceil('{$eGraceTimeMins}');
+	flashvars.event_time=  eTime;//Math.ceil('{$eTimeMins}');
+	var params = {};
+	params.wmode = 'transparent';
+	params.allowscriptaccess = "sameDomain";
+	var attributes = {};
+	attributes.id = "broadcast";
+	attributes.name = "broadcast";
+	{/literal}
+	swfobject.embedSWF("{$smarty.const.ROOT_HTTP_PATH}/sj/vchat.swf", "broadcast", "727", "370", "11.1.0", "{$SUB_DOMAIN}sj/expressInstall.swf", flashvars, params, attributes); 
+	
+	
+	function startTimer(timeInSec, extraTimeInSec) {
+		flash = document.getElementById('broadcast');
+		flash.setTimers(timeInSec, extraTimeInSec);
+	}
+	var recording = false;
+	var recStatus ='';
+	
+    $(document).ready(function()
+    {	
+		$('#startBroadcastRecord').hide();
+		$(window).bind("beforeunload", function(e) 
+		{ 
+			if(eTime > 0 || grace_time > 0) { 
+				return "Are you sure you want to leave/refresh the page?  If you leave/refresh  the broadcast page then you might lose the data or broadcast access.";
+			}
+			else
+			{
+				return "The event is finished.";
+			}
+		})	
+// Remove Start
+	$('#delDialog').dialog({ autoOpen: false });
+	$('#delConfirm').dialog({ 
+		autoOpen: false, 
+		modal: true,
+		title: 'Finish Event',
+		buttons: {
+		
+		'Cancel' : {
+				 "text":'Cancel', "class": 'button bgrey', "click": function() {
+			 		$(this).dialog('close');
+			 	}
+			 },
+		'OK': {
+				"text":'OK', "class":'button wblue',  "click":function(){
+				$('body').addClass('loading');
+				//EventsFinish();
+				oProfile.FinishEvent();				
+				$(this).dialog('close');				
+				}
+   			  }		
+		
+		/*
+			'Delete' : function(){
+				$('body').addClass('loading');
+				EventsFinish();
+				$(this).dialog('close');
+			}, 
+			'Cancel': function(){
+				$(this).dialog('close');
+			}
+		*/	
+		}
+	});
+	$('body').on('click', '.Dialog_event_finish', function(){
+			var mid  = $(this).attr('mid');
+			if(mid){
+			$('#mId').val(mid);									
+			$('#delConfirm').dialog('open');
+				}
+			
+	});
+// Remove End		
+		
+
+	    oProfile.InitEventActions();
+        oProfile.GetViewersCount('{if $event}{$event.Code}{else}{$UserInfo.Name}{/if}', 1);
+		$('#recordEvent').click(function(){
+			mode="{$smarty.request.mode}";
+			recStatus = (recording) ? 'StopRecord' : 'StartRecord';
+			thisObj = $(this);
+			oErrors.SetWaitFld('recording');
+			thisObj[0].disabled = true;
+			$.ajax({
+				url: '/base/profile/'+recStatus,
+				type: 'post', 
+				data: { event_id : eventCode, 'mode':mode},
+				dataType: 'json',
+				success: function(response){
+					if(response.success)
+					{
+						recording = !recording;
+						if(recStatus == 'StartRecord')
+						{
+							$('#record').attr('src', "{$SUB_DOMAIN}si/ic-stop-record.png");
+							$('#recording').html('Stop Recording');
+						} 
+						else 
+						{
+							$('#record').attr('src', "{$SUB_DOMAIN}si/ic-record.png");
+							$('#recording').html('Start Recording');							
+						}
+						oErrors.SetOkFld('recording', response.message);
+					} 
+					else 
+					{
+					
+						oErrors.SetBadFld('recording', response.message);
+					}
+					thisObj[0].disabled = false;
+				}
+			});
+		})
+    });
+</script>
+
+<script type="text/javascript">
+function convertFormat(number)
+{
+	var hours = Math.floor(number / (60 * 60));
+	if(hours < 10) 
+	{
+	 	hours = '0'+hours;
+	}
+	var divisor_for_minutes = number % (60 * 60);
+	var minutes = Math.floor(divisor_for_minutes / 60);
+ 	
+	if(minutes < 10) 
+	{
+	 	minutes = '0'+minutes;
+	}
+	
+	var divisor_for_seconds = divisor_for_minutes % 60;
+	var seconds = Math.ceil(divisor_for_seconds);
+	
+	if(seconds < 10) 
+	{
+	 	seconds = '0'+seconds;
+	}
+	
+	return hours+':'+minutes+':'+seconds;
+}
+	
+function startCountDown() 
+{		
+	{*$('#startBroadcastRecord').show();*}
+	$('#startBroadcastRecord').hide();
+	$('#counter').html('');		
+	$.ajax({
+		type:     'POST',
+		dataType: 'json',
+		data:     "getTime=1&id="+{$event.Id},
+		url:      '/base/artist/StartBroadcasting',
+		success: function (data)
+		{
+			if (data.q == 'ok')
+			{
+				reTime = data.reTime;
+						
+				//MINUTES  CONVERTED AS SECONDS AFTER IF CHECK EXISTING BROADCAST
+				if(eTime >= reTime && reTime!=0) 
+				{
+	
+					eTime = eTime - reTime;
+				} 
+				else if(eTime < reTime) 
+				{
+					grace_time = (eTime - reTime) + grace_time
+					eTime = 0;
+				}
+				flash = document.getElementById('broadcast');
+				flash.setTimers(eTime, grace_time);
+				
+				if(eTime > 0)
+				{
+					var timer = convertFormat(eTime);
+					$('#finalCounter').hide();
+					$('#counter').countdown({
+						  image: '{$SUB_DOMAIN}si/digits.png',
+						  startTime: timer,
+						  timerEnd: function(){ eTime = 0; finalCountdown(grace_time);}
+					});
+				}
+				else if(grace_time)
+				{
+					finalCountdown(grace_time);
+				}
+			}
+		}
+	});
+	
+
+}
+function finalCountdown(grace_time) 
+{	
+
+	var timer = convertFormat(grace_time);
+	$('#gTimeAlert').html('<span style="padding-left:10px; color:red;">This event will finish in '+timer.substring(4)+' minutes </span>');
+	
+	$('#counter').empty();
+	$('#counter').countdown({
+	  image: '{$SUB_DOMAIN}si/digits.png',
+	  startTime: timer,
+	  timerEnd: function(){ grace_time=0; eventOnline();}
+	});
+ 
+}
+function closeEvent()
+{
+	wsCount = 0;
+	grace_time = 0;
+	oProfile.FinishEvent();
+}
+function eventOnline()
+{
+	 var eventCode ="{if $event}{$event.Code}{else}u{$UserInfo.Name}{/if}";
+	 $('#counter').empty();
+     $('.event_finish').addClass('noactive');
+     $('.event_finish').parent().find('.wait').show();
+				
+	 $.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    data:{ 'id': eventCode },
+                    url:'/base/profile/CheckEventFinished',
+                    success:function (data)
+                    {
+                        $('.event_finish').removeClass('noactive');
+                        $('.event_finish').parent().find('.wait').hide();
+                        if (data.q == 'ok')
+                        {
+                            document.location = '/artist/broadcasting?event_finished=' + data.status;
+                        }
+						else
+						{
+							setTimeout(eventOnline, 2000);
+						}
+                    }
+                });	
+}
+
+
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div>
+   {*	<div class="P15">
+    	 <h2 class="LF">My Live Event</h2>
+    	<h5 class="pink">{if $event}{$event.Title|truncate:70:'...'}{else}Add-hoc broadcasting{/if}</h5>
+    </div> *}
+<h2 class="P15">{if $event}{$event.Title|truncate:70:'...'}{else}Add-hoc broadcasting{/if}</h2>
+
+<div class="Vidlarge relative" style=" background-color:#f6f6f6; width:100%; height:400px;"> 
+    
+    <div id="broadcast"></div> 
+    
+    <div class="clear"></div>    
+    
+    <div class="LF" id="startBroadcastRecord">
+        <div style="left: 185px; position: absolute; width: 155px; z-index: 99; bottom: 52px;">            
+            <a href="javascript:void(0);" class="font14 black RT" id="recordEvent" ><img src="{$SUB_DOMAIN}si/ic-record.png" id="record" hspace="5" align="left" /><span id="recording">Start Recording</span></a>
+            <div class="clear"></div>            
+        </div>
+    </div>
+
+    <div class="RT">
+        <div class="LF" style="bottom:22px; right: 186px; position: absolute;z-index: 99;margin-right:15px;"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>
+                <div id="counter"></div>
+                <div id="finalCounter"></div>
+          </td>
+          <td valign="top"></td>
+          </tr>
+        </table></div>
+        	<div style="bottom:48px; right: 49px; position: absolute;z-index: 99;"> <a href="javascript:void(0);" class="sBtn3 LF Dialog_event_finish event_finish1" mid="{if $event}{$event.Id}{else}0{/if}">Finish Event</a> </div>
+	</div>
+    <div id="err_recording" class="err" style="padding-left:15px; margin-top:-8px;"></div>   
+    <div class="clear"></div>
+    
+    </div>
+    <div class="clear"></div>
+    
+    <table  width="100%" border="0" cellspacing="0" cellpadding="0"> 
+      <tr> 
+        <td colspan="2" align="left" id="gTimeAlert"></td>	
+      </tr>
+   	  <tr>
+      		<td colspan="2">
+	             <div class="P10">
+    		         Your Event's URL: <a href="http://{$smarty.const.DOMAIN}/broadcasting/{if $event_id}{$event_id}{else}{$UserInfo.Name}/live{/if}/" target="_blank">http://{$smarty.const.DOMAIN}/broadcasting/{if $event_id}{$event_id}{else}{$UserInfo.Name}/live{/if}/</a>
+             	</div>
+                 <div class="P10 font16">
+                 	<span id="viewers_count">0</span> fans are watching this broadcast 
+                 </div>
+            </td>
+      </tr>
+      <tr>
+      	<td colspan="2">
+        	<div class="P10 font16">Fans</div>
+            <div class="chatBox chatIN">
+              <div class="chatListBox list">
+                <ul class="viewers_list" pid="1">
+                  
+                </ul>
+              </div>
+            </div>          
+        </td>
+      </tr>
+    {*   <tr id="chatTR">
+        <td align="left" valign="top">
+       
+       
+        <div class="chatBox">
+          <div class="chatTitleBar"><strong>{if $UserInfo.BandName}{$UserInfo.BandName|truncate:25:'':true}{else}{$UserInfo.FirstName|cat:' '|cat:$UserInfo.LastName|truncate:25:'':true}{/if}</strong><a href="/artist/profile" class="minIc" target="_blank"><img src="{$SUB_DOMAIN}si/ic-setting3.png" vspace="8" /></a></div>
+          
+          <div class="chatListBox" id="chat-area" >          	
+                <ul >
+                </ul>
+          </div>
+          <div class="chatWriteBox">
+                  <form id="send-message-area" action="">
+                    <textarea id="sendie" class="writeBox" maxlength='120'></textarea>
+                  </form>
+          </div>
+        </div>
+       
+    	</td>
+        <td align="left" valign="top">---</td>
+      </tr>
+       *}
+    </table>
+    
+    <div class="clear"></div>
+</div>
+<div id="delDialog" title="Delete Tracks">
+<p></p>
+</div>
+<div id="delConfirm" title="Confirm Delete">
+<p>Do you want to finish this event? </p>
+<input type="hidden" id="mId">
+</div>
+<div class="loadingdiv"></div>
+{/block}

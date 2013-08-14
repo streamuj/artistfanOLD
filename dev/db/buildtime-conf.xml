@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config>
+  <propel>
+    <datasources default="artistfan">
+      <datasource id="artistfan">
+        <adapter>mysql</adapter>
+        <connection>
+          <dsn>mysql:host=mysql51-020.wc2.dfw1.stabletransit.com;dbname=466649_artistfan</dsn>
+          <user>466649_artistfa</user>
+          <password>04Thursday</password>
+        </connection>
+      </datasource>
+    </datasources>
+  </propel>
+</config>

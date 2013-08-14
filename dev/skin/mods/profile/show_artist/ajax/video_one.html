@@ -1,0 +1,70 @@
+{strip}
+<div>
+<div class="tbBox">
+    <div class="P15"><h4 class="LF">VIDEOS {if $Relatedvideo|@count gt 3 }</h4> <a href="/u/{$Relatedvideoui.Name}/video?video_type={$smarty.const.MUSIC_VIDEO}" class="seeAll RT M5">See all</a> {/if}
+    <div class="clear"></div>
+</div>
+<div class="clear"></div>
+<div id="slider2" class="tbSliderMin">
+          <a class="buttons prev" href="#">left</a>
+          <div class="viewport">
+          {if $Relatedvideo}
+            <ul class="overview">
+            {foreach key=k item=i from=$Relatedvideo}
+                <li>
+                  <div class="imgBox">
+              <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}" class="playIC"><span></span></a>
+                    <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}"></a>
+              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="Video conversion under process!"  width="210"/>
+                   </div>
+                  <a href="/u/{$Relatedvideoui.Name}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:50}</a>
+				  <a href="/u/{$Relatedvideoui.Name}" class="nameTxt">{if $Relatedvideoui.BandName}{$Relatedvideoui.BandName}{else}{$Relatedvideoui.FirstName} {$Relatedvideoui.LastName}{/if}</a>
+                      {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
+               </li>
+{/foreach}
+                     
+            </ul>
+            {else}
+            <p class="noBar">No Videos </p>  
+            {/if}
+                        </div>
+                    <a class="buttons next" href="#">right</a>                    
+  </div>
+</div>
+  
+<div class="clear"></div>
+<div class="tbBox">
+<div class="P15"><h4 class="LF">STREAMS {if $streamVideo|@count gt 3 }</h4>  <a href="/u/{$Relatedvideoui.Name}/video?video_type={$smarty.const.RE_LIVE_STREAM}" class="seeAll M5 RT">See all</a>{/if}
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+<div id="slider2" class="tbSliderMin">
+          <a class="buttons prev" href="#">left</a>
+          <div class="viewport">
+          {if $streamVideo}
+            <ul class="overview">
+            {foreach key=k item=i from=$streamVideo}
+                <li>
+                  <div class="imgBox">
+              <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}" class="playIC"><span></span></a>
+                    <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}"></a>
+              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="Video conversion under process!"  width="210"/>
+                   </div>
+                  <a href="/u/{$Relatedvideoui.Name}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:50}</a>
+				  <a href="/u/{$Relatedvideoui.Name}" class="nameTxt">{if $Relatedvideoui.BandName}{$Relatedvideoui.BandName}{else}{$Relatedvideoui.FirstName} {$Relatedvideoui.LastName}{/if}</a>
+                      {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
+               </li>
+{/foreach}
+                     
+            </ul>
+            {else}
+            <p class="noBar">No Videos </p>  
+            {/if}
+                        </div>
+                    <a class="buttons next" href="#">right</a>                    
+  </div>
+</div>
+<div class="clear"></div>
+</div> 
+{/strip}
+ 

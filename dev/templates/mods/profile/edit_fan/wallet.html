@@ -1,0 +1,144 @@
+{extends file="mods/profile/cabinet_fan.html"}
+
+{block name="javascript"}
+<script type="text/javascript" src="/j/jquery.form.js"></script>
+<script type="text/javascript" src="/j/cls/Errors.js"></script>
+<script type="text/javascript" src="/j/cls/Profile.js"></script>
+<script type="text/javascript">
+    var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
+    $(document).ready(function()
+    {
+        oErrors.Show();
+    });
+</script>
+{/block}
+
+{block name="my_cabinet"}
+<div class="header_block">
+  <div class="path"> <a href="/">{$UserInfo.FirstName} {$UserInfo.LastName}</a> </div>
+  <h1>My wallet</h1>
+</div>
+<div class="content_block wide">
+  <p class="side"><a href="/fan/WalletHistory">Transaction history</a></p>
+  <div class="points">
+    <h3>You have</h3>
+    <div class="amount"><strong>{if $UserInfo.Wallet}{$UserInfo.Wallet}{else}0{/if}</strong> point(s)</div>
+  </div>
+  {if $notice}
+  <div class="alert alert_note"> <strong>Please note:</strong> {$notice} </div>
+  {/if}
+  <div class="alert" style="display: none;"> <a class="close" href="javascript:void(0);" onclick="$(this).parent().hide();" title="close">×</a> <strong></strong> <span id="buy_result"></span> </div>
+  <form method="post" action="/fan/wallet" class="big_form" id="buy_form">
+    <input type="hidden" name="do" value="1" />
+    <h3>Buy more points</h3>
+    <h4>Amount</h4>
+    <table class="form_table">
+      <tr>
+        <td class="label_td"><label>Points</label></td>
+        <td><input type="text" name="fm[amount]" value="{$fm.amount}" class="text_input small_input" /></td>
+        <td id="err_amount" class="err"></td>
+      </tr>
+    </table>
+    <h4>Card holder information</h4>
+    <table class="form_table">
+      <tr>
+        <td class="label_td"><label>Card holder name</label></td>
+        <td><input type="text" name="fm[cardHolder]" value="{$fm.cardHolder}" class="text_input" /></td>
+        <td id="err_cardHolder" class="err"></td>
+      </tr>
+      <tr>
+        <td class="label_td"><label>Country</label></td>
+        <td><select name="fm[countryId]">
+            
+                    {foreach key=k item=i from=$countries}
+                    
+            <option value="{$i.Iso3}"{if $fm.countryId==$i.Iso3} selected="selected"{/if}>{$i.Name}</option>
+            
+                    {/foreach}
+                
+          </select>
+        </td>
+        <td id="err_countryId" class="err"></td>
+      </tr>
+      <tr>
+        <td class="label_td"><label>Street address</label></td>
+        <td><input type="text" name="fm[avsAddress]" value="{$fm.avsAddress}" class="text_input" maxlength="20" /></td>
+        <td id="err_avsAddress" class="err"></td>
+      </tr>
+      <tr>
+        <td class="label_td"><label>Zip Code</label></td>
+        <td><input type="text" name="fm[avsZip]" value="{$fm.avsZip}" class="text_input" maxlength="9" /></td>
+        <td id="err_avsZip" class="err"></td>
+      </tr>
+    </table>
+    <h4>Card information</h4>
+    <table class="form_table">
+      <tr>
+        <td class="label_td"><label>Card number</label></td>
+        <td><input type="text" name="fm[cardNumber]" value="{$fm.cardNumber}" class="text_input" maxlength="16" /></td>
+        <td id="err_cardNumber" class="err"></td>
+      </tr>
+      <tr>
+        <td class="label_td"><label>Card expiration</label></td>
+        <td><select name="fm[cardExpiryMonth]" class="small_select">
+            <option value="0">Month</option>
+            
+                    {foreach key=k item=i from=$mm}
+                    
+            <option value="{$k}"{if $fm.cardExpiryMonth==$k} selected="selected"{/if}>{$i}</option>
+            
+                    {/foreach}
+                
+          </select>
+          <select name="fm[cardExpiryYear]" class="small_select">
+            <option value="0">Year</option>
+            
+                    {foreach key=k item=i from=$yy}
+                    
+            <option value="{$i}"{if $fm.cardExpiryYear==$i} selected="selected"{/if}>{$i}</option>
+            
+                    {/foreach}
+                
+          </select>
+        </td>
+        <td id="err_cardExpiry" class="err"></td>
+      </tr>
+      <tr>
+        <td class="label_td"><label>Card validation code</label></td>
+        <td><input type="text" name="fm[cardCvv]" value="{$fm.cardCvv}" class="text_input small_input" /></td>
+        <td id="err_cardCvv" class="err"></td>
+      </tr>
+    </table>
+    <div class="line"></div>
+    <table class="form_table">
+      <tr>
+        <td class="label_td"></td>
+        <td><input class="button yellow_button" type="button" value="Buy points" onclick="oProfile.Payment();" />
+          <span class="wait button-wait"></span> </td>
+      </tr>
+    </table>
+  </form>
+  <div class="line"></div>
+  <form method="post" action="#" name="frmPaypal" id="frmPaypal" class="big_form">
+    <table class="form_table">
+      <tr>
+        <td><label>Wallet Amount</label></td>
+        <td><input type="text" name="paypal" id="paypal" value=""/></td>
+        <td id="err_paypal" class="err"></td>
+      </tr>
+      <tr>
+      <td colspan="3">
+      	<img src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif"  alt="PayPal - The safer, easier way to pay online!" />
+      </td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3"><input type="button" class="button yellow_button" name="submit" id="submit" onclick="return oProfile.ValidateAmount();" value="Submit" /><span class="wait button-wait"></span>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <br />
+  <p>How many points you can get for $1? Learn about <a href="">cash to points conversion</a>.</p>
+  <p>You can buy points using VISA & MasterCard credit cards.</p>
+</div>
+{/block}

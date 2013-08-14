@@ -1,0 +1,82 @@
+{extends file="mods/profile/cabinet_artist.html"}
+
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
+<script type="text/javascript" src="{$SUB_DOMAIN}ssj/jquery.jqtransform.js" ></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        oProfile.InitEventActions();
+    });
+	$(function(){
+			$('.xform').jqTransform({ imgPath:'{$SUB_DOMAIN}ssi/' });
+	});	
+</script>
+{/strip}
+{/block}
+
+{block name="my_cabinet"}
+{strip}
+<div>
+<div class="content_block wide">
+    {if $event_added}
+        <div class="alert_success LT" style="border-bottom:2px solid #EEEEEE; background:none;">
+        	<table width="100%">
+            	<tr>
+                	<td>
+                    	<div class="LT P20" style="color:#009900"><h5><strong>Event created!</strong></h5><br/>
+            			<strong>{$smarty.const.EVENT_ANNOUNCE}</strong>
+               			</div>
+                   </td>
+            		<td><div class="RT" style="width:100px; padding-right:10px; padding-top:40px;"><a href="/artist/EventAnnounce?id={$event_added}" class="button" style="float:right;">Announce</a></div></td>
+                </tr>
+            </table>
+        	
+        </div>               
+    {/if}
+</div>  
+  
+<div class="P15"><h2 class="LF">My Live Streams</h2>  <a href="/artist/EventEdit" class=" RT button">Create Event</a> </div>
+   
+  <div class="clear">&nbsp;</div>
+  <div class="subTab">
+      <ul>
+         <li> <a href="/artist/events"  class="active">My Streams</a></li>
+        <li><a href="/artist/artistsevents">Artists Streams </a></li>
+      </ul>
+  </div>
+  <div class="clear"></div>
+  <div  id="pagging1">{$pagging}</div>
+  <div class="clear"></div>
+  <div style="background:#F6F6F6;">
+  <div class="RT">
+  <span class="floatL xform P10">
+  <span class="LF" style=" padding-right:10px; line-height:28px;">Show</span>
+
+                     <strong>  
+                        <select name="df" onchange="Go('/artist/events?df='+$(this).val());">
+        <option value="up" {if $df=="up"} selected="selected"{/if}>All</option>    
+        <option value="tw"{if $df=="tw"} selected="selected"{/if}>This week</option>
+        <option value="nw"{if $df=="nw"} selected="selected"{/if}>Next week</option>
+        <option value="tm"{if $df=="tm"} selected="selected"{/if}>This month</option>
+        <option value="nm"{if $df=="nm"} selected="selected"{/if}>Next month</option>
+        <option value="pa"{if $df=="pa"} selected="selected"{/if}>Finished</option>                        
+    </select></strong>  </span>
+  </div>
+  <div class="clear"></div>
+  <div id="event_list">
+  		{include file="mods/profile/edit_artist/ajax/event_list.html"}
+  </div>
+   <div class="clear"></div>
+  </div>
+   <div class="clear"></div>
+  <div  id="pagging">{$pagging}</div>
+
+</div>
+{/strip}
+
+{/block}

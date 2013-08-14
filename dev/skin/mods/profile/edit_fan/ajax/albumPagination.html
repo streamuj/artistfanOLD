@@ -1,0 +1,21 @@
+ {foreach name=ph key=k item=i from=$albums }
+<li id="PhotoAlbums_{$i.Id}"> <a href="/fan/editphotoalbum?id={$i.Id}" class="tb"> <img id="photoid_{$i.Id}" class="phto-clu-img" src='{if $i.Cover}{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.Cover}{else}{$SUB_DOMAIN}si/nophoto.jpg{/if}'  /> </a>
+  <ul class="font12 block relative">
+    
+    <li class="block font14" id="AlbumName_{$i.Id}">{$i.Title|truncate:25}</li>
+    
+    <li class="LF">{$i.Pdate|date_format:"%b%d at %l:%M%p"}</li>
+    <li class="RT">{$i.CountPhotos} Photos</li>
+    <li class="clear"></li>
+    <li class="belw editTool none"> {if $i.Title !=$smarty.const.BANNER_IMAGES && $i.Title !=$smarty.const.PROFILE_PICTURES} <span class="DeleteAlbum LF" PhId="{$i.Id}" ><img src="{$SUB_DOMAIN}si/remvIconGry.png">&nbsp;Remove</span> <span class="RT P0"  onclick="oPhotoEdit.TopAdd({$i.Id},'{$i.Title}');"><img src="{$SUB_DOMAIN}si/addBtnBk.png">&nbsp;Add</span> <span class="RT edit" onclick="oPhotoEdit.FanAlbumNameEdit({$i.Id});" ><img src="{$SUB_DOMAIN}si/addBtnBk.png">&nbsp;Edit</span> {else}
+      &nbsp;
+      {/if} </li>
+    <li class="clear"></li>
+  </ul>
+</li>
+{foreachelse}
+ <li>
+    	<span class="tb"><img src="{$SUB_DOMAIN}si/nophoto.jpg"  /></span>
+ </li>
+{/foreach}
+<li id="recentPhotoAdded" style="display:none;"></li>

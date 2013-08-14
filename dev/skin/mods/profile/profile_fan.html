@@ -1,0 +1,205 @@
+{extends file="mods/profile/cabinet_fan.html"}
+{block name="meta"}
+{strip}
+<meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}" />
+<meta property="og:title" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if} "/>
+<meta property="og:description" content="Artistfan"/>
+<meta property="og:image" content="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+<meta name="title" content="Artistfan | {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName} {$ui.LastName}{/if}" />
+<link rel="image_src" type="image/jpeg" href="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+{/strip}
+{/block}
+{block name="title"}Artistfan | {if $ui.BandName}{$ui.BandName|truncate:25:'...'}{else}{$ui.FirstName|cat:''|cat:$ui.LastName|truncate:25:'...'}{/if}{/block}
+{block name="javascript"}
+{strip}
+<link rel="stylesheet" href="{$SUB_DOMAIN}ss/fileuploader.css" />
+<link rel="stylesheet" type="text/css" href="{$SUB_DOMAIN}sfb/album-fancybox.css" media="screen" />
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.autosize.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Wall.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Player.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/fileuploader.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" id='fbScript' src="{$SUB_DOMAIN}sfb/jquery.fancybox-1.3.4.pack.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.slimscroll.js"></script>
+<script type="text/javascript">
+		$(document).ready(function() {
+		$("a[rel=photoGroup]").fancybox(wallFancySetting);
+		});
+</script>
+
+<script type="text/javascript">
+    var user_id = {$ui.Id};
+   var fWall = 0;	
+    $(document).ready(function()
+    {
+        oWall.Reload();
+        oProfile.InitPurchase();
+        oPlay.InitPlayButtons(); 
+		oPopup.InitPurchase();						    		
+    });	
+</script>
+{/strip}
+{/block}
+{block name="slider"}
+{include file="mods/profile/home_slider.html"}
+{/block}  
+{block name="profile"}
+{strip}
+<div id="profileMini">
+  <div class="LF" id="proInfoBox">
+    <div class="proPic"><a href="/fan/profile"> <img src="{if !$ui.Avatar}{$SUB_DOMAIN}si/ph/user-234x234.png{else}{$SUB_DOMAIN}images/avatars/s_{$ui.Avatar}{/if}" /> </a> </div>
+    <div class="proInfo">
+      <h2><a href="/fan/profile"> {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName|cat:' '|cat:$ui.LastName}{/if}</a></h2>
+      <p class="locationInfo"> <a href="/fan/profile">{if $ui.Country}{$ui.Country} , {/if}  {if $ui.Location}{$ui.Location}{/if}</a>&nbsp;</p>
+      <p class="genreInfo"> <a href="/fan/profile">{$ui.GenresList}</a>&nbsp;</p>
+      <p class="countTxt">       
+       <a href="/fan/fans"><strong class="txt">{$UserInfo.FollowersCount}&nbsp;Friend{if $UserInfo.FollowersCount gt 1}s {/if}</strong></a>            
+      </p>
+      
+    </div>
+  </div>
+ {if $UserInfo.Status  && $IsOther}
+
+	{if $IsFollow1}
+		{if $UserInfo.Status == $ui.Status}
+<a href="javascript:void(0);" onclick="oUsers.Follow('{$ui.Id}');" class="connBtn followBox" id="follow"><span class="unFo" >Disconnect</span></a>
+		{else}
+			{if $UserInfo.Status==2}        
+			{else}        
+				<a href="javascript:void(0);" onclick="oUsers.Follow('{$ui.Id}');" class="connBtn followBox" id="follow"><span class="unFo" >Unfollow</span></a>
+			{/if}
+        {/if}
+   {else}
+   		{if $UserInfo.Status == $ui.Status}
+<a href="javascript:void(0);" onclick="oUsers.Follow('{$ui.Id}');" class="connBtn followBox" id="follow"><span class="Fo" >Connect</span></a>
+        {else}
+			{if $UserInfo.Status==2}        
+			{else}
+				<a href="javascript:void(0);" onclick="oUsers.Follow('{$ui.Id}');" class="connBtn followBox" id="follow"><span class="Fo" >Follow</span></a>
+	        {/if}
+        {/if}
+   {/if}
+{/if}  
+  <div class="clear"></div>
+</div>
+{/strip}
+{/block}
+
+{block name="content"}
+{strip}
+<div class="clear"></div>
+<div class="contentArea">
+<div class="colSide">
+<div class="mod">
+  		<h3 class="fan"><span class="floatL"><a href="/fan/artists">My Artists</a> </span> {if $artistCount gt 9} <a href="/fan/artists" class="seeAll">See all</a> {/if}</h3>
+	 {if $fellow_artist}        
+        <ul class="imgGrid">
+	     {foreach key=k item=i from=$fellow_artist}     
+      <li><a href="/u/{$i.Name}"> {if $i.Avatar} <img src="{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}" />{else}<img src="{$SUB_DOMAIN}si/ph/user-48x48.png" />{/if} {if $i.IsOnline == 1} <span class="online"></span>{/if}</a></li>      
+    	{/foreach}
+    	</ul>
+        {else}
+          <ul style="color:#cccccc; margin:0px 10px;" ><li><p align="center" class="noBar">{$smarty.const.NO_ARTISTS_FOLLOWED_YET}</p></li></ul> 
+     {/if}        
+</div>   
+<div class="clear"></div>
+      <div class="mod">
+            <h3 class="fan"><span class="floatL"> <a href="/fan/fans">My Friends </a></span> {if $fansCount gt 9} <a href="/fan/fans" class="seeAll">See all</a> {/if}</h3>
+			{if $fellow_fans}            
+             <ul class="imgGrid">               
+		     {foreach key=k item=i from=$fellow_fans}     
+      			<li><a href="/u/{$i.Name}"> {if $i.Avatar} <img src="{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}" />{else}<img src="{$SUB_DOMAIN}si/ph/user-48x48.png" />{/if} {if $i.IsOnline == 1} <span class="online"></span>{/if}</a></li>      
+    		{/foreach}            
+	    	</ul>
+            {else}
+		          <ul style="color:#cccccc; margin:0px 10px;" ><li><p align="center" class="noBar">{$smarty.const.NO_FRIENDS_CONNECTED_YET}</p></li></ul> 
+            {/if}            
+      </div>
+  <div class="clear"></div>
+</div>
+<div class="colMid floatL" style="min-height:800px;" >
+    <div class="inComp"> {include file="mods/profile/say_form.html"}
+      <div class="clear"></div>
+    </div>
+      <div class="wall_info"></div>
+      <div class="clear"></div>
+      <div class="more_posts wall_more" style="display:none;"> <a href="javascript:void(0);" onclick="oWall.Reload(1, 1)">567 more wall posts...</a><span class="wait" style="display: none;"></span> </div>
+      <div class="clear"></div>
+  </div>
+<div class="colSide floatR">
+<div class="mod">
+<h3 class="event"><span class="floatL"><a href="/fan/events">My Live Streams </a></span> {if $followerEventsCount gt 5} <a href="/fan/events" class="seeAll">See all</a> {/if}</h3>
+{if $follower_events}
+{foreach key=k item=i from=$follower_events} 
+  {if !$i.EventDate|ispast}
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="eGrid">
+      <tr>
+        <td width="11%" align="left" valign="middle"><table width="50" border="0" cellspacing="0" cellpadding="0" class="day">
+          <tr>
+            <td align="center" valign="middle" bgcolor="#989ba7" class="month">{$i.EventDate|date_format:"%b"}</td>
+          </tr>
+          <tr>
+            <td align="center" valign="middle" class="date">{$i.EventDate|date_format:"%d"}</td>
+          </tr>
+        </table></td>
+        <td width="89%" align="left" valign="middle">
+        	<table width="100%" border="0" cellspacing="0" cellpadding="1" class="detail">
+              <tr>
+                <td class="desc"><a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName|truncate:22:'...'}{else}{$i.FirstName|cat:' '|cat:$i.LastName|truncate:22:'...'}{/if}</a></td>
+              </tr>
+              <tr>
+                <td class="decs"><a href="{if ($i.EventType > 1 && $i['EventPurchase.Id']) || ($i.EventType==1 && $i['EventAttend.Id'])}/fan{else}/u/{$i.Name}{/if}/events/{$i.Id}">{$i.Title|truncate:15} </a></td>
+              </tr>          
+              <tr>
+                <td class="loc">
+                {$i.EventDate|date_format:'%l:%M  %p'} at {$i.Location}
+                </td>
+              </tr>
+            </table>        
+        </td>        
+      </tr>
+      
+    </table>
+    {/if}
+    {/foreach}
+ {else}
+         <ul style="color:#cccccc; margin:0px 10px;" ><li><p align="center" class="noBar">{$smarty.const.NO_EVENTS_ADDED}</p></li></ul>          
+{/if}   
+  </div>
+    <div class="mod">
+    	<h3 class="vid"><span class="floatL"><a href="/fan/video">My Videos </a></span> {if $videoCount gt 9} <a href="/fan/video" class="seeAll">See all</a>{/if}</h3>
+        {if $video}
+        <ul class="imgGrid">
+        {foreach key=k item=i from=$video}
+        <li><a href="/fan/video?id={$i.Id}"><img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/default.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/x_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-22x22.png{/if}" /> <span class="play"></span></a></li>
+         {/foreach}
+        </ul>
+        {else}        
+	        <ul style="color:#cccccc; margin:0px 10px;" ><li><p align="center" class="noBar">{$smarty.const.NO_VIDEOS_ADDED_YET}</p></li></ul>        
+        {/if}         
+    </div>
+    <div class="clear"></div>
+    <div class="mod">
+        <h3 class="photo"><span class="floatL"> <a href="/fan/showAllPhotosById">My Photos</a> </span> {if $photoCount gt 9} <a href="/fan/showAllPhotosById" class="seeAll">See all</a>{/if}</h3>
+		{if $photo}        
+        <ul class="imgGrid">
+        {foreach key=k item=i from=$photo}
+        <li>
+		         <a rel="group1" id="popBox" name="popBox" href="/base/profile/showPhotoOne?id={$i.Id}">                 
+                <img src="{$SUB_DOMAIN}photo/thumbs/{$i.UserId}/{$i.Image}" />{$ui.Image}
+                </a>
+	     </li>
+         {/foreach}
+        </ul>
+        {else}
+              <ul style="color:#cccccc; margin:0px 10px;" ><li><p align="center" class="noBar">{$smarty.const.NO_PHOTOS_ADDED_YET}</p></li></ul>   
+        {/if}        
+    </div>
+</div>
+<div class="clear"></div>
+</div>
+{/strip}
+{/block}

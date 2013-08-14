@@ -1,0 +1,30 @@
+{extends file="base.html"}
+
+{block name="content"}
+
+    <!--sitebar_01-->
+    <div class="sitebar sitebar_01">
+        <div class="big_user_icon">
+            <a href="/u/{$UserInfo.Name}"><img src="{if !$UserInfo.Avatar}/i/ph1/user-144x144.png{else}/files/images/avatars/s_{$UserInfo.Avatar}{/if}" id="image" width="144" height="144" alt="" /></a>
+            <a href="/u/{$UserInfo.Name}"><big>{$UserInfo.FirstName} {$UserInfo.LastName}</big></a>
+        </div>
+
+        <ul class="sitebar_menu">
+            <li{if $module=='wallet'} class="active"{/if}><a href="/fan/wallet">My wallet_21</a></li>
+            <li{if $module=='artists'} class="active"{/if}><a href="/fan/artists">My Artists</a></li>
+            <li{if $module=='fans'} class="active"{/if}><a href="/fan/fans">My fellow fans</a></li>
+            <li{if $module=='feed'} class="active"{/if}><a href="/fan/feed">News feed</a></li>
+            <li{if $module=='music'} class="active"{/if}><a href="/fan/music">My Music</a></li>
+            <li{if $module=='video'} class="active"{/if}><a href="/fan/video">My Videos</a></li> 
+            <li{if $module=='photos'} class="active"{/if}><a href="/fan/photo">My Photos</a></li>             
+            <li{if $module=='events'} class="active"{/if}><a href="/fan/events">My Events</a></li>
+            <li{if $module=='profile'} class="active"{/if}><a href="/fan/profile">My Profile</a></li>
+            <li{if $module=='settings'} class="active"{/if}><a href="/fan/settings">Settings</a></li>
+        </ul>
+    </div>
+    <!--/sitebar_01-->
+    {block name="my_cabinet"}
+
+    {/block}
+    
+{/block}

@@ -1,0 +1,88 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="javascript"}
+{strip}
+		<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function(){	
+            $('#delDialog').dialog({ autoOpen: false });
+            $('#delConfirm').dialog({ 
+                autoOpen: false, 
+                modal: true,
+                buttons: {
+                'Cancel' : {
+                         "text":'Cancel', "class": 'button bgrey', "click": function() {
+                            $(this).dialog('close');
+                        }
+                     },
+                'Delete': {
+                        "text":'Delete', "class":'button wblue',  "click":function(){
+                        $('body').addClass('loading');
+                        deleteVideo();
+                        $(this).dialog('close');				
+                        }
+                    }
+                }
+            });
+            $('body').on('click', '.DeletePricedVideo', function(){
+                    
+                    var VId  = $(this).attr('VId');
+                    if(VId){
+                    $('#vId').val(VId);									
+                    $('#delConfirm').dialog('open');
+                        }
+                    
+            });
+        function deleteVideo()
+            {
+                var VId  =	$('#vId').val();	
+                    if(VId){
+                    $.ajax({
+                    type:     'POST',
+                    dataType: 'json',
+                    data:     "delete_video_id="+VId,
+                    url:      '/base/artist/ArtisttwoartistVideoDelete',
+                    success: function (data)
+                    {
+                        if (data.q == 'ok')
+                        {
+                            $('body').removeClass('loading');																	
+                            $('#video_list').html(data.data);
+                            $('#video_'+id).remove();					
+        
+                        }
+                    }
+                });}
+            }	
+            });
+        </script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Play.js"></script>
+
+{/strip}
+{include file="mods/profile/fanfinder_map.html"}
+{/block}
+{block name="my_cabinet"}
+{strip}
+        <div class="P15">
+        <h2 class="LF">My Videos</h2>
+          <div class="clear">&nbsp;</div>    
+          <div class="subTab">
+              <ul>
+                 <li> <a href="/artist/video?vt=1"> Video List</a></li>
+                 <li> <a href="/artist/video?vt=2">Stream Video</a></li>
+                  <li> <a href="/artist/pricedvideos" class="active" >My Playlist</a></li>
+              </ul>    
+          </div>
+            <div class="clear"></div>
+        <div id="list">  {include file="mods/profile/edit_artist/ajax/pricedfilter_video.html"} </div>
+           <div class="clear"></div>
+        </div>
+        <div id="delDialog" title="Delete Tracks">
+        <p>Please select tracks to delete</p>
+        </div>
+        <div id="delConfirm" title="Confirm Delete">
+        <p>Are you sure you want to delete the selected Video?</p>
+        <input type="hidden" id="vId">
+        </div>
+        <div class="loadingdiv"></div>
+{/strip}
+{/block}
