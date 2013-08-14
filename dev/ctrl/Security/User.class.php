@@ -100,9 +100,8 @@ class Security_User
         $user_fields = array('Id', 'Email', 'Status', 'Pass', 'FirstName', 'LastName', 'BandName', 'Name', 'Blocked', 'BlockReason',
                              'Avatar', 'Location', 'About', 'EmailConfirmed', 'Likes', 'Country', 'Zip', 'HideLoc',
                              'Gender', 'Dob', 'LastReload', 'Wallet', 'WalletBlock', 'FbId', 'FbToken', 'FbStart', 'TwStart', 'TwId', 
-							 'TwOauthToken', 'TwOauthTokenSecret',
-                             'RecordLabel', 'RecordLabelLink', 'Bio', 'Members', 'Website', 'Genres', 'YearsActive', 
-							 'IsAdmin', 'IsOnline', 'UserPhone', 'State', 'HashTag');
+							 'TwOauthToken', 'TwOauthTokenSecret', 'RecordLabel', 'RecordLabelLink', 'Bio', 'Members', 'Website', 'Genres', 'YearsActive', 
+							 'IsAdmin', 'IsOnline', 'AltEmail', 'UserPhone', 'State', 'HashTag', 'FbOn', 'TwOn', 'InOn');
 		UserQuery::create()->Select(array('Id'))->filterByLastReload(array('max' => mktime()-$this->mLogoutAfter))->Update(array('IsOnline' => 0));
 		 $system_login = trim(strip_tags(_v('system_login', '')));
          $system_pass  = trim(strip_tags(_v('system_pass', '')));
@@ -402,7 +401,7 @@ class Security_User
             {
                 $this->mOtherUserInfo = UserQuery::create()
                     ->Select(array('Id', 'Email', 'Status', 'Pass', 'LastReload', 'FirstName', 'LastName', 'Name', 'Blocked', 'BlockReason', 'Country',
-                                   'Avatar', 'Location', 'HideLoc', 'About', 'BandName', 'Likes', 'Dob', 'Gender', 'YearsActive', 'Genres', 'Members', 'Website', 'Bio', 'RecordLabel', 'RecordLabelLink', 'UserPhone', 'State', 'HashTag'))
+                                   'Avatar', 'Location', 'HideLoc', 'About', 'BandName', 'Likes', 'Dob', 'Gender', 'YearsActive', 'Genres', 'Members', 'Website', 'Bio', 'RecordLabel', 'RecordLabelLink', 'UserPhone', 'State', 'HashTag', 'FbOn', 'TwOn', 'InOn'))
                     ->where('LOWER(Name) = "' . ToLower( $login ) . '"')
 					->filterByEmailConfirmed(1)
 					->filterByBlocked(0)

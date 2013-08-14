@@ -26,7 +26,6 @@
 
                     <div class="proInfo">
                       <h2><a href="/u/{$ui.Name}/profile"> {if $ui.BandName}{$ui.BandName}{else}{$ui.FirstName|cat:' '|cat:$ui.LastName}{/if}</a></h2>
-                     {*  <p class="genreInfo floatL"  style="width:100%"><a href="/u/{$ui.Name}/profile"> {$ui.GenresList}</a></p> *}
                    {if $ui.Country || $ui.Location}  
                       <p class="LF font11"><a href="/u/{$ui.Name}/profile">{if $ui.Country}{$ui.Country} , {/if}  {if $ui.Location}{$ui.Location}{/if}</a></p>
                    {/if}

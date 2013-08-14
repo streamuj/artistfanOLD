@@ -49,12 +49,12 @@ window.onresize = function() {  window.resizeTo(width,height);  }
 		var suffix = '';
 		if (DetectSmartphone() || DetectTierTablet())
 		{
-			fileRoot = 'http://mobile.streamingmediahosting.com/artistfan/_definst_/';
+			fileRoot = '{$smarty.const.STREAMING_HTML5_VOD}';
 			suffix = '/playlist.m3u8';
 		} else if (DetectMobileQuick()){
-			fileRoot = 'rtmp://mobile.streamingmediahosting.com/artistfan/mp3:';
+			fileRoot = '{$smarty.const.STREAMING_MOBILE_VOD}mp3:';
 		} else {
-			fileRoot = 'rtmp://flash.streamingmediahosting.com/artistfan/mp3:';
+			fileRoot = '{$smarty.const.STREAMING_MOBILE_VOD}mp3:';
 		}
 		$(document).ready(function(){
 			if($('#list tr').length == 1) {
@@ -121,56 +121,37 @@ window.onresize = function() {  window.resizeTo(width,height);  }
   </div>
   <div id="jwplayer"></div>
   
-  {strip}
+{strip}
   <script type='text/javascript'>
-			jwplayer('jwplayer').setup({
-				controlbar: "bottom",
-				file: fileRoot+"{if $tracks[0].TrackPreview && $i.Price>0 && $tracks[0].IsOther && !$tracks[0]['MusicPurchase']['Id']}{$tracks[0].TrackPreview|substr:6}{else}{$tracks[0].Track|substr:6}{/if}"+suffix,
-				width: 690,
-				height: 140,
-		   });
-		   jwplayer().onReady(function(){ 
-		   		jwplayer().play(); 
-				updateTrackBlock({$tracks[0].Id}); 
-			});
-			jwplayer().onTime(function(obj){
-				myListener.update(obj)
-			});
-			jwplayer().onPlay(function() {
-				myListener.isPlaying = true;
-			});
-			jwplayer().onPause(function(){
-				myListener.isPlaying = false;
-				$('.player_control').find('.track_play').show(); 
-				$('.player_control').find('.track_pause').hide(); 
-			});
-			jwplayer().onComplete(function(){
-				next();
-			});
-			jwplayer().onError(function(){
-				next();
-			});
-		   </script>
-           {/strip}
-   {strip}
-  <style>
-  .btn1old{ 
-color: #363636;
-font-weight: bold;
-font-size: 11px;
-display: inline-block;
-border: 1px solid #c6c6c6;
-border-radius: 4px;
-padding: 4px 12px;
-box-shadow: 0 2px 2px #dad5ce;
-background: url(/i/button_bg.gif) 0 100% repeat-x;
-text-shadow: 0px 1px 0px #fff;
-  }
- .yellow_button_old {
- background: #fff082 url(/i/yellow_button.jpg) 0 0 repeat-x !important;
- } 
-  </style>
-  {/strip}
+	jwplayer('jwplayer').setup({
+		controlbar: "bottom",
+		file: fileRoot+"{if $tracks[0].TrackPreview && $i.Price>0 && $tracks[0].IsOther && !$tracks[0]['MusicPurchase']['Id']}{$tracks[0].TrackPreview|substr:6}{else}{$tracks[0].Track|substr:6}{/if}"+suffix,
+		width: 690,
+		height: 140,
+   });
+   jwplayer().onReady(function(){ 
+		jwplayer().play(); 
+		updateTrackBlock({$tracks[0].Id}); 
+	});
+	jwplayer().onTime(function(obj){
+		myListener.update(obj)
+	});
+	jwplayer().onPlay(function() {
+		myListener.isPlaying = true;
+	});
+	jwplayer().onPause(function(){
+		myListener.isPlaying = false;
+		$('.player_control').find('.track_play').show(); 
+		$('.player_control').find('.track_pause').hide(); 
+	});
+	jwplayer().onComplete(function(){
+		next();
+	});
+	jwplayer().onError(function(){
+		next();
+	});
+	</script>
+{/strip}
   {strip}
   <div class="clear"></div>
   

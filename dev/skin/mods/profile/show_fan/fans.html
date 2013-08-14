@@ -8,7 +8,7 @@
         <ul class="phto-clu">
           {foreach key=k item=i from=$fellow_fans}       
                <li class="belw editTool " id="delUser_{$i.FollowId}" >
-               <a href="/u/{$i.Name}"><img class="phto-clu-img" src="{$SUB_DOMAIN}{if $i.Avatar}{$SUB_DOMAIN}images/avatars/s_{$i.Avatar}{else}si/user500x500.jpg{/if}" width="234" height="234"> </a>
+               <a href="/u/{$i.Name}"><img class="phto-clu-img" src="{$SUB_DOMAIN}{if $i.Avatar}images/avatars/s_{$i.Avatar}{else}si/user500x500.jpg{/if}" width="234" height="234"> </a>
                	  <ul class="font12 block">
                   <li class="font14"><span class="LF" style="overflow:hidden; white-space:nowrap; width:208px; text-overflow:ellipsis; display:block;">{$i.FirstName|cat:' '|cat:$i.LastName}
                   </span>

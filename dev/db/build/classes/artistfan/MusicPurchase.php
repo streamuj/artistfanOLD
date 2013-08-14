@@ -22,6 +22,15 @@ class MusicPurchase extends BaseMusicPurchase {
             ->filterByMusicId($music_id)
             ->findOne();
     }
+	
+	public static function GetAlbum($user_id, $album_id)
+	{
+		return MusicPurchaseQuery::create()->select(array('Id', 'Pdate', 'WithAllAlbum'))
+            ->filterByUserId($user_id)
+            ->filterByWithAllAlbum($album_id)
+			->filterByMusicId(0)
+            ->findOne();
+	}
 
 
     /**

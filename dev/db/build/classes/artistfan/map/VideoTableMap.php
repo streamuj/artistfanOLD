@@ -57,6 +57,7 @@ class VideoTableMap extends TableMap
 		//$this->addColumn('VIDEO_DATE', 'VideoDate', 'DATE', false, null, null);		
 		$this->addColumn('VIDEO_DATE', 'VideoDate', 'DATE', false, null, '0000-00-00');		
 		$this->addColumn('VIDEO_IMAGE', 'VideoImage', 'VARCHAR', false, 255, '150');
+		$this->addColumn('EMAIL_SENT', 'EmailSent', 'TINYINT', false, 2, 0);
 		// validators
 	} // initialize()
 

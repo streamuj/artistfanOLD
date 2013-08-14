@@ -153,6 +153,16 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
+
+	{if $twError}
+		$('.alert_success').hide();
+		$('#connectedTw').removeClass('good');
+		$('#connectedTw').addClass('error').html('{$twError}');
+	{else if $twSuccess}
+		$('.alert_success').hide();
+		$('#connectedTw').removeClass('error');
+		$('#connectedTw').addClass('good').html('{$twSuccess}');
+	{/if}
 	
 	$('#alt_email_div').hide();
 	$('#alt_save_div').hide();			
@@ -260,8 +270,8 @@ $(document).ready(function(){
 	});
 	$('body').on('click', '.DeleteProfilePic', function(){
 			$('#delConfirm').dialog('open');
-			});
-function deleteProfilePic()
+	});
+	function deleteProfilePic()
 	{
 		        $.ajax({
             type:     'POST',
@@ -278,7 +288,65 @@ function deleteProfilePic()
             }
         });
 
-	}	
+	}
+		$('#connectTwitter').click(function(){
+			$.ajax({
+				type:'POST',
+				dataType:'json',
+				url:'/base/user/ConnectTwtGetAuthUrl',
+				success:function (data)
+				{
+				   if (data.q == 'ok')
+				   {
+					 document.location = data.url;
+				   }
+				   else
+				   {
+					   alert(data.err);
+				   }
+				}
+			});
+		});		
+		$('#connectFb').click(function(){
+				FB.login(function (response)
+				{
+					if (response.authResponse)
+					{
+						FB.api('/me', function (response)
+						{
+							var email = (undefined != response.email) ? response.email : '';
+							 $.ajax({
+							   type:'POST',
+							   dataType:'json',
+							   cache:false,
+							   data:{
+								   "id":response.id,
+								   "ajaxinit":1,
+								   "fname":response.first_name,
+								   "lname":response.last_name,
+								   "name":response.name,
+								   "email":response.email
+							   },
+							   url:'/base/user/ConnectFB',
+							   success:function (data)
+							   {
+									if(data.q == 'ok')
+									{
+										$('#connectedFb').removeClass('error');
+										$('#connectedFb').addClass('good').html(data.msg);
+									}
+									else if(data.q == 'err')
+									{
+										$('#connectedFb').removeClass('good');	
+										$('#connectedFb').addClass('error').html(data.err);
+									}
+							   }
+							   
+							  });		   
+						});
+					}
+				});			
+		});		
 });
 
 </script>
@@ -495,6 +563,16 @@ function deleteProfilePic()
           </tr>
         </table></td>
       </tr>
+    {if !$fm.FbId}
+    <tr>
+      <td align="center" valign="left" nowrap="nowrap" id="connectFb"><img src="{$SUB_DOMAIN}si/fb-con-btn.png" style="cursor:pointer;" />&nbsp;</td><td><span id="connectedFb"></span></td>
+    </tr>
+    {/if}
+    {if !$fm.TwId}
+    <tr>
+      <td align="center" valign="left" nowrap="nowrap" id="connectTwitter"><img src="{$SUB_DOMAIN}si/Tw-con-btn.png" style="cursor:pointer;" />&nbsp;</td><td><span id="connectedTw"></span></td>
+    </tr>     
+    {/if}       
       <tr>
             <td colspan="2" align="center" ><input type="submit" class="button wblue" value="Save Changes" /></td>      </tr>      
     </table>

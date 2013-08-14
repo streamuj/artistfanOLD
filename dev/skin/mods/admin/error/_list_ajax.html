@@ -1,0 +1,11 @@
+{foreach key=k item=i from=$list}
+   <tr class="f11">
+   	<td>{$i.err_date}</td>
+    <td>{$i.err_url}</td>
+    <td>{$i.err_mesg|nl2br|stripslashes}</td>
+   </tr>
+{foreachelse}
+    <tr class="f11">
+        <td colspan="2">Error not found</td>
+    </tr>
+{/foreach}

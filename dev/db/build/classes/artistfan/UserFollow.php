@@ -105,13 +105,10 @@ class UserFollow extends BaseUserFollow {
 				$keywordSrch = array();
 				foreach($keywords as $key)
 				{
-				 	$cond = ' name LIKE "%'.$key.'%" OR band_name LIKE "%'.$key.'%" ';		
-					
+				 	$cond = ' last_name LIKE "%'.$key.'%" OR first_name LIKE "%'.$key.'%" OR band_name LIKE "%'.$key.'%" ';		
 					$keywordSrch[] = $cond;
-			
 				}
 				$searchCond = ' AND (' . implode (' OR ', $keywordSrch) . ')';
-						
 			}
 			$sql .= $searchCond ;
 			
@@ -133,7 +130,7 @@ class UserFollow extends BaseUserFollow {
 				$keywordSrch = array();
 				foreach($keywords as $key)
 				{
-				 	$cond = ' name LIKE "%'.$key.'%" OR band_name LIKE "%'.$key.'%" ';		
+				 	$cond = ' last_name LIKE "%'.$key.'%" OR first_name LIKE "%'.$key.'%" OR band_name LIKE "%'.$key.'%" ';		
 					
 					$keywordSrch[] = $cond;
 			

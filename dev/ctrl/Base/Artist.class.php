@@ -6,14 +6,16 @@
  * User: ssergy
  * Date: 08.02.12
  * Time: 17:46  
- *         
- **/     
+ *          
+ **/        
              
 class Base_Artist extends Base
 { 
     public function __construct($glObj)
-    {
+    { 
         parent :: __construct($glObj); 
+		
+		$this->mlObj['mSession']->Del('redirect');
 		 
         if (!$this->mUser->IsAuth()) 
         {
@@ -471,7 +473,7 @@ class Base_Artist extends Base
             $this->mSmarty->assignByRef('fm', $fm);
         }
 		$confirm = _v('confirm', 0);
-		
+//deb($fm);		
         $this->mSmarty->assign('confirm', $confirm);
         $this->mSmarty->display('mods/profile/edit_artist/profile_data.html');
         exit();
@@ -660,8 +662,9 @@ class Base_Artist extends Base
             //show events list
             $page = _v('page', 1);
             $pcnt = 10;
-            $df = _v('df', '');
+            $df = _v('df', 'tm');
             $df = !in_array($df, array('tw', 'nw', 'tm', 'nm', 'up', 'all','pa')) ? '' : $df;
+			
 			// today event is not shoing  by defualt start			
 			if($df=='') 
 			{
@@ -1109,6 +1112,7 @@ class Base_Artist extends Base
 							$this->mSmarty->assign('event_time', $event_time);	
 							$this->mSmarty->assign('MailInfo', $MailImages);							
 							$this->mSmarty->assign('Image', ROOT_HTTP_PATH.'/files/photo/mid/'.$MailImages['UserId'].'/'.$MailImages['EventPhoto']);
+							
 							$fromEmail = ADMIN_EMAIL;
 							$fromName = SITE_NAME;							
 							$toEmail = $followers['Email'];
@@ -1245,13 +1249,54 @@ class Base_Artist extends Base
 
             Wall::Add( $this->mUser->mUserInfo['Id'], $this->mUser->mUserInfo['Id'], $wallMesg,'','', 0, $this->mCache );
          
-		    //re-post to twitter
+		  /*  //re-post to twitter
             if (!empty($this->mUser->mUserInfo['TwOauthToken']) && !empty($this->mUser->mUserInfo['TwOauthTokenSecret']))
             {
                 require_once('libs/twitteroauth/twitteroauth.php');
                 $tweet = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $this->mUser->mUserInfo['TwOauthToken'], $this->mUser->mUserInfo['TwOauthTokenSecret']);
-                $tweet->post('statuses/update', array('status' => $mesg));
-            }
+				
+				//start 	
+                          
+				$con = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+				$request_token = $con->getRequestToken('http://' . DOMAIN . '/base/user/twitterconnect');
+				$this->mlObj['mSession']->set('oauth_token', $request_token['oauth_token']);
+				$this->mlObj['mSession']->set('oauth_token_secret', $request_token['oauth_token_secret']);
+				if($con->http_code == 200)
+				{
+					$url = $con->getAuthorizeURL($request_token['oauth_token']);
+					$res['url'] = $url;
+				}
+				else
+				{
+					$errs['tw_id'] = COULD_NOT_CONNECT_TO_TWITTER_REFRESH_THE_PAGE_OR_TRY_AGAIN_LATER;
+					throw new Exception('err');
+				}
+							
+				$code = $tweet->post('https://api.twitter.com/1.1/statuses/update_with_media.json',
+									  array(
+										'media[]'  => '/files/photo/thumbs/'.$this->mUser->mUserInfo['Id'].'/'.$event['EventPhoto'].'',
+										'status'   => $mesg // Don't give up..
+									  ),
+									  true, // use auth
+									  true  // multipart
+				);
+
+				 var_dump($code); die;
+				if ($code == 200) 
+				{
+					echo "OK";
+				  deb(json_decode($tweet->response['response']));
+				} 
+				else 
+				{
+					echo "ERROR";
+					  deb($tweet->response['response']);
+				}
+				//end
+				
+				
+                //$tweet->post('statuses/update', array('status' => $mesg));
+            }*/
             //re-post to facebook
             if (!empty($this->mUser->mUserInfo['FbId']))
             {
@@ -1607,9 +1652,7 @@ class Base_Artist extends Base
 			$this->mSmarty->assignByRef('aid' ,$aid);
 			$track = Music::GetPurchaseMusicTrackByAlbumId($a_id, $this->mUser->mUserInfo['Id'], 1);
 			$this->mSmarty->assignByRef('tracks', $track);
-			
 
-			//$album = $this->mSmarty->assignByRef('album', MusicAlbum::GetAlbum( $a_id ));
 			$res['q'] = OK; 
 			$res['data'] = $this->mSmarty->fetch('mods/profile/show_artist/ajax/priced_album_track.html');		
 			
@@ -1623,10 +1666,7 @@ class Base_Artist extends Base
      */
 	 
     public function EditAlbum()
-    {
-       
-	  //deb($_REQUEST);
-	
+    {	
    	    $this->mSmarty->assign('module', 'music');
 		$ui = & $this->mUser->mUserInfo;
 		$this->mSmarty->assign('ui', $ui);
@@ -1851,65 +1891,7 @@ class Base_Artist extends Base
 							$mMusic->setUpcCode($fm['UpcCode']);
 							$mMusic->setPayMore( 1 );
 							$mMusic->save();
-							
-							
-							$follow 	 = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_ARTIST);
-							$fellow_fans = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_FAN);
-							
-							include 'libs/Phpmailer_v5.1/class.phpmailer.php';										
-							if($follow)
-							{      		     
-								foreach($follow as $followers)
-								{
-									$name = $followers['BandName'] ? $followers['BandName'] : $followers['FirstName'].' '.$followers['LastName'];														
-									$this->mSmarty->assign('name',$name);  
-									$this->mSmarty->assign('musictrack', $fm);	
-									$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);																	
-									$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);																						
-									$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);																											
-									$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);
-									$fromEmail = ADMIN_EMAIL;
-									$fromName = SITE_NAME;
-									$toEmail = $followers['Email'];
-									$toName = $name;
-									if( $this->mUser->mUserInfo['BandName']) {
-									$subjectName =  $this->mUser->mUserInfo['BandName'];
-									}else{
-									$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-									}									
-									$subject = $subjectName." has uploaded a new track!";
-									$message = $this->mSmarty->fetch('mails/musictrack_add_notification.html');
-									//sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);
-								}
-					  
-							}
-							if($fellow_fans)
-							{
-								foreach($fellow_fans as $fellow_fanslist)
-								{	
-									$name = $fellow_fanslist['BandName'] ? $fellow_fanslist['BandName'] : $fellow_fanslist['FirstName'].' '.$fellow_fanslist['LastName'];												
-									$this->mSmarty->assign('name', $name );  
-									$this->mSmarty->assign('musictrack', $fm);
-									$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);
-									$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);
-									$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);
-									$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);									
-									$fromEmail = ADMIN_EMAIL;
-									$fromName = SITE_NAME;
-									$toEmail = $fellow_fanslist['Email'];
-									$toName = $name;
-									if( $this->mUser->mUserInfo['BandName']) {
-									$subjectName =  $this->mUser->mUserInfo['BandName'];
-									}else{
-									$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-									}								
-									$subject = $subjectName ." has uploaded a new track!";
-									$message = $this->mSmarty->fetch('mails/musictrack_add_notification.html');					
-									//sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-									
-									
-								}					
-						   }					
+						
 							//clear artist music cache
 							$this->mCache->set('music_onwall' . $this->mUser->mUserInfo['Id'], '', 1);
 							// uni_redirect(PATH_ROOT.'artist/music'.($fm['AlbumId'] ? '/' . $fm['AlbumId'] : '').'?track_added');  											
@@ -2117,6 +2099,30 @@ class Base_Artist extends Base
 		echo json_encode($res);
 		exit;
 	}
+	
+	public function deleteMusicAlbumTarck()
+	{
+		
+		   $id = $_POST['delTrack'];
+		   $music = Music::GetMusic( $id );
+		   if (empty($music) || $music['UserId'] != $this->mUser->mUserInfo['Id'])
+		   {
+					echo json_encode(array('success'=>false, 'message'=>YOU_ARE_NOT_AUTHORIZED_TO_DELETE_THE_TRACK));
+					exit;
+		   } 
+		   
+			MusicQuery::create()->select('Id')->filterById($id)->update(array('Deleted' => 1));
+			$this->mCache->set('music_onwall' . $this->mUser->mUserInfo['Id'], '', 1);
+			MusicAlbum::UpdateAlbumPrice($music['AlbumId'], $price = 0);
+			$album = MusicAlbum::GetAlbum($music['AlbumId'], 0, 1);
+			$res['success'] = true;
+			$res['price'] = round($album['TracksPrice'], 2);
+			$res['trackCount'] = $album['Tracks'].' Track'.($album['Tracks'] > 1 ? 's':'');
+			echo json_encode($res);
+			exit;
+	}
+	
+	
 	public function SaveTrack()
 	{
 		
@@ -2125,7 +2131,6 @@ class Base_Artist extends Base
 		$Genres = urldecode(_v('Genres', ''));
 			
         $fm = $_POST['fm'];
-		//$genresVal = '';
 		
 		include_once 'model/Valid.class.php';
             $errs = array();
@@ -2192,23 +2197,26 @@ class Base_Artist extends Base
 				
                 if (!$id && $fm['AlbumId'])
                 {
+					$maxSortOrder = Music::GetMaxSortOder($fm['AlbumId']);
                     $mMusic = new Music();
                     $mMusic->setUserId($this->mUser->mUserInfo['Id']);
                     $mMusic->setTitle(ucwords(strtolower($fm['Title'])));
                     $mMusic->setAlbumId($fm['AlbumId']);
 					$mMusic->setGenre($Genres);
                     $mMusic->setPrice(empty($fm['Price']) ? 0 : $fm['Price']);
-                    $mMusic->setTrack( $track );
-                    $mMusic->setTrackPreview( $track_preview );
-                    $mMusic->setPdate( mktime() );
-                    $mMusic->setActive( 1 );
-					$mMusic->setStatus( 1 );
+                    $mMusic->setTrack($track);
+                    $mMusic->setTrackPreview($track_preview);
+                    $mMusic->setPdate(mktime());
+                    $mMusic->setActive(1);
+					$mMusic->setStatus(1);
 					$mMusic->setUpcCode($fm['UpcCode']);
-					$mMusic->setPayMore( 1 );
+					$mMusic->setPayMore(1);
+					$mMusic->setSortOrder($maxSortOrder);
                     $mMusic->save();
-				
+					
 					
 					$fm['Id'] = $mMusic->getId();
+					$fm['SortOrder'] = $maxSortOrder;
                     //clear artist music cache
                     $this->mCache->set('music_onwall' . $this->mUser->mUserInfo['Id'], '', 1);
 					MusicAlbum::UpdateAlbumPrice($fm['AlbumId'], $price = 0);
@@ -2221,14 +2229,12 @@ class Base_Artist extends Base
 					$res['message'] = $newTrack;
 					$res['success'] = true;
 					$res['price'] = round($album['TracksPrice'], 2);
-			
 					$res['rand_id'] = _v('rand_id', rand(100000, 999999));
 					$res['trackCount'] = $album['Tracks'].' Track'.($album['Tracks'] > 1 ? 's':'');
 					echo json_encode($res);
 					exit;
 					//uni_redirect(PATH_ROOT.'artist/music'.($fm['AlbumId'] ? '/' . $fm['AlbumId'] : '').'?track_added');
                 } else {
-					
                     $up = array( 
 							'Title' => ucwords(strtolower($fm['Title'])),
 							'AlbumId' => $fm['AlbumId'], 
@@ -2238,7 +2244,9 @@ class Base_Artist extends Base
 							'Price'  => empty($fm['Price']) ? 0 : $fm['Price'],
 							'Active' => 1,
 							'UpcCode' => $fm['UpcCode'],
-							'PayMore'	=> $fm['payMore']
+							'PayMore'	=> $fm['payMore'],
+							'TrackLength' => '',
+							'Status' => 1
                         );
 					
                     if ($track)
@@ -2266,6 +2274,7 @@ class Base_Artist extends Base
 					$newTrack = $this->mSmarty->fetch('mods/profile/edit_artist/ajax/edit_ajax_file.html');
 					$res['message'] = $newTrack;
 					$res['success'] = true;
+					$res['TrackPrice'] = number_format($music['Price'],2);
 					$res['price'] = round($album['TracksPrice'], 2);
 					$res['trackCount'] = $album['Tracks'].' Track'.($album['Tracks'] > 1 ? 's':'');
 					echo json_encode($res);
@@ -2288,7 +2297,6 @@ class Base_Artist extends Base
                 {
                     $fm['TrackPreview'] = $track_preview;
                 }
-
                 $this->mSmarty->assignByRef('fm', $fm);
 				
            }
@@ -2374,7 +2382,7 @@ class Base_Artist extends Base
 		if($id)
 		{
 			$albumInfo = MusicAlbum::GetAlbum($music['AlbumId'], 0, 1);
-			//deb($albumInfo);
+			
 			$music['AlbumPrice'] = $albumInfo['Price'];
 			$music['DateRelease'] = date('m/d/Y', strtotime($music['DateRelease']));
 			$this->mSmarty->assign('albumInfo', $albumInfo);
@@ -2385,7 +2393,6 @@ class Base_Artist extends Base
 			$this->mSmarty->display('mods/profile/edit_artist/music_track_edit.html');
 			exit();
 		}
-		
      	$this->mSmarty->display('mods/profile/edit_artist/music_edit_track.html');
     }
 	
@@ -2405,7 +2412,7 @@ class Base_Artist extends Base
         $preview = _v('preview', 0);
 
         include_once 'model/FileUpload.class.php';
-        $mFu = new FileUpload(array(), 31457280);
+        $mFu = new FileUpload(array(), MUSIC_FILE_SIZE);
 
         //upload to tmp directory
         $result = $mFu->handleUpload( 'files/track/tmp/');
@@ -2541,7 +2548,6 @@ class Base_Artist extends Base
 	} 
     public function Video()
     {	
-		
 		 $res = array('q' => OK);
         //main video page
         $this->mSmarty->assign('module', 'video');
@@ -2618,7 +2624,22 @@ class Base_Artist extends Base
             if(!$is_broadcasting)
             {
                 //show one video			
-                $video = Video::GetVideoInfoForArtist($id, 0, 1);				
+                $video = Video::GetVideoInfoForArtist($id, 0, 1);					
+				if($video['Status'] == 1 || $video['Status'] == 4)
+				{
+					$processingVideoList = Video::getProcessingVideoList($this->mUser->mUserInfo['Id'], 1 , 1);
+					foreach($processingVideoList['list'] as &$prVideo){
+						$prVideo['Pdate'] = videoProcessingTime($prVideo['Pdate']);
+					}
+					$this->mSmarty->assignByRef('processingVideo', $processingVideoList['list']);
+					$musicVideo = Video::GetEditArtistVideoList($this->mUser->mUserInfo['Id'], 1);
+					$this->mSmarty->assignByRef('musicVideo', $musicVideo['list']);
+					$streamVideo = Video::GetEditArtistVideoList($this->mUser->mUserInfo['Id'], 1, '', '', '', RE_LIVE_STREAM);
+					$this->mSmarty->assignByRef('streamVideo', $streamVideo['list']);			
+					$vidCnt = Video::videoCount($id);
+					$this->mSmarty->display('mods/profile/edit_artist/video_inprocess.html');
+					exit();	
+				}		
                 if (empty($video) || $video['Deleted']==1)
                 {
                     uni_redirect( PATH_ROOT . 'artist/video' );
@@ -2707,7 +2728,7 @@ class Base_Artist extends Base
         if ($id)
         {
             $video = Video::GetVideoInfo( $id, '','', 1 );
-			//print_r($video);
+
             if (empty($video) || $video['Deleted']==1 || $video['UserId'] != $this->mUser->mUserInfo['Id'])
             {
                 $id = 0;
@@ -2716,7 +2737,18 @@ class Base_Artist extends Base
             else if($video['Price'] == 0)
             {
                 $video['PriceFree'] = 1;
+				
+
+		
             }
+			$tDate = date('Y-m-d', strtotime("+1 day", getEstTime()));
+			$vDate = $video['VideoDate'];
+			
+			if($tDate < $vDate)
+			{
+				$this->mSmarty->assign('editDate', 1);
+			}			 			
+		
         }
         $this->mSmarty->assign('module', 'video');
 
@@ -2780,7 +2812,6 @@ class Base_Artist extends Base
 						$gPdo->query('SET CHARACTER SET utf8');
 						$gPdo->query("INSERT INTO " . VTABLE . " (from_fname, to_fname, cdate, save_frames, in_proc, pdate) VALUES ('" . $fn . "', '" . $fn . ".mp4', 0, '15', 0, 0)");
 						$gPdo = null;
-	
 						$video_m = $fn;
 						$status = 1; //send to convertation
 					}
@@ -2788,7 +2819,7 @@ class Base_Artist extends Base
 					if (!$id)
 					{
 						//new video
-
+						
 						$mVideo = new Video();
 						$mVideo->setUserId($this->mUser->mUserInfo['Id']);
 						$mVideo->setTitle(ucwords(strtolower($fm['Title'])));
@@ -2797,87 +2828,17 @@ class Base_Artist extends Base
 						$mVideo->setStatus( 1 );						
 						$mVideo->setVideo( $video_m );
 						$mVideo->setVideoPreview( $video_pr );
-						$mVideo->setPdate( mktime() );
+						$mVideo->setPdate(mktime());
 						$mVideo->setStatus( 1 );
 						$mVideo->setActive( !empty($fm['Active']) ? 1 : 0);
 						$mVideo->setPayMore(!empty($fm['payMore']) ? 1 : 0);	
-						$mVideo->setVideoType($fm['VideoType']);		 					
+						$mVideo->setVideoType($fm['VideoType']);
 						$mVideo->save();
-						
 						$id = $mVideo->getId();
-						//mail start
-
-					$this->mSmarty->assign('mAlbmId',$id);	
-					
-					$this->mSmarty->assign('videoInfo', $fm);	
-					$this->mSmarty->assign('Image', $image);
-					$this->mSmarty->assign('Title', $fm['Title']);							
-					$this->mSmarty->assign('VideoDate', $fm['VideoDate']);														
-					$this->mSmarty->assign('Price', $fm['Price']);
-					$this->mSmarty->assign('Free', 0 );						
-					$this->mSmarty->assign('artistId',$this->mUser->mUserInfo['Id']);																						
-					$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);	
-					$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);																						
-					$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);																											
-					$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);
-					$this->mSmarty->assign('artistLocation',$this->mUser->mUserInfo['Location']);
-					$this->mSmarty->assign('artistState',$this->mUser->mUserInfo['State']);
-																							
-																																																						
-					$fromEmail = ADMIN_EMAIL;
-					$fromName = SITE_NAME;								
-					if( $this->mUser->mUserInfo['BandName']) 
-					{
-						$subjectName =  $this->mUser->mUserInfo['BandName'];
-					}
-					else
-					{
-						$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-					}	
-					$follow 	 = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_ARTIST);
-					$fellow_fans = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_FAN);			    
-					
-					include 'libs/Phpmailer_v5.1/class.phpmailer.php';										
-					if($follow)
-					{      		     
-						foreach($follow as $followers)
-						{	
-							$name = $followers['BandName'] ? $followers['BandName'] : $followers['FirstName'].' '.$followers['LastName'];																
-							$this->mSmarty->assign('name', $name );  
-					
-							$toEmail = $followers['Email'];
-							$toName = $name;
-													
-							$subject = $subjectName." has uploaded a new video!";
-							$message = $this->mSmarty->fetch('mails/video_add_notification.html');
-						
-							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-							
-						}
-			  
-					}
-					if($fellow_fans)
-					{
-						foreach($fellow_fans as $fellow_fanslist)
-						{		
-							$name = $fellow_fanslist['BandName'] ? $fellow_fanslist['BandName'] : $fellow_fanslist['FirstName'].' '.$fellow_fanslist['LastName'];																
-							$this->mSmarty->assign('name', $name );  
-											
-							$toEmail = $fellow_fanslist['Email'];
-							$toName = $name;
-							
-							$subject = $subjectName." has uploaded a new video!";
-							$message = $this->mSmarty->fetch('mails/video_add_notification.html');
-							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-									  					
-						}					
-					}	
-											
-						//mail end
+				
 						//clear artist video cache
 						$this->mCache->set('video_onwall' . $this->mUser->mUserInfo['Id'], '', 1);
 						uni_redirect(PATH_ROOT.'artist/video/' . $id . '?video_added');
-
 					}
 					else
 					{				
@@ -2914,7 +2875,6 @@ class Base_Artist extends Base
 							$ftpServer->delete($mobileFile);
 							if(file_exists(BPATH . $video['Video']))
 							{
-								
 								//old tmp file
 								@unlink(BPATH . $video['Video']);
 							}
@@ -3008,85 +2968,7 @@ class Base_Artist extends Base
 						$mVideo->setActive( !empty($fm['Active']) ? 1 : 0);
 						$mVideo->setVideoType($fm['VideoType']);
 						$mVideo->save();
-						$id = $mVideo->getId();						
-						//mail start
-
-					$this->mSmarty->assign('artistLocation',$this->mUser->mUserInfo['Location']);
-					$this->mSmarty->assign('artistState',$this->mUser->mUserInfo['State']);
-											
-					$follow 	 = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_ARTIST);
-					$fellow_fans = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_FAN);			    
-					
-					include 'libs/Phpmailer_v5.1/class.phpmailer.php';										
-					if($follow)
-					{      		     
-						foreach($follow as $followers)
-						{
-							$name = $followers['BandName'] ? $followers['BandName'] : $followers['FirstName'].' '.$followers['LastName'];						
-							$this->mSmarty->assign('name', $name );  
-							$this->mSmarty->assign('videoInfo', $fm);										
-							$this->mSmarty->assign('Image', $track);
-							$this->mSmarty->assign('Title', $fm['Title']);							
-							$this->mSmarty->assign('Price', $fm['Price']);
-							$this->mSmarty->assign('VideoDate', $fm['VideoDate']);															
-							$this->mSmarty->assign('Free', 1 );																				
-							$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);																																										
-							$this->mSmarty->assign('artistId',$this->mUser->mUserInfo['Id']);																																																	
-							$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);																						
-							$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);																											
-							$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);					
-							$this->mSmarty->assign('mAlbmId',$id);																			
-							$fromEmail = ADMIN_EMAIL;
-							$fromName = SITE_NAME;
-							$toEmail = $followers['Email'];
-							$toName = $name;
-							if( $this->mUser->mUserInfo['BandName']) {
-							$subjectName =  $this->mUser->mUserInfo['BandName'];
-							}else{
-							$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-							}							
-							$subject = $subjectName." has uploaded a new video!";
-							$message = $this->mSmarty->fetch('mails/video_add_notification.html');
-					
-							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-							
-						}
-			  
-					}
-					if($fellow_fans)
-					{
-						foreach($fellow_fans as $fellow_fanslist)
-						{	
-							$name = $fellow_fanslist['BandName'] ? $fellow_fanslist['BandName'] : $fellow_fanslist['FirstName'].' '.$fellow_fanslist['LastName'];										
-							$this->mSmarty->assign('name', $name );  
-							$this->mSmarty->assign('videoInfo', $fm);	
-							$this->mSmarty->assign('Image', $track);
-							$this->mSmarty->assign('Title', $fm['Title']);							
-							$this->mSmarty->assign('Price', $fm['Price']);
-							$this->mSmarty->assign('VideoDate', $fm['VideoDate']);														
-							$this->mSmarty->assign('Free', 1 );																					
-							$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);	
-							$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);																						
-							$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);																											
-							$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);										
-							$this->mSmarty->assign('mAlbmId',$id);																																																									
-							$fromEmail = ADMIN_EMAIL;
-							$fromName = SITE_NAME;
-							$toEmail = $fellow_fanslist['Email'];
-							$toName = $name;
-							if( $this->mUser->mUserInfo['BandName']) {
-							$subjectName =  $this->mUser->mUserInfo['BandName'];
-							}else{
-							$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-							}							
-							$subject = $subjectName." has uploaded a new video!";
-							$message = $this->mSmarty->fetch('mails/video_add_notification.html');	
-																					
-							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-									  					
-						}					
-					}	
-					//mail end						
+						$id = $mVideo->getId();				
 						//clear artist video cache
 						$this->mCache->set('video_onwall' . $this->mUser->mUserInfo['Id'], '', 1);
 						uni_redirect(PATH_ROOT.'artist/video?video_added');
@@ -3133,8 +3015,6 @@ class Base_Artist extends Base
             $this->mSmarty->assignByRef('fm', $video);
 			//deb($video);
         }
-
-
         $this->mSmarty->assign('id', $id);
 
         $this->mSmarty->display('mods/profile/edit_artist/video_edit.html');
@@ -4049,7 +3929,7 @@ class Base_Artist extends Base
                     $this->mSmarty->assign('artist_name', $this->mUser->mUserInfo['Name']); 
 					$this->mSmarty->assign('email', $this->mUser->mUserInfo['Email']);					
 					$this->mSmarty->assign('amount', $fm['Payout']);					
-					$this->mSmarty->assign('paypal_id', $pfm['PaypalId']);										
+					$this->mSmarty->assign('paypal_id', ($pfm['PaypalId'])?$pfm['PaypalId']:$fm['PaypalId']);										
 					$this->mSmarty->assign('mode', 'paypal');
 					$this->mSmarty->assign('avatar', $this->mUser->mUserInfo['Avatar']);
 											
@@ -4430,6 +4310,9 @@ class Base_Artist extends Base
          $res['q'] = 'ok';
 			 
 		$viewers = BroadcastViewers::GetListViewersReport($this->mUser->mUserInfo['Id'], $event_id);
+		
+		$MailImages = Event::GetEvent($event_id);
+		$this->mSmarty->assign('Image', ROOT_HTTP_PATH.'/files/photo/mid/'.$MailImages['UserId'].'/'.$MailImages['EventPhoto']);
 
 		if($viewers['list'])
 		{
@@ -4440,13 +4323,14 @@ class Base_Artist extends Base
 			
 			foreach($viewers['list'] as $val)
 			{
-												
-				$this->mSmarty->assign('name', $val['Name']);				 
+				$userName = $val['BandName'] ?  $val['BandName'] :  $val['FirstName'].' '. $val['LastName'];
+				
+				$this->mSmarty->assign('name', $userName);				 
 				$this->mSmarty->assign('Avatar',$this->mUser->mUserInfo['Avatar']);				 										
 				$fromEmail = ADMIN_EMAIL;
 				$fromName = SITE_NAME;
 				$toEmail = $val['Email'];
-				$toName = $val['Email'];
+				$toName = $userName;
 				$subject = $subject;
 				$message = $this->mSmarty->fetch('mails/viewers_mail.html');
 				
@@ -4971,7 +4855,7 @@ class Base_Artist extends Base
 							$subName = ($artistBandName)?$artistBandName:$artistFirstName.''.$artistlastName;
 							$subject = $subName.' '.PHOTO_HAS_UPLOADED_FROM;
 							
-							$message = $this->mSmarty->fetch('mails/photo_add_notification.html');					
+							$message = $this->mSmarty->fetch('mails/photo_add_notification.html');		
 							sendEmail($fromEmail, $fromName,$toEmail, $toName, $subject, $message);												  
 						}
 			  
@@ -4993,7 +4877,8 @@ class Base_Artist extends Base
 							$subName = ($artistBandName)?$artistBandName:$artistFirstName.''.$artistlastName;
 							$subject = $subName.' '.PHOTO_HAS_UPLOADED_FROM;
 							
-							$message = $this->mSmarty->fetch('mails/photo_add_notification.html');					
+							$message = $this->mSmarty->fetch('mails/photo_add_notification.html');		
+
 							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
 						
 						}					
@@ -5903,6 +5788,7 @@ class Base_Artist extends Base
 				$this->mSmarty->assign('discountPrice', $discountPrice);
 				$this->mSmarty->assign('albumInfo', $albumInfo);
 				$this->mSmarty->assign('dateRealse', $albumInfo['DateRelease']);
+				
 				if($albumInfo['Tracks'] > 0)
 				{
 					$trackList = MusicAlbum::GetAlbumTracks($albumInfo['Id']);
@@ -5928,68 +5814,7 @@ class Base_Artist extends Base
 					}
 					
 					MusicAlbumQuery::create()->select('Id')->filterById($PublishId)->update($MaUp);	
-					$follow 	 = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_ARTIST);
-					$fellow_fans = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_FAN);
 
-					include 'libs/Phpmailer_v5.1/class.phpmailer.php';										
-					if($follow)
-					{      		     
-						foreach($follow as $followers)
-						{
-							$name = $followers['BandName'] ? $followers['BandName'] : $followers['FirstName'].' '.$followers['LastName'];						
-							$this->mSmarty->assign('name', $name );  
-							$this->mSmarty->assign('musicalbum', $albumInfo);										
-							$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);																																										
-							$this->mSmarty->assign('artistId',$this->mUser->mUserInfo['Id']);																																																	
-							$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);																						
-							$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);																											
-							$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);					
-							$this->mSmarty->assign('mAlbmId',$PublishId);																			
-							$fromEmail = ADMIN_EMAIL;
-							$fromName = SITE_NAME;
-							$toEmail = $followers['Email'];
-							$toName = $name;
-							if( $this->mUser->mUserInfo['BandName']) {
-							$subjectName =  $this->mUser->mUserInfo['BandName'];
-							}else{
-							$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-							}							
-							$subject = $subjectName." has uploaded a new album!";
-							$message = $this->mSmarty->fetch('mails/musicalbum_add_notification.html');
-
-							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-							
-						}
-			  
-					}
-					if($fellow_fans)
-					{
-						foreach($fellow_fans as $fellow_fanslist)
-						{	
-							$name = $fellow_fanslist['BandName'] ? $fellow_fanslist['BandName'] : $fellow_fanslist['FirstName'].' '.$fellow_fanslist['LastName'];										
-							$this->mSmarty->assign('name', $name );  
-							$this->mSmarty->assign('musictrack', $albumInfo);	
-							$this->mSmarty->assign('artistName',$this->mUser->mUserInfo['Name']);	
-							$this->mSmarty->assign('artistFirstName',$this->mUser->mUserInfo['FirstName']);																						
-							$this->mSmarty->assign('artistlastName',$this->mUser->mUserInfo['LastName']);																											
-							$this->mSmarty->assign('artistBandName',$this->mUser->mUserInfo['BandName']);										
-							$this->mSmarty->assign('mAlbmId',$PublishId);																																																									
-							$fromEmail = ADMIN_EMAIL;
-							$fromName = SITE_NAME;
-							$toEmail = $fellow_fanslist['Email'];
-							$toName = $name;
-							if( $this->mUser->mUserInfo['BandName']) {
-							$subjectName =  $this->mUser->mUserInfo['BandName'];
-							}else{
-							$subjectName =  $this->mUser->mUserInfo['FirstName'].'  '.$this->mUser->mUserInfo['LastName'];		
-							}							
-							$subject = $subjectName." has uploaded a new album!";							
-							$message = $this->mSmarty->fetch('mails/musicalbum_add_notification.html');					
-							sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
-									  					
-						}					
-					}	
-					//end					
 				 	uni_redirect( PATH_ROOT . 'artist/music');
 			}
 			
@@ -6001,38 +5826,6 @@ class Base_Artist extends Base
 			}
 	}
 	
-	
-	/*public function EditAllPhotos()
-		{
-		$id = _v('id', 0);
-		$mode		= 	$_REQUEST['mode'];
-		$title		=	$_REQUEST['title'];				
-		$desc		=	$_REQUEST['desc'];
-		$albumId	=	$_REQUEST['albumId'];
-		if($id) {
-			$photo 		= Photo::GetPhoto($id);
-			$photoAlbum = PhotoAlbum::GetAlbumList( $photo['UserId'], $with_cover = 1, $with_counts = 1, $page = 0, $items_on_page = 0 );
-			$this->mSmarty->assign('photoAlbum', $photoAlbum);					
-			$this->mSmarty->assign('photo', $photo);		
-			
-		 }	
-			if($mode && $id ){
-			$photo_date = date('Y-m-d');
-			// for now im using desc as title 
-			if($desc) { 
-				$phTitle = $desc; 
-			} else { 
-				$phTitle = $photo['Title'];  
-			}			
-			$up = array('Title' => $phTitle  , 'AlbumId' => $albumId,  'PhotoDate' => $photo_date);				
-            $updatedId  =Photo::EditPhoto($id, $up);
-		    $res['q'] = 'ok';			
-			echo json_encode($res);
-			exit();				
-			}
-	    return $this->mSmarty->display('mods/profile/blocks/_edit_allphoto.html');	
-
-		}*/
 	
 	public function AlbumEditData()
 	{
@@ -6069,10 +5862,11 @@ class Base_Artist extends Base
 				 {
 				 	$res['Error'] = ALBUM_NAME_ALREADY_EXIST;
 				 }
-				 elseif($_REQUEST['AlbumDiscountPrice'] > $_REQUEST['AlbumPrice'])
+				 // as per client request we removed discount price for album edit price
+				 /*elseif($_REQUEST['AlbumDiscountPrice'] > $_REQUEST['AlbumPrice'])
 				 {
 				 	$res['priceError'] = YOU_ARE_NOT_ALLOW_TO_REDUCE_THE_ALBUM_PRICE;
-				 }
+				 }*/
 				 else
 				 {
 				 	$up = array('Title' => ucwords(strtolower($_REQUEST['Title'])), 'Price' => $_REQUEST['Price'], 'Genre' => $_REQUEST['Genre'], 'DateRelease' => $date_release, 'Descr' => $_REQUEST['Descr']);
@@ -6095,7 +5889,7 @@ class Base_Artist extends Base
 	}
 	
 		
-	public function EditAlbumDetails()
+	public static function EditAlbumDetails()
 	{
 		$this->mSmarty->assign('module', 'music');
 		
@@ -6118,5 +5912,36 @@ class Base_Artist extends Base
 	 	$this->mSmarty->display('mods/profile/edit_artist/edit_music_album.html');		
 	}	
 		
+	public static function SaveMusicOrder()
+	{
+        $res = array('q' => 'ok');
+        $id = _v('id', 0);	
+        $saveOrder = _v('saveOrder', 0);	
+		Music::musicOrder($id, $saveOrder);
+		echo json_encode($res);
+		exit();			
+	}
+	
+	public function updateMusicSaveOrder()
+	{
+			$AlbumId = _v('Id', 0);
+			$albumInfo = MusicAlbum::GetAlbum($AlbumId, 0, 1);
+			//deb($albumInfo);
+			$this->mSmarty->assignByRef('albumInfo', $albumInfo);
+			$this->mSmarty->assignByRef('dateRealse', $albumInfo['DateRelease']);
+			if($albumInfo['Tracks'] > 0)
+			{
+					$trackList = MusicAlbum::GetAlbumTracks($AlbumId);
+					$freeTrack = MusicAlbum::GetCountofFreeTrack($AlbumId);
+					$this->mSmarty->assign('freeTrack', $freeTrack);
+					$this->mSmarty->assign('trackList', $trackList);
+			}
+		$res['q'] = OK; 
+		$res['message'] = $this->mSmarty->fetch('mods/profile/edit_artist/ajax/updateSaveOrder.html');
+		$res['success'] = true;
+		echo json_encode($res);
+		exit();		
+	}
+
     
 }

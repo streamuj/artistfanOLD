@@ -58,7 +58,7 @@ class BroadcastViewers extends BaseBroadcastViewers {
     public static function GetListViewersReport( $user_id, $event_id =0, $limit = 10, $page = 1)
     {
 		$viewers =array();
-		$sql = sprintf('SELECT bv.id AS Id, bv.pdate AS Pdate, ep.price AS Price, u.name AS Name, u.email AS Email, sourceEvent.title AS Title 			
+		$sql = sprintf('SELECT bv.id AS Id, bv.pdate AS Pdate, ep.price AS Price, u.name AS Name, u.email AS Email, u.band_name AS BandName, u.first_name AS FirstName, u.last_name AS LastName, sourceEvent.title AS Title 			
 			,(select name from user where id = sourceEvent.user_id ) as EventOwner,count(ep.event_id) as Count ,(ep.price * count(ep.event_id)) as Total
 			,ep.event_id as EId,sourceEvent.user_id as UserId		
 			FROM  broadcast_viewers AS bv 

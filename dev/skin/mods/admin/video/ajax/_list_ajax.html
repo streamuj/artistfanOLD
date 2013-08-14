@@ -4,7 +4,7 @@
         <td><a href="/base/admin/videoInfo?vId={$i.Id}">{$i.Title}</a></td>
         <td>{if $i['u.Name']}<a href="/base/user/AdminShowUser?id={$i.UserId}">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a>{/if}</td>
         <td><a href="javascript:void(0)" id="active_{$i.Id}" style="text-decoration:none" class="switchActive {if $i.Featured==0}in_act_ico{else}act_ico{/if}">&nbsp;</a></td>
-        <td>{$i.Pdate|mdate:4}</td>
+        <td> {$i.VideoDate|date_format:'%m/%d/%Y'}</td>
         <td class="acent" nowrap="nowrap">{if $i.Price}$ {$i.Price|string_format:'%.2f'}{else}Free{/if}</td>
         <td class="acent">{if $i.FromYt==1}Yes{else}No{/if}</td>
         <td class="acent">{if $i.Active==1}Yes{else}No{/if}</td>
@@ -17,7 +17,8 @@
                                  {/if}
                                 {else}&mdash;{/if} 
         </td>
-        <td class="acent">{$i.VideoCount}</td>
+        {*<td class="acent">{$i.VideoCount}</td>*}
+        <td class="acent">&nbsp;</td>
         <td class="aright">
             {if !$i.FromYt && $i.Status==2}<a href="/download/video/{$i.Id}">Download</a><br />{/if}
             {if $i.Deleted==0}<a href="javascript:void(0);" onclick="oAdmin.DeleteVideo('{$i.Id}');">Delete</a>{else}<a href="javascript:void(0);" onclick="oAdmin.RestoreVideo('{$i.Id}');">Restore</a>{/if}

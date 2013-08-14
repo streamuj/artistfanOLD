@@ -4,7 +4,8 @@
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>{/if}
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
 {if !$video.FromYt && $video.Status == 2}
-{include file="jwplayer.html"}
+{* include file="jwplayer.html" *}
+{include file="smhplayer.html"}
 {/if}
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.tinycarousel.min.js"></script>
 <script type="text/javascript">
@@ -13,18 +14,18 @@
         })
 </script>
 <script type="text/javascript">
-{if !$video.FromYt && $video.Status == 2}
+{* if !$video.FromYt && $video.Status == 2}
 	var uagent = navigator.userAgent.toLowerCase();
 	var fileRoot;
 	var suffix = '';
 	if (DetectSmartphone() || DetectTierTablet())
 	{
-		fileRoot = 'http://mobile.streamingmediahosting.com/artistfan/_definst_/';
+		fileRoot = '{$smarty.const.STREAMING_HTML5_VOD}';
 		suffix = '/playlist.m3u8';
 	} else {
-		fileRoot = 'rtmp://flash.streamingmediahosting.com/artistfan/';
+		fileRoot = '{$smarty.const.STREAMING_MOBILE_VOD}';
 	}
-{/if}
+{/if *}
   $(document).ready(function(){
 	{if !$UserInfo.Status}
 	oProfile.InitPurchaseForGuests();
@@ -78,7 +79,7 @@
         <p class="des"><strong> Price: </strong> Free</p>
         {/if} </div>
       <div class="clear"></div>
-      <p class="viewTxt">{$video.VideoCount} Views</p>
+      {* <p class="viewTxt">{$video.VideoCount} Views</p> *}
       <ul class="RT icBox">
         {if $video.Status == 2}
         <li><a href="javascript:void(0);" class="shareVideo"  mid="{$video.Id}"  albumtitle="{$video.Title}" ><span class="LF">SHARE</span><img width="18" hspace="4" src="{$SUB_DOMAIN}si/share-ic-w.png" align="bottom"/></a> </li>
@@ -97,9 +98,9 @@
         <ul class="overview">
           {foreach key=k item=i from=$vids}
           <li>
-            <div class="imgBox"> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/fan{/if}/video/{$i.Id}" class="playIC"><span></span></a> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/fan{/if}/video/{$i.Id}"></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}" alt="pic" width="210" /></div>
+            <div class="imgBox"> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/fan{/if}/video/{$i.Id}" class="playIC"><span></span></a> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/fan{/if}/video/{$i.Id}"></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="pic" width="210" /></div>
             <a href="/u/{$i['u.Name']}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:20}</a> <a href="/u/{$i['u.Name']}" class="nameTxt">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a>
-            <p class="viewTxt">{$i.VideoCount} Views</p>
+            {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
           </li>
           {/foreach}
         </ul>

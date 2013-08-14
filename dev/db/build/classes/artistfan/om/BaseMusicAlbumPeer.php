@@ -79,6 +79,9 @@ abstract class BaseMusicAlbumPeer {
 	/** the column name for the IS_SINGLE field */
 	const IS_SINGLE = 'music_album.IS_SINGLE';
 
+	/** the column name for the EMAIL_SENT field */
+	const EMAIL_SENT = 'music_album.EMAIL_SENT';	
+
 	/** The default string format for model objects of the related table **/
 	const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -98,12 +101,12 @@ abstract class BaseMusicAlbumPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'UserId', 'Title', 'Descr', 'DateRelease', 'Image', 'Price', 'Pdate', 'Active', 'Deleted', 'Featured', 'AlbumPayMore', 'Genre', 'Label', 'IsSingle', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'userId', 'title', 'descr', 'dateRelease', 'image', 'price', 'pdate', 'active', 'deleted', 'featured', 'albumPayMore', 'genre', 'label', 'isSingle', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::USER_ID, self::TITLE, self::DESCR, self::DATE_RELEASE, self::IMAGE, self::PRICE, self::PDATE, self::ACTIVE, self::DELETED, self::FEATURED, self::ALBUM_PAY_MORE, self::GENRE, self::LABEL, self::IS_SINGLE, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USER_ID', 'TITLE', 'DESCR', 'DATE_RELEASE', 'IMAGE', 'PRICE', 'PDATE', 'ACTIVE', 'DELETED', 'FEATURED', 'ALBUM_PAY_MORE', 'GENRE', 'LABEL', 'IS_SINGLE', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'user_id', 'title', 'descr', 'date_release', 'image', 'price', 'pdate', 'active', 'deleted', 'featured', 'album_pay_more', 'genre', 'label', 'is_single', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'UserId', 'Title', 'Descr', 'DateRelease', 'Image', 'Price', 'Pdate', 'Active', 'Deleted', 'Featured', 'AlbumPayMore', 'Genre', 'Label', 'IsSingle', 'EmailSent',),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'userId', 'title', 'descr', 'dateRelease', 'image', 'price', 'pdate', 'active', 'deleted', 'featured', 'albumPayMore', 'genre', 'label', 'isSingle', 'emailSent', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::USER_ID, self::TITLE, self::DESCR, self::DATE_RELEASE, self::IMAGE, self::PRICE, self::PDATE, self::ACTIVE, self::DELETED, self::FEATURED, self::ALBUM_PAY_MORE, self::GENRE, self::LABEL, self::IS_SINGLE, self::EMAIL_SENT, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USER_ID', 'TITLE', 'DESCR', 'DATE_RELEASE', 'IMAGE', 'PRICE', 'PDATE', 'ACTIVE', 'DELETED', 'FEATURED', 'ALBUM_PAY_MORE', 'GENRE', 'LABEL', 'IS_SINGLE', 'EMAIL_SENT', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'user_id', 'title', 'descr', 'date_release', 'image', 'price', 'pdate', 'active', 'deleted', 'featured', 'album_pay_more', 'genre', 'label', 'is_single', 'email_sent', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, )
 	);
 
 	/**
@@ -113,12 +116,12 @@ abstract class BaseMusicAlbumPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UserId' => 1, 'Title' => 2, 'Descr' => 3, 'DateRelease' => 4, 'Image' => 5, 'Price' => 6, 'Pdate' => 7, 'Active' => 8, 'Deleted' => 9, 'Featured' => 10, 'AlbumPayMore' => 11, 'Genre' => 12, 'Label' => 13, 'IsSingle' => 14, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'userId' => 1, 'title' => 2, 'descr' => 3, 'dateRelease' => 4, 'image' => 5, 'price' => 6, 'pdate' => 7, 'active' => 8, 'deleted' => 9, 'featured' => 10, 'albumPayMore' => 11, 'genre' => 12, 'label' => 13, 'isSingle' => 14, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::USER_ID => 1, self::TITLE => 2, self::DESCR => 3, self::DATE_RELEASE => 4, self::IMAGE => 5, self::PRICE => 6, self::PDATE => 7, self::ACTIVE => 8, self::DELETED => 9, self::FEATURED => 10, self::ALBUM_PAY_MORE => 11, self::GENRE => 12, self::LABEL => 13, self::IS_SINGLE => 14, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USER_ID' => 1, 'TITLE' => 2, 'DESCR' => 3, 'DATE_RELEASE' => 4, 'IMAGE' => 5, 'PRICE' => 6, 'PDATE' => 7, 'ACTIVE' => 8, 'DELETED' => 9, 'FEATURED' => 10, 'ALBUM_PAY_MORE' => 11, 'GENRE' => 12, 'LABEL' => 13, 'IS_SINGLE' => 14, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'user_id' => 1, 'title' => 2, 'descr' => 3, 'date_release' => 4, 'image' => 5, 'price' => 6, 'pdate' => 7, 'active' => 8, 'deleted' => 9, 'featured' => 10, 'album_pay_more' => 11, 'genre' => 12, 'label' => 13, 'is_single' => 14, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UserId' => 1, 'Title' => 2, 'Descr' => 3, 'DateRelease' => 4, 'Image' => 5, 'Price' => 6, 'Pdate' => 7, 'Active' => 8, 'Deleted' => 9, 'Featured' => 10, 'AlbumPayMore' => 11, 'Genre' => 12, 'Label' => 13, 'IsSingle' => 14, 'EmailSent' => 15, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'userId' => 1, 'title' => 2, 'descr' => 3, 'dateRelease' => 4, 'image' => 5, 'price' => 6, 'pdate' => 7, 'active' => 8, 'deleted' => 9, 'featured' => 10, 'albumPayMore' => 11, 'genre' => 12, 'label' => 13, 'isSingle' => 14, 'emailSent' => 15,),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::USER_ID => 1, self::TITLE => 2, self::DESCR => 3, self::DATE_RELEASE => 4, self::IMAGE => 5, self::PRICE => 6, self::PDATE => 7, self::ACTIVE => 8, self::DELETED => 9, self::FEATURED => 10, self::ALBUM_PAY_MORE => 11, self::GENRE => 12, self::LABEL => 13, self::IS_SINGLE => 14, self::EMAIL_SENT => 15, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USER_ID' => 1, 'TITLE' => 2, 'DESCR' => 3, 'DATE_RELEASE' => 4, 'IMAGE' => 5, 'PRICE' => 6, 'PDATE' => 7, 'ACTIVE' => 8, 'DELETED' => 9, 'FEATURED' => 10, 'ALBUM_PAY_MORE' => 11, 'GENRE' => 12, 'LABEL' => 13, 'IS_SINGLE' => 14, 'EMAIL_SENT' => 15, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'user_id' => 1, 'title' => 2, 'descr' => 3, 'date_release' => 4, 'image' => 5, 'price' => 6, 'pdate' => 7, 'active' => 8, 'deleted' => 9, 'featured' => 10, 'album_pay_more' => 11, 'genre' => 12, 'label' => 13, 'is_single' => 14, 'email_sent' => 15, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, )
 	);
 
 	/**
@@ -196,7 +199,7 @@ abstract class BaseMusicAlbumPeer {
 			$criteria->addSelectColumn(MusicAlbumPeer::DESCR);
 			$criteria->addSelectColumn(MusicAlbumPeer::DATE_RELEASE);
 			$criteria->addSelectColumn(MusicAlbumPeer::IMAGE);
-			$criteria->addSelectColumn(MusicAlbumPeer::PRICE);
+			$criteria->addSelectColumn(MusicAlbumPeer::PRICE); 
 			$criteria->addSelectColumn(MusicAlbumPeer::PDATE);
 			$criteria->addSelectColumn(MusicAlbumPeer::ACTIVE);
 			$criteria->addSelectColumn(MusicAlbumPeer::DELETED);
@@ -205,6 +208,7 @@ abstract class BaseMusicAlbumPeer {
 			$criteria->addSelectColumn(MusicAlbumPeer::GENRE);
 			$criteria->addSelectColumn(MusicAlbumPeer::LABEL);
 			$criteria->addSelectColumn(MusicAlbumPeer::IS_SINGLE);
+			$criteria->addSelectColumn(MusicAlbumPeer::EMAIL_SENT);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.USER_ID');
@@ -221,6 +225,7 @@ abstract class BaseMusicAlbumPeer {
 			$criteria->addSelectColumn($alias . '.GENRE');
 			$criteria->addSelectColumn($alias . '.LABEL');
 			$criteria->addSelectColumn($alias . '.IS_SINGLE');
+			$criteria->addSelectColumn($alias . '.EMAIL_SENT');
 		}
 	}
 

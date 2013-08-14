@@ -145,12 +145,12 @@ class Music extends BaseMusic
      */
     public static function GetMusicListByTitleCount($title )
     {
-
+		 $musicDate	=	date('Y-m-d', getEstTime());
          $sql = sprintf('SELECT count(m.id) as Count
                 FROM music as m  
 				INNER JOIN music_album as ma ON (ma.id = m.album_id AND ma.deleted =0 AND m.deleted =0)
 				INNER JOIN user as u ON (u.Id = m.user_id AND u.blocked=0 AND u.email_confirmed = 1)
-                WHERE m.deleted = 0 AND m.status = 0');
+                WHERE m.deleted = 0 AND m.status = 0 AND m.date_release <= "'.$musicDate.'"');
 				 
 		 $searchCond = '';
 		 if(trim($title))
@@ -182,11 +182,12 @@ class Music extends BaseMusic
 	} 
     public static function GetMusicListByTitle($title, $start = 0, $limit = 0 , $u_id = 0)
     {
-         $sql = sprintf('SELECT m.id as Id,ma.id as AlbumId,ma.image as Image, m.title AS Title, m.track AS Track, m.track_preview as TrackPreview,u.id as UserId, u.band_name AS BandName, u.first_name as FirstName, u.last_name as LastName, u.Name AS Name, u.Avatar AS Avatar
+		 $musicDate	=	date('Y-m-d', getEstTime());
+         $sql = sprintf('SELECT m.id as Id,ma.id as AlbumId,ma.image as Image, m.title AS Title, m.track AS Track, m.date_release AS DateRelease, m.track_preview as TrackPreview,u.id as UserId, u.band_name AS BandName, u.first_name as FirstName, u.last_name as LastName, u.Name AS Name, u.Avatar AS Avatar
                 FROM music as m  
 				INNER JOIN music_album as ma ON (ma.id = m.album_id AND ma.deleted =0 AND m.deleted =0)
 				INNER JOIN user as u ON (u.Id = m.user_id AND u.blocked=0 AND u.email_confirmed = 1)
-                WHERE m.deleted = 0 AND m.status = 0');
+                WHERE m.deleted = 0 AND m.status = 0 AND m.date_release <= "'.$musicDate.'"');
 				 
 			 $searchCond = '';
 			if(trim($title)){
@@ -283,6 +284,7 @@ class Music extends BaseMusic
 	
     public static function GetMusicList($user_id, $album_id = 0, $active = 1, $page = 0, $items_on_page = 0, $album_info = 0, $artist_info = 0, $mCache = '', $status = 0)
     {
+		$MusicDate	=	date('Y-m-d', getEstTime());
         //get from cache
         if (!empty($mCache))
         {
@@ -333,7 +335,7 @@ class Music extends BaseMusic
             if (count($ids_album) > 0)
             {
                 $albums = MusicAlbumQuery::create()->select(array('Id', 'Image'))
-                                ->filterById($ids_album, Criteria::IN)->find()->toArray();
+                                ->filterById($ids_album, Criteria::IN)->where('date_release <="'.$MusicDate.'"')->find()->toArray();
                 $albums_list = array();
                 foreach ($albums as $item)
                 {
@@ -707,6 +709,7 @@ class Music extends BaseMusic
 		
 				
 		$cnt = Query::GetAll($sql);
+
 		$res['cnt'] = count($cnt);
 		if ($items_on_page)
         {
@@ -830,7 +833,12 @@ class Music extends BaseMusic
 		return $all;
 	}
 	
-	
+	public static function musicOrder($id, $saveOrder)
+	{
+		$sql = 'UPDATE music SET sort_order ='.$saveOrder.' WHERE id ='.$id;
+		$res = Query::Execute($sql);
+		return $res;
+	}
 	
 	public static function GetArtistMusicListByAlbum($user_id, $album_id = 0, $page = 0, $items_on_page = 0, $album_info = 0, $artist_info = 0, $mCache = '')
     {
@@ -950,7 +958,60 @@ class Music extends BaseMusic
 
         return $list;
     }
+	
+	public static function getShowartistMusicList($user_id, $mCache = '', $start=0, $limit=0)
+	{
 		
+		$MusicDate	=	date('Y-m-d', getEstTime());
+        //get from cache
+        if (!empty($mCache))
+        {
+            $music = $mCache->get('music_onwall' . $user_id, 12*3600);
+            if (!empty($music))
+            {
+                return @unserialize($music);
+            }
+        }
+		$sql = sprintf('SELECT m.id as Id,ma.id as AlbumId,ma.image as Image, m.title AS Title, m.track AS Track, m.date_release AS DateRelease, m.track_preview as TrackPreview,u.id as UserId, u.band_name AS BandName, u.first_name as FirstName, u.last_name as LastName, u.Name AS Name
+                FROM music as m  
+				INNER JOIN music_album as ma ON (ma.id = m.album_id AND ma.deleted =0 AND m.deleted =0)
+				INNER JOIN user as u ON (u.Id = m.user_id AND u.blocked=0 AND u.email_confirmed = 1)
+                WHERE m.deleted = 0 AND m.status = 0 AND ma.active = 1 AND ma.user_id = '.$user_id.' AND ma.date_release <= "'.$MusicDate.'"');
+		if($limit)
+		{
+				 	$sql .= ' LIMIT '.$start.', '.$limit.' '; 
+		}
+
+		$list = Query::GetAll( $sql );
+		
+		//save to cache
+        if (!empty($mCache))
+        {
+            $mCache->set('music_onwall' . $user_id, serialize($list), 12*3600);
+        }
+		
+        return $list;
+	}	
+	
+	public static function GetShowartistMusicListCount($user_id)
+	{	
+			$MusicDate	=	date('Y-m-d', getEstTime());
+			$sql1 = sprintf('SELECT count(m.id) as Cnt FROM music as m  
+				INNER JOIN music_album as ma ON (ma.id = m.album_id AND ma.deleted =0 AND m.deleted =0)
+				INNER JOIN user as u ON (u.Id = m.user_id AND u.blocked=0 AND u.email_confirmed = 1)
+                WHERE m.deleted = 0 AND m.status = 0  AND ma.user_id = '.$user_id.' AND ma.date_release <= "'.$MusicDate.'"');
+			$count = Query::GetOne( $sql1);
+		return $count['Cnt'];
+	
+	}
+	
+	public static function GetMaxSortOder($albumId)
+	{
+		$sql = 'SELECT max(sort_order) as mOrder FROM music WHERE album_id ='.$albumId;
+		$maxid = Query::GetOne($sql);
+		$maxid =$maxid['mOrder'] + 1;
+		return $maxid;
+	}		
 
 }
 

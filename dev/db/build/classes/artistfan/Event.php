@@ -172,7 +172,7 @@ class Event extends BaseEvent {
         {
            $events = $events->filterByEventDate($periods['from'], '>=');
         }
-		if(strtolower($getAllPeriods)=='pa') 
+		if(strtolower($getAllPeriods)=='pa' && strtolower($getAllPeriods)=='up') 
 		{
 			$events = $events->filterByStatus(array(4), Criteria::IN);
 		}
@@ -187,7 +187,7 @@ class Event extends BaseEvent {
 		}	
 		$events = $events->filterByDeleted(0);
 		
-		if(strtolower($getAllPeriods)!='pa')
+		if(strtolower($getAllPeriods)!='pa' && strtolower($getAllPeriods)!='up')
 		{
 			 $events = $events->filterByStatus(array(3,4), Criteria::NOT_IN);	
 		}
@@ -217,7 +217,7 @@ class Event extends BaseEvent {
            $events = $events->filterByEventDate($periods['from'], '>=');
         }
 
-		if(strtolower($getAllPeriods)=='pa') 
+		if(strtolower($getAllPeriods)=='pa' && strtolower($getAllPeriods)=='up') 
 		{
 			$events = $events->filterByStatus(array(4), Criteria::IN);
 		}
@@ -226,7 +226,7 @@ class Event extends BaseEvent {
 			$events = $events->filterByEventDate($periods['to'], '<');
 		}
 		
-		if(strtolower($getAllPeriods)!='pa')
+		if(strtolower($getAllPeriods)!='pa' && strtolower($getAllPeriods)!='up')
 		{
 			 $events = $events->filterByStatus(array(3,4), Criteria::NOT_IN);	
 		}
@@ -291,7 +291,7 @@ class Event extends BaseEvent {
            $events = $events->filterByEventDate($periods['from'], '>=');
         }
 		
-		if(strtolower($getAllPeriods)=='pa') 
+		if(strtolower($getAllPeriods)=='pa' && strtolower($getAllPeriods)=='up') 
 		{
 			$events = $events->filterByStatus(array(4), Criteria::IN);
 		}
@@ -300,7 +300,7 @@ class Event extends BaseEvent {
 			$events = $events->filterByEventDate($periods['to'], '<');
 		}
 		
-		if(strtolower($getAllPeriods)!='pa')
+		if(strtolower($getAllPeriods)!='pa' && strtolower($getAllPeriods)!='up')
 		{
 			 $events = $events->filterByStatus(array(3,4), Criteria::NOT_IN);	
 		}
@@ -431,7 +431,7 @@ class Event extends BaseEvent {
 		   $events = $events->filterByEventDate($periods['from'], '>=');
 		}	
 
-		if(strtolower($getAllPeriods)=='pa') 
+		if(strtolower($getAllPeriods)=='pa' && strtolower($getAllPeriods)=='up') 
 		{
 			$events = $events->filterByStatus(array(4), Criteria::IN);
 		}
@@ -448,7 +448,7 @@ class Event extends BaseEvent {
         {
             $events = $events->filterByStatus($statuses, Criteria::IN);
         }
-		if(strtolower($getAllPeriods)!='pa')
+		if(strtolower($getAllPeriods)!='pa' && strtolower($getAllPeriods)!='up')
 		{
 			 $events = $events->filterByStatus(array(3,4), Criteria::NOT_IN);	
 		}			
@@ -627,7 +627,7 @@ public static function EventsWithAttendAndPurchasedList($user_id, $user_attend_i
            $events = $events->filterByEventDate($periods['from'], '>=');
         }
 		
-		if(strtolower($getAllPeriods)=='pa') 
+		if(strtolower($getAllPeriods)=='pa' && strtolower($getAllPeriods)=='up') 
 		{
 			$events = $events->filterByStatus(array(4), Criteria::IN);
 		}
@@ -636,7 +636,7 @@ public static function EventsWithAttendAndPurchasedList($user_id, $user_attend_i
 			$events = $events->filterByEventDate($periods['to'], '<');
 		}
 
-		if(strtolower($getAllPeriods)!='pa')
+		if(strtolower($getAllPeriods)!='pa' && strtolower($getAllPeriods)!='up')
 		{
 			 $events = $events->filterByStatus(array(3,4), Criteria::NOT_IN);	
 		}
@@ -892,7 +892,7 @@ public static function EventsWithAttendAndPurchasedList($user_id, $user_attend_i
                 break;
 			case 'up':
                 //from today 00:00 to next 30 days
-                $from = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+                $from = mktime(0, 0, 0, date("m", getEstTime()), date("d", getEstTime()), date("Y", getEstTime())); 
                 $to   = mktime(47, 59, 59, date("m")+2, date("d"), date("Y"));				
                 break;	
 			case 'pa':

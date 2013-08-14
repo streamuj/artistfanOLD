@@ -73,7 +73,7 @@
             <li>
               <div class="imgBox"> <a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}"><span class="playIC"></span></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}" alt="pic" /> </div>
               <a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:55|ucwords}</a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName|ucwords}{else}{$i.FirstName|cat:' '|cat:$i.LastName|ucwords}{/if}</a>
-              <p class="viewTxt">{$i.VideoCount} Views</p>
+              {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
             </li>
             {/foreach}
           </ul>
@@ -93,7 +93,7 @@
             <li>
               <div class="imgBox"> <a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}"><span class="playIC"></span></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}" alt="pic" /> </div>
               <a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:55|ucwords}</a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName|ucwords}{else}{$i.FirstName|cat:' '|cat:$i.LastName|ucwords}{/if}</a>
-              <p class="viewTxt">{$i.VideoCount} Views</p>
+              {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
             </li>
             {/foreach}
           </ul>
@@ -113,7 +113,7 @@
             <li>
               <div class="imgBox"> <a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/video/{$i.VideoId}"><span class="playIC"></span></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}" alt="pic" /> </div>
               <a href="{if $UserInfo.Id == $i.UserId}/artist{else}/u/{$i.Name}{/if}/video/{$i.VideoId}" class="titleTxt">{$i.Title|truncate:55|ucwords}</a> <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName|ucwords}{else}{$i.FirstName|cat:' '|cat:$i.LastName|ucwords}{/if}</a>
-              <p class="viewTxt">{$i.VideoCount} Views</p>
+              {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
             </li>
             {/foreach}
           </ul>

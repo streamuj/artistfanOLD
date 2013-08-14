@@ -4,7 +4,7 @@
  * User profile class
  * User: ssergy
  * Date: 14.12.11 
- * Time: 21:40 
+ * Time: 21:40  
  *
  */                
         
@@ -14,11 +14,13 @@ class Base_Profile extends Base
     { 
         parent :: __construct($glObj);  
 		  
-		$crawler = crawlerDetect($_SERVER['HTTP_USER_AGENT']);		  
+		$crawler = crawlerDetect($_SERVER['HTTP_USER_AGENT']);	
+		
+		$this->mlObj['mSession']->Del('redirect');
 
 		if (!$this->mUser->IsAuth() && !$crawler)
         {
-			$this->mlObj['mSession']->Del('redirect');
+			
             $this->mlObj['mSession']->set('redirect', array('url' => $_SERVER['REQUEST_URI']));		
 
 			uni_redirect( PATH_ROOT . 'base/user/login' );
@@ -33,8 +35,30 @@ class Base_Profile extends Base
             $ui =& $this->mUser->mUserInfo;
 	        $IsFollow1 = UserFollow::GetFollow($ui['Id'], $this->mUser->mOtherUserId);
     	    $this->mSmarty->assign('IsFollow1', $IsFollow1);			
-         }	
-			
+        }
+		else
+		{
+			if($this->mUser->mUserInfo['Status']==USER_ARTIST)
+			{
+				$cUrl = $_SERVER['REQUEST_URI'];
+				$cUrlArray = explode('/', $cUrl);
+				if($cUrlArray[3]=='events')
+				{
+					uni_redirect( PATH_ROOT . 'artist/events/'.$cUrlArray[4] );
+				}
+				else if($cUrlArray[1]=='broadcasting')
+				{
+					$event = Event::GetEvent($cUrlArray[2], '', 1);
+
+					if($event['UserId'] == $this->mUser->mUserInfo['Id'])				
+					{
+						uni_redirect( PATH_ROOT . 'artist/events/'.$cUrlArray[2] );
+					}
+					//else
+						//uni_redirect( PATH_ROOT . 'u/'.$event['Name'].'/events/'.$cUrlArray[2] );
+				}
+			}
+		}	
     }
 
 
@@ -133,11 +157,11 @@ class Base_Profile extends Base
                         $this->FanArtists( $ui );
                         break;
 												
-                    case 'music':
+/* 					case 'music':
                         $this->mSmarty->assign('module', 'music');
                         $this->FanMusic( $ui );
                         break;
-
+*/
                     case 'video':
                         $this->mSmarty->assign('module', 'video');
                         $this->FanVideo( $ui );
@@ -152,10 +176,11 @@ class Base_Profile extends Base
                         $this->mSmarty->assign('module', 'viewphotoalbum');
                         $this->FanViewPhotoAlbum( $ui );
                         break;																		
-                    case 'events':
+/*                    case 'events':
                         $this->mSmarty->assign('module', 'events');
                         $this->FanEvents( $ui );
                         break;						
+*/						
                 }
 
                 //All Fellow artists
@@ -346,11 +371,9 @@ class Base_Profile extends Base
                 //sum +credits
                 $add_sum = ShoppingLog::GetPointsForToday($this->mUser->mUserInfo['Id']);
                 $this->mSmarty->assign('add_sum', $add_sum);
-
                 //music
-				$this->mSmarty->assignByRef('musicCount', Music::GetMusicListCount( $ui['Id'], -1, 1, $this->mCache ));					
+				$this->mSmarty->assignByRef('musicCount', Music::GetMusicListCount( $ui['Id'], -1, 1, $this->mCache ));	
              	$this->mSmarty->assignByRef('music', Music::GetMusicList( $ui['Id'], -1, 1, 1, 5, $this->mCache ));
-
 				$this->mSmarty->assignByRef('videoCount', Video::GetVideoListCount( $ui['Id'], 1));
                 $this->mSmarty->assignByRef('video', Video::GetVideoList( $ui['Id'], 1, 1, 9));
 				
@@ -674,7 +697,7 @@ class Base_Profile extends Base
 			        $uFollowersCount = UserFollow::GetFollowersUserCount($this->mUser->mUserInfo['Id'], USER_ARTIST);	
 					$this->mSmarty->assign('uFollowersCount', $uFollowersCount);
 
-					if($fromuser['Status']==USER_ARTIST)
+					if($touser['Status']==USER_ARTIST)
 					{					
 						$artistSince = date('Y', $touser['RegDate'])-$touser['YearsActive'] ;
 						$this->mSmarty->assign('artistSince', $artistSince);
@@ -700,7 +723,7 @@ class Base_Profile extends Base
 						$subject = $sub.' '.$userName.' From '.SITE_NAME;
 						
 						$message = $this->mSmarty->fetch('mails/follow_add_notification.html');
-		
+
 						sendEmail($fromEmail,$fromName,$toEmail, $toName, $subject, $message);						
 					}					
 					
@@ -847,25 +870,27 @@ class Base_Profile extends Base
 		
 		$_SESSION['last_mesg_time'] = mktime();
         //re-post to twitter
-        if ($id == $this->mUser->mUserInfo['Id'] && !empty($this->mUser->mUserInfo['TwOauthToken']) && !empty($this->mUser->mUserInfo['TwOauthTokenSecret']))
+        if ($id == $this->mUser->mUserInfo['Id'] && !empty($this->mUser->mUserInfo['TwOauthToken']) && !empty($this->mUser->mUserInfo['TwOauthTokenSecret']) && !empty($this->mUser->mUserInfo['TwOn']))
         {
             require_once('libs/twitteroauth/twitteroauth.php');
             $tweet = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $this->mUser->mUserInfo['TwOauthToken'], $this->mUser->mUserInfo['TwOauthTokenSecret']);
             $tweet->post('statuses/update', array('status' => $mesg));
         }
         //re-post to facebook
-        if ($id == $this->mUser->mUserInfo['Id'] && !empty($this->mUser->mUserInfo['FbId']))
+        if ($id == $this->mUser->mUserInfo['Id'] && !empty($this->mUser->mUserInfo['FbId']) && !empty($this->mUser->mUserInfo['FbOn']))
         {
             require_once 'libs/facebook-php-sdk/src/facebook.php';
             $facebook = new Facebook(array('appId'  => FACEBOOK_API_ID, 'secret' => FACEBOOK_API_SECRET));
             $token = !empty($this->mUser->mUserInfo['FbToken']) ? $this->mUser->mUserInfo['FbToken'] : $facebook->getAccessToken();
-            try
+
+		    try
             {
                 $facebook->api('/'.$this->mUser->mUserInfo['FbId'] . '/feed', 'POST', array('access_token' => $token, 'message' => $mesg, 'link' => 'http://' . DOMAIN . '/u/' . $this->mUser->mUserInfo['Name']));
             }
             catch(FacebookApiException $e)
             {
             }
+			
         }
         
         echo json_encode(array('q' => OK ));
@@ -2093,7 +2118,7 @@ private function ArtistBuyPhoto( $ui )
             //show events list
             $page = _v('page', 1);
             $pcnt = 10;
-            $df = _v('df', '');
+            $df = _v('df', 'tm');
             $df = !in_array($df, array('tw', 'nw', 'tm', 'nm', 'up', 'all','pa')) ? '' : $df;
 			// today event is not shoing  by defualt start			
 			if($df=='') {
@@ -2455,20 +2480,20 @@ private function ArtistBuyPhoto( $ui )
         $this->mSmarty->assign('fans_count', $fans_count);
 
         //music		
-		$musicCount = Music::GetMusicListCount($ui['Id'], -1, 1, $this->mCache);		
-        $music = Music::GetMusicList( $ui['Id'], -1, 1, 1, 5, 1, 0, $this->mCache, 1);
-
+		$musicCount = Music::GetShowartistMusicListCount($ui['Id']);
+		// deb($musicCount);	
+		$music = Music::getShowartistMusicList( $ui['Id'], $this->mCache, 0, 5);
+	 // deb($music);
+     // $music = Music::GetMusicList( $ui['Id'], -1, 1, 1, 5, 1, 0, $this->mCache, 1);
 		$this->mSmarty->assignByRef('musicCount', $musicCount);	
 		$this->mSmarty->assignByRef('music', $music);	
 
 		//videos
-		
 		$video = Video::GetVideoListWithPurchase($ui['Id'], $this->mUser->mUserInfo['Id'], 1, 1, 9);
         $this->mSmarty->assignByRef('video', $video['list']);
 		$this->mSmarty->assignByRef('videoCount', $video['rcnt']);		
 
 		//photos		
-		
         $this->mSmarty->assignByRef('photo', Photo::GetUserPhotos( $ui['Id'], 1, 9));
         $this->mSmarty->assignByRef('photoCount', Photo::GetUserPhotosCount( $ui['Id'] ));
 		
@@ -3510,6 +3535,49 @@ private function ArtistBuyPhoto( $ui )
         exit();
     }
 	
+	public function LiveRecording($recording="on", $flow="")
+	{
+		if($recording =="on"){
+			$action = 'startRecording';
+			$recordMode = 'true';
+		} else {
+			$action = 'stopRecording';
+			$recordMode ='false';
+		}
+		
+		$mode = _v('mode');
+		if($mode=="new"){
+			$request = sprintf(STREAMING_LIVE_UPLOAD_NEW."&streamname=%s&format=%s&recInterval=0&action=%s&recTimer=0", $flow, STREAMING_MP4_FORMAT_STRING, $action);
+		} else {
+			$request = sprintf(STREAMING_LIVE_UPLOAD."&streamname=%s&format=%s&recInterval=0&action=%s&recTimer=0", $flow, STREAMING_MP4_FORMAT, $action);
+		}
+		
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $request);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HEADER, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+		$response = curl_exec($curl);
+		if(curl_error($curl)){
+			$error = 'Error In Start Recording: '.curl_error($curl).' Error Code: '. curl_errno($curl);
+			sendEmail('admin@artistfan.com', 'Admin', 'bks@usaweb.net', 'Bala', DOMAIN. ' '. $action, ' Error', $error);
+		}
+		curl_close($curl);
+		if($recording == "on"){
+			if(stristr($response, 'recording:start')) {
+				return 1;
+			} 
+		} else {
+			if(stristr($response, 'recording:stop')) {
+				return 1;
+			}
+		}
+		$params['to'] = 'np@usaweb.net';
+		sendEmail('admin@artistfan.com', 'Admin', 'bks@usaweb.net', 'Bala', DOMAIN. ' '.$action, ' Response '. $request. '<br />'.$response, $params);
+		return 0;
+	}
+	
 	public function StartRecord()
 	{
       $redirect = $this->GetRedirectUrl();
@@ -3531,15 +3599,8 @@ private function ArtistBuyPhoto( $ui )
 			$cache = unserialize($cache);
 			$flow = $cache['flow'];
 			$time = $cache['time'];
-			$request = sprintf(STREAMING_LIVE_UPLOAD."&streamname=%s&format=%d&recInterval=0&action=startRecording&recTimer=0", $flow, STREAMING_FLV_FORMAT);
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $request);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_HEADER, false);
-			$response = curl_exec($curl);
-			curl_close($curl);
-		
-			if(strstr($response, 'recording:start')) 
+			$recordStart = $this->LiveRecording("on", $flow);
+			if($recordStart) 
 			{
 				$res['success'] = 1;
 				$res['message'] = RECORDING_STARTED;
@@ -3577,30 +3638,16 @@ private function ArtistBuyPhoto( $ui )
 			$time = $cache['time'];
 			$res['flow'] = $flow;
 			$recording = $cache['recording'];
-			if(!$recording)
-			{
+			if(!$recording){
 				$res['success'] = 1;
 				$res['message'] = RECORDING_NOT_STARTED;
-			} 
-			else 
-			{
-				$request = sprintf(STREAMING_LIVE_UPLOAD."&streamname=%s&format=%d&recInterval=0&action=stopRecording&recTimer=0", $flow, STREAMING_FLV_FORMAT);
-				//$response = file_get_contents($request);
-				
-				$curl = curl_init();
-				curl_setopt($curl, CURLOPT_URL, $request);
-				curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-				curl_setopt($curl, CURLOPT_HEADER, false);
-				$response = curl_exec($curl);
-				curl_close($curl);
-				
-				if(strstr($response, 'recording:stop')) 
-				{
+			} else {
+				$recordStop = $this->LiveRecording("off", $flow);
+				if($recordStop) {
 					$res['success'] = 1;
 					$res['message'] = 'Recording Stopped';
 					$this->mCache->set('broadcast_' . $event_id, serialize(array('flow' => $flow, 'recording' => 0, 'time' => mktime())), 4 * 3600);
-				} 
-			
+				}
 			}
 		}
 		echo json_encode($res);
@@ -3627,8 +3674,7 @@ private function ArtistBuyPhoto( $ui )
             exit();
         } 
 		$cache = $this->mCache->get('broadcast_' . $event_id, 4 * 3600);
-		if(!empty($cache))
-		{
+		if(!empty($cache)){
 			$cache = unserialize($cache);
 			$flow = $cache['flow'];
 			$time = $cache['time'];
@@ -3638,14 +3684,8 @@ private function ArtistBuyPhoto( $ui )
 				exit;
 			}
 			$res['flow'] = $flow;
-			$request = sprintf(STREAMING_LIVE_UPLOAD."&streamname=%s&format=%d&recInterval=0&action=stopRecording&recTimer=0", $flow, STREAMING_FLV_FORMAT);
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $request);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_HEADER, false);
-			$response = curl_exec($curl);
-			curl_close($curl);
-			if(strstr($response, 'recording:stop')) {
+			$recordStop = $this->LiveRecording("off", $flow);
+			if($recordStop) {
 				$this->mCache->set('broadcast_' . $event_id, serialize(array('flow' => $flow, 'recording' => 0, 'time' => mktime())), 4 * 3600);
 				echo '1';
 				exit;

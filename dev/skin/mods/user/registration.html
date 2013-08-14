@@ -72,18 +72,19 @@
           </div>
            <div id="err_pass"></div>
           <p class="font11 gray">Minimum 6 characters. Note: Passwords are case sensitive</p>
+          {*
           <p>Repeat Password<span class="red">*</span></p>
          
           <div>
             <input type="password" class="txtBox2" value="{$fm.pass2}" id="pass2" name="fm[pass2]"  maxlength="30">
           </div>
            <div id="err_pass2"></div>
-          
+          *}
           {if $status==2}
           	<br />
           	<h5>Account Contact</h5> 
           {/if}
-          
+		{*          
           <p>First name<span class="red">*</span></p>
          
           <div>
@@ -96,6 +97,7 @@
             <input type="text" class="txtBox2" value="{$fm.last_name}" id="last_name" name="fm[last_name]"  maxlength="20">
           </div>
            <div id="err_last_name"></div>
+           *}
           <p>User Name<span class="red">*</span></p>
          
           <div>
@@ -104,8 +106,8 @@
            <div id="err_name"></div>
           <p class="font11 gray">Maximum 40 characters</p>
           <br />
-          <div class="locBox floatL"> &nbsp;
-            <p style="margin-bottom: 30px;" class="smtxt">By clicking the Sign up button, you agree to our <a target="_blank" href="/pages/privacy.html"><span style="color:red">copyright policy</span></a>, <span><a target="_blank" href="/pages/terms.html"><span style="color:red">terms of service</span></a> and<a target="_blank" href="/pages/privacy.html"> <span style="color:red">privacy policy</span></a>.</span></p>
+          <div class="locBox floatL"> &nbsp;           <div id="err_accept"></div>
+            <p style="margin-bottom: 30px;" class="smtxt"><input type="checkbox"  value="1" id="accept" name="fm[accept]" {if $fm['accept']} checked="checked" {/if}   >By clicking the Sign up button, you agree to our <a target="_blank" href="/pages/privacy.html"><span style="color:red">copyright policy</span></a>, <span><a target="_blank" href="/pages/terms.html"><span style="color:red">terms of service</span></a> and<a target="_blank" href="/pages/privacy.html"> <span style="color:red">privacy policy</span></a>.</span></p>
           <div> 
           	<input type="submit" name="button" id="button" value="Sign Up" style="padding: 7px 10px; margin-left: 200px;" class="button wblue"/>
           </div>             

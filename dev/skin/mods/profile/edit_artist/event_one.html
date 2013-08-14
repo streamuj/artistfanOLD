@@ -72,6 +72,10 @@ function mailToViewers(id)
 			{
 				$('#mailSend').html('<span class="good">Email Sent Successfully</span>');
 			}
+			else
+			{
+				$('#mailSend').html('<span class="error">No viewers found, you cannot sent mail</span>');
+			}
 		}
 	});
 }
@@ -93,7 +97,7 @@ function ViewersReportCsv(id)
 
               <table cellpadding="10" cellspacing="0" width="100%">
 <tr>
-	<td colspan="2"><img src="{$SUB_DOMAIN}photo/slide/{$event.UserId}/{$event.EventPhoto}" width="100%" /></td>
+	<td colspan="2"><img src="{$SUB_DOMAIN}{if $event.EventPhoto}photo/slide/{$event.UserId}/{$event.EventPhoto}{else}si/noEventPhoto.jpg{/if}" width="100%" /></td>
 </tr>                     
 <tr>
                             <td width="119" align="left" valign="top" nowrap="nowrap">Title </td>

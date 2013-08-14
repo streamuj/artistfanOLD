@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * This class defines the structure of the 'music' table.
  *
@@ -56,6 +54,7 @@ class MusicTableMap extends TableMap
 		$this->addColumn('STATUS', 'Status', 'TINYINT', false, 1, 0);
 		$this->addColumn('UPC_CODE', 'UpcCode', 'VARCHAR', false, 50, '');
 		$this->addColumn('PAY_MORE', 'PayMore', 'TINYINT', false, 1, 0);
+		$this->addColumn('SORT_ORDER', 'SortOrder', 'INTEGER', false, 4, 0);
 		// validators
 	} // initialize()
 

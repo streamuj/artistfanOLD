@@ -119,7 +119,7 @@
                                        {if $track.Price > 0}
                                         <a price="{$track.Price}" trackImage="{if $track.Image}/{$track.Image}{else}/si/ic-music-17x14.png{/if}"  mid="{$track.Id}" onclick="oPopup.MusicTrackPlayer({$track.Id});"  style="cursor:pointer"  class="button wblue RT">{if $track.Price>0} ${$track.Price|string_format:'%.2f'}{/if}</a>
                                        {elseif $i.Price} 
-                                        	<a href="javascript:void(0);" mid="{$i.Id}" price="{$i.Price}" savings="{$i.Savings}" tracks="{$i.Tracks}"  image="{$i.Image}" filename="{$i.Title}" artistUrl="{$i.Name}" class="button wblue RT buy_albumTXT">BONUS</a>
+                                        	<a href="javascript:void(0);" mid="{$i.Id}" price="{$i.Price}" savings="{$i.Savings}" tracks="{$i.Tracks}"  image="{$i.Image}" filename="{$i.Title}" artistUrl="{$i.Name}" class="button wblue RT bonusalbum">BONUS</a>
                                        {else}
                                         <a href="javascript:void(0);" id="FFree_{$track.Id}"  class="button wblue RT add_music" trackImage="{if $track.Image}/{$track.Image}{else}/si/ic-music-17x14.png{/if}"  mid="{$track.Id}">FREE</a>
                                        {/if}

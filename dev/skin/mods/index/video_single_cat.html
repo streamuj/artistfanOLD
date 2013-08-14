@@ -38,8 +38,7 @@
             
             <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/video/{if $id == 'nr' || $id == 'mv'}{$i.Id}{else}{$i.VideoId}{/if}"  class="titleTxt">{$i.Title|truncate:55:'...'}</a>
             <a href="/u/{$i.Name}" class="nameTxt">{if $i.BandName}{$i.BandName}{else}{$i.FirstName|cat:' '|cat:$i.LastName}{/if}</a>
-          
-            <p class="viewTxt">{$i.VideoCount} Views</p>
+            {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
           </li>
           {/foreach}
         </ul>

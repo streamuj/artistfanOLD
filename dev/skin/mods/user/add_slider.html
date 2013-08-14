@@ -1,36 +1,18 @@
 {extends file="base.html"}
 
 {block name="javascript"}
-<link rel="stylesheet" href="/ss1/jqtransform.css" type="text/css" media="all" />
-<script type="text/javascript" src="/ssj/jquery.jqtransform.js" ></script>
-
-
-<link rel="stylesheet" href="/ss/jquery.Jcrop.css" />
-
-<script type="text/javascript" src="/sj/fileuploader.js"></script>
-<link rel="stylesheet" href="/ss/fileuploader.css" />
-
-<script type="text/javascript" src="/sj/cls/Errors.js"></script>
-<script type="text/javascript" src="/sj/cls/Profile.js"></script>
-
-
-{*<script type="text/javascript" src="/sj/cls/jquery-pack.js"></script>*}
-{*<script type="text/javascript" src="/sj/cls/jquery.imgareaselect.min.js"></script>*}
-<script type="text/javascript" src="/sj/jquery.Jcrop.min.js"></script>
-
-
-<script language="javascript">
-	$(function(){
-			$('.xform').jqTransform({ imgPath:'/ssi/' });
-	});
-</script>
+{strip}
+<link rel="stylesheet" href="{$smarty.const.SUB_DOMAIN}ss/jquery.Jcrop.css" />
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/fileuploader.js"></script>
+<link rel="stylesheet" href="{$smarty.const.SUB_DOMAIN}ss/fileuploader.css" />
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Profile.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
 
 <script type="text/javascript">
     var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
 	imgWidth = 1;
-	imgHeight = 1;
-	
-	
+	imgHeight = 1;	
 	u_id = {$UserInfo.Id};
 	user_name = '{$UserInfo.Name}';
 		
@@ -51,9 +33,6 @@
  
         oErrors.Show();
 		oProfile.SlideLinkUser(user_name, u_id);
-        $("#PhotoDate").datepicker({
-            dateFormat: 'mm/dd/yy'
-        });
 		var jcrop_api;
 		var orginalImage = '{if $fm.Image}{$fm.Image}{else}/i/nophoto.jpg{/if}';
         var uploader = new qq.FileUploader({
@@ -61,12 +40,12 @@
             action: '/base/user/UploadSlidePhoto',
             params: { 'rand_id': $('#rand_id').val() },
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
-            sizeLimit: 5120000, // max size
+            sizeLimit: 5120000, /* max size*/
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('Image');
 				var loadImage = "/si/loading.gif";
-//				$('#photo_image').attr('src', loadImage);
+/*				$('#photo_image').attr('src', loadImage);*/
 				 $('#photo_image').attr('src', loadImage).css({ 'visibility': 'visible', width:'auto', height : 'auto'}).show();
 				 if(jcrop_api){
 				 	jcrop_api.setImage(loadImage);
@@ -130,7 +109,7 @@
             autoSubmit: true,
 
             messages: {
-                // error messages, see qq.FileUploaderBasic for content
+                /* error messages, see qq.FileUploaderBasic for content*/
             },
             showMessage: function(message){
                 oErrors.SetBadFld('Image', message);
@@ -166,13 +145,14 @@
 		}
 	};
 </script>
-
+{/strip}
 {/block}
 
 {block name="content"}
+{strip}
 <div>
 
-<h2 align="center" class="pink P15">Add Cover Image</h2><br />
+<h2 align="center" class="pink P15">Add Cover Image </h2><br />
 
 
 <form class="big_form" id="photo_form" method="post" action="/base/user/AddSlider">
@@ -281,6 +261,7 @@
     <div id="SlideLinkSelected" align="center" style="padding-left:15px;"></div><br />
 
     </form>
-</div>    
+</div> 
+{/strip}   
 <div style="height:150px;"></div>
 {/block}

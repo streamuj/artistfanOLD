@@ -366,7 +366,8 @@ class Home extends BaseHome {
 		$sql = 'DELETE FROM home WHERE home_id ='.$id;
 		$res = Query::Execute($sql);
 		return $res;
-    }	
+    }
+		
     public static function SaveHomeOrder( $id, $h_order )
     {
 		$sql = 'UPDATE home SET home_order ='.$h_order.' WHERE home_id ='.$id;

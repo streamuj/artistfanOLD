@@ -13,6 +13,17 @@ class Security_Session
     {
         // Session config and initialization
         session_save_path(BPATH . 'files/sessions');
+		session_name(SESSION_NAME);
+		if (!empty($_REQUEST[SESSION_NAME]))
+        {
+            session_id($_REQUEST[SESSION_NAME]);
+        }
+		
+		if (!empty($_REQUEST[SESSION_NAME]))
+        {
+            session_id($_REQUEST[SESSION_NAME]);
+        }
+		
 		ini_set('session.gc_maxlifetime', SESSION_TIME);
         session_start(); // Start session
     }

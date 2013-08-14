@@ -86,13 +86,14 @@
 <div class="colSide">
 <div class="mod">
 <h3 class="music"> <span class="floatL"><a href="/u/{$ui.Name}/music"> Music </a></span> {if $musicCount gt 5} <a href="/u/{$ui.Name}/music" class="seeAll">See all</a> {/if}</h3>
+
+
 {if $music}
   <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mGrid">
   <tr>
-  {assign var="album" value = $music[0]}
  	 <td width="20%" align="left" valign="top"><div class="Mpic">
-     <a href="/u/{$ui.Name}/music/{$album.AlbumId}">
-        <img src="{if $album.Profile_data_Images}/{$album.Profile_data_Images}{else}{$SUB_DOMAIN}si/ph/track-22x22.png{/if}" width="50"  /></a></div></td>
+     <a href="/u/{$ui.Name}/music/{$music[0].AlbumId}">
+        <img src="{if $music[0].Image}/files/track/images/{$music[0].UserId}/m_{$music[0].Image}{else}{$SUB_DOMAIN}si/ph/track-22x22.png{/if}" width="50"  /></a></div></td>
       <td width="80%" align="left" valign="top">
       {foreach key=k item=i from=$music}
       		<table width="100%" border="0" cellspacing="0" cellpadding="3">

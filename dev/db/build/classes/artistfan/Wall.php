@@ -18,6 +18,10 @@ class Wall extends BaseWall {
 	 
     public static function Add( $user_id, $user_id_from, $mesg, $image, $video, $timeline = 0, $mCache = '', $link = 0 )
     {
+		if(!$user_id)
+		{
+			return false;
+		}
 	    $mesg = makeTextAsHyperLink($mesg);
 		$mesg = addslashes($mesg);
 	    $sql = 'INSERT INTO wall (user_id, user_id_from, mesg, pdate, photo, video, cdate,timeline,link) 

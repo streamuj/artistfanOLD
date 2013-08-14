@@ -53,6 +53,7 @@ class MusicAlbumTableMap extends TableMap
 		$this->addColumn('GENRE', 'Genre', 'VARCHAR', false, 250, '');
 		$this->addColumn('LABEL', 'Label', 'VARCHAR', false, 250, '');
 		$this->addColumn('IS_SINGLE', 'IsSingle', 'TINYINT', false, 1, 0);
+		$this->addColumn('EMAIL_SENT', 'EmailSent', 'TINYINT', false, 2, 0);
 		// validators
 	} // initialize()
 

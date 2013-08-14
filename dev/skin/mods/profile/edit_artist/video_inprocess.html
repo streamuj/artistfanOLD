@@ -1,0 +1,148 @@
+{extends file="mods/profile/cabinet_artist.html"}
+{block name="meta"}
+{strip}
+<meta property="og:title" content="ArtistFan Video"/>
+<meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/video/{$video.Id}"/>
+<meta property="og:type" content="movie"/>
+<meta property="og:image" content="{if $video.FromYt}http://i.ytimg.com/vi/{$video.Video}/0.jpg{elseif $video.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/s_{$video.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}"/>
+{/strip}
+{/block}
+{block name="javascript"}
+{strip}
+
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.tinycarousel.min.js"></script>
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
+<script type="text/javascript">
+        jQuery(document).ready(function() {
+			$('.tbSliderMin').tinycarousel({ display: 3 });
+		oPopup.InitPurchase();	   											
+        })
+</script>
+{if $video.Status < 2}
+<script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
+{/if}
+{if !$video.FromYt && $video.Status == 2}
+{include file="jwplayer.html"}
+{/if}
+{include file="mods/profile/fanfinder_map.html"}
+<script type="text/javascript">
+	{if !$video.FromYt && $video.Status == 2}
+	var uagent = navigator.userAgent.toLowerCase();
+	var fileRoot;
+	var suffix = '';
+	if (DetectSmartphone() || DetectTierTablet())
+	{
+		fileRoot = '{$smarty.const.STREAMING_HTML5_VOD}';
+		suffix = '/playlist.m3u8';
+	} else {
+		fileRoot = '{$smarty.const.STREAMING_MOBILE_VOD}';
+	}
+	{/if}
+  $(document).ready(function(){
+	{if $processingVideo.Status < 2}
+        oProfile.GetVideoStatus(1, {$processingVideo[0].Id});
+	{/if}
+  });
+</script>
+{/strip}
+{/block}
+{block name="my_cabinet"}
+{strip}
+    
+        
+<div class="Vidlarge" style="width:100%">
+		<div class="" style="float:left; margin-left:20px;">
+        	<h5 class="font14 ClrB" style="width:600px; float:left;margin-top:5px;">Videos currently processing</h5>
+        	<a href="/artist/editvideo" class="RT button" style="margin-top:5px; margin-bottom:10px;">Upload Video</a>
+        </div>
+	 <div class="video"> 
+     	<div class="vidblog">
+            	<div class="scroll">
+            	<ul>
+                	{foreach key=k item=i from=$processingVideo}
+                        <li>
+                        	<span class="procimg"></span><span class="vidtext font12"><h6 class="font12">{$i.Title}</h6>Process started at {$i.Pdate}</span>
+                        </li>
+                    {/foreach}
+            	</ul>
+                </div>
+        </div>
+        <div class="vidcont">
+            <p class="font12 mt5"> Processing time varies greatly depending on the format of your original video, file size and upload traffic. This could take anywhere from a few minutes to several hours. you should also expect that higher resolution formats will render more slowly. for instance, 720p and 1080p may take significantly longer to appear than 480p. <br/>
+            <br/>
+            If after 24 hours if you still see a status message next to the video saying processing Please contact us at <strong> support@ artistfan.com</strong>
+            </p>
+        </div>
+     
+     </div>
+
+  {if $video.Status == 3}
+  <p class="error" style="width:700px;"> Error In Processing Video </p>
+  {/if}
+  <div class="desBox">
+    <div class="LF">
+      <p class="nameTxt"><a href="/u/{$video.Name}">{if $video.BandName}{$video.BandName}{else}{$video.FirstName} {$video.LastName}{/if} </a></p>
+      <p class="titleTxt">{$video.Title}</p>
+    </div>
+    <div class="clear"></div>
+    {*<p class="viewTxt">{$video.VideoCount} Views</p>*}
+    <ul class="RT icBox">
+      {if $video.Status == 2}
+      <li><a href="javascript:void(0);" mid="{$video.Id}" class="shareVideo"  albumtitle="{$video.Title}"><span class="LF">SHARE</span><img width="18" hspace="4" src="{$SUB_DOMAIN}si/share-ic-w.png" align="bottom"/></a></li>
+      {/if}
+    </ul>
+    <div class=" clear"></div>
+  </div>
+</div>
+<div class="clear"></div>
+
+<div class="tbBox">
+  <div class="P15"><h4 class="LF">VIDEOS {if $musicVideo|@count gt 3 }</h4><a href="/artist/video?video_type={$smarty.const.MUSIC_VIDEO}" class="seeAll RT M5">See all</a> {/if}
+  <div class="clear"></div>
+  </div>
+  <div class="clear"></div>
+  <div id="slider2" class="tbSliderMin"> <a class="buttons prev" href="#">left</a>
+    <div class="viewport"> {if $musicVideo}
+      <ul class="overview">
+        {foreach key=k item=i from=$musicVideo}
+        <li>
+          <div class="imgBox"> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}" class="playIC"><span></span></a> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i['u.Name']}{/if}/video/{$i.Id}"></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="Video conversion under process!" width="210" /></div>
+          <a href="/artist/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:50}</a> <a href="/u/{$i['u.Name']}" class="nameTxt">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a>
+          {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
+        </li>
+        {/foreach}
+      </ul>
+      {else}
+      <p class="noBar">No Videos </p>
+      {/if} </div>
+    <a class="buttons next" href="#">right</a> </div>
+</div>
+
+<div class="clear"></div>
+
+<div class="tbBox">
+<div class="P15">  <h4> STREAMS {if $streamVideo|@count gt 3 }</h4> <a href="/artist/video?video_type={$smarty.const.RE_LIVE_STREAM}" class="seeAll M5 RT">See all</a> {/if}
+<div class="clear"></div>
+</div>
+  <div class="clear"></div>
+  <div id="slider2" class="tbSliderMin"> <a class="buttons prev" href="#">left</a>
+    <div class="viewport"> {if $streamVideo}
+      <ul class="overview">
+        {foreach key=k item=i from=$streamVideo}
+        <li>
+          <div class="imgBox"> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i.Name}{/if}/video/{$i.Id}" class="playIC"><span></span></a> <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$i['u.Name']}{/if}/video/{$i.Id}"></a> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="Video conversion under process!" width="210" /></div>
+          <a href="/artist/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:50}</a> <a href="/u/{$i['u.Name']}" class="nameTxt">{if $i['u.BandName']}{$i['u.BandName']}{else}{$i['u.FirstName']} {$i['u.LastName']}{/if}</a>
+          {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
+        </li>
+        {/foreach}
+      </ul>
+      {else}
+      <p class="noBar">No Videos </p>
+      {/if} </div>
+    <a class="buttons next" href="#">right</a> </div>
+</div>
+{/strip}
+<div class="clear"></div>
+{include file="mods/profile/blocks/_buy_block.html"}
+
+{/block}

@@ -6,7 +6,7 @@
                   <tr>
                     <td>
                     <div style="position:relative; width:350px; height:210px;  background:#eee;"> <a href="/fan/video/{$i.Id}"> 
-                        <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-96x96.png{/if}" width="350" height="210" />
+                        <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" width="350" height="210" />
                       </a><a href="/fan/video/{$i.Id}" style="position: absolute;top: 88px;left: 158px;background: url(/si/play-btn.png) no-repeat center center;z-index: 99;width: 35px;height: 35px;">{$i.VideoPurchaseId}&nbsp;</a></div>                     
                      
                          </td>
@@ -16,7 +16,7 @@
                       <tr>
                         
                         <td><span class="pricetag free" >{if $i.Price}$ {$i.Price|string_format:'%.2f'}{else}free{/if}</span></td>
-                        <td><strong>View Count:</strong> {$i.VideoCount}</td>
+                        {*<td><strong>View Count:</strong> {$i.VideoCount}</td>*}
                         <td><a href="/fan/video/{$i.Id}" class="play_button"><img src="{$SUB_DOMAIN}si/play-btn.png" height="24" alt="Play" title="Play" ></a></td>
                         <td><a href="javascript:void(0);" onclick="oPlay.DeleteVideo('{$i.Id}', '');"  class="floatR"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="24" alt="Delete" title="Delete"> &nbsp;&nbsp;&nbsp; </a></td>
                       </tr>

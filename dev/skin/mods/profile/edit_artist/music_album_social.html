@@ -23,7 +23,6 @@
 		{/if}
         oPlay.InitPlayButtons();  
 		oPopup.InitPurchase();	
-// Remove Start
 	$('#delDialog').dialog({ autoOpen: false });
 	$('#delConfirm').dialog({ 
 		autoOpen: false, 
@@ -97,8 +96,7 @@ function deleteMusicTrack()
 		  return true;
 			}
 	}	
-		
-// Remove End		   		
+			   		
     });	
 </script>
 <script type="text/javascript">
@@ -165,10 +163,10 @@ function deleteMusicTrack()
             <a href="javascript:void(0)"  class="floatL button play round play_track" mid="{$track.Id}"><img class="icon" src="{$SUB_DOMAIN}si/ic-playGrey.png"></a>
             <span class="P10">{$smarty.foreach.track.iteration}</span>
             <a class="trackLink trackTitle" href="javascript:void(0)">{$track.Title|truncate:60:'...'}</a>
-          <span  class="RT" style="min-width:80px; text-align:center">{if $track.Price>0 } ${$track.Price|string_format:'%.2f'} {elseif $album.Price >0} Bonus {else} FREE {/if}</span>
-            <a href="javascript:void(0)" id="{$track.Id}" {* onclick="CGo('/artist/removetrack?id={$track.Id}', 'Do you want to remove this track?');" *} class="TrackdeleteInc iconSet RT "><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a>
-            <a href="/artist/edittrack?id={$track.Id}" class="iconSet RT"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a>
-           <span class="RT trackLink">{if $track.TrackLength} {$track.TrackLength|date_format:"%M:%S"} {else} In process {/if}</span>
+          <span  class="RT trackLink" style="width:35px;">{if $track.Price>0 } ${$track.Price|string_format:'%.2f'} {elseif $album.Price >0} Bonus {else} FREE {/if}</span>
+            {* <a href="javascript:void(0)" id="{$track.Id}" class="TrackdeleteInc iconSet RT "><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a>
+            <a href="/artist/edittrack?id={$track.Id}" class="iconSet RT"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a> *}
+           <span class="RT trackLink" style="width:35px;">{if $track.TrackLength} {$track.TrackLength|date_format:"%M:%S"} {else} In process {/if}</span>
         </li>
         {/foreach}
        

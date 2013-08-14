@@ -260,6 +260,7 @@ class Base_User extends Base
                     $fm['pass'] = '';
                     $fm['pass2'] = '';
                 }
+				/*
                 elseif (empty($fm['pass2']) || strlen($fm['pass2']) < 6)
                 {
                     $errs['pass2'] = PLEASE_REPEAT_PASSWORD;
@@ -294,7 +295,7 @@ class Base_User extends Base
 				{
 					$errs['last_name'] = MAX_LAST_NAME_LENGTH_26_SYMBOLS;
 				}
-				
+				*/
 				// Name Field
 				if (empty($fm['name']))
 				{
@@ -334,8 +335,8 @@ class Base_User extends Base
 				$mUser = new User();
                 $mUser->setEmail($fm['email']);
 				$mUser->setAltEmail(serialize(array($fm['email'])));
-                $mUser->setFirstName(ucwords(strtolower($fm['first_name'])));
-                $mUser->setLastName(ucwords(strtolower($fm['last_name'])));
+                //$mUser->setFirstName(ucwords(strtolower($fm['first_name'])));
+                //$mUser->setLastName(ucwords(strtolower($fm['last_name'])));
                 $mUser->setName($fm['name']);
                 $mUser->setStatus(ucwords(strtolower($status))); //1 - fan, 2 - artist
                 //password && checksum
@@ -435,6 +436,7 @@ class Base_User extends Base
 							UserQuery::create()->select(array('Id', 'Avatar'))
 										->filterById($userDetail['Id'])
 										->update(array('Avatar' => 'user_'.$userDetail['Id'].$rand.'.jpg'));
+										
 							$image = $newImage;
 							
 							 if (!empty($image))
@@ -561,9 +563,9 @@ class Base_User extends Base
 						   'last_name' => $this->mSession->Get('fbAuth_last_name')
 						   );
 	
-				$this->mSession->Del('fbAuth_email');
-				$this->mSession->Del('fbAuth_first_name');
-				$this->mSession->Del('fbAuth_last_name');
+				//$this->mSession->Del('fbAuth_email');
+				//$this->mSession->Del('fbAuth_first_name');
+				//$this->mSession->Del('fbAuth_last_name');
 			}
 			else if($this->mSession->Get('twAuth_name'))
 			{
@@ -574,9 +576,9 @@ class Base_User extends Base
 						   'last_name' => $this->mSession->Get('twAuth_last_name')
 						   );
 
-				$this->mSession->Del('twAuth_email');
-				$this->mSession->Del('twAuth_first_name');
-				$this->mSession->Del('twAuth_last_name');
+				//$this->mSession->Del('twAuth_email');
+				//$this->mSession->Del('twAuth_first_name');
+				//$this->mSession->Del('twAuth_last_name');
 			}
 
             $this->mSmarty->assignByRef('fm', $fm);
@@ -595,10 +597,10 @@ class Base_User extends Base
 		 $rand_id = _v('rand_id', rand(100000, 999999));
 		 $this->mSmarty->assign('rand_id', $rand_id);	
 		 
-		 $user = UserQuery::create()->Select(array('Id', 'Email', 'Status', 'Pass', 'FirstName', 'LastName', 'BandName', 'Name', 'Blocked', 'BlockReason',
+		 $user = UserQuery::create()->Select(array('Id', 'Email', 'Status', 'Pass', 'BandName', 'Name', 'Blocked', 'BlockReason',
 			'Avatar', 'Location', 'About', 'Wallet', 'WalletBlock', 'IsOnline', 'Website', 'AltEmail', 'UserPhone','HashTag'));
 		 $user = $user->filterById($Id)->findOne();	
-		 
+
 		  //month-day-year
 		$dd = array();
 		for ($i=1; $i<=31;$i++)
@@ -642,12 +644,25 @@ class Base_User extends Base
 		//genres list
 		$genres_list = User::GetGenresList();
 		$this->mSmarty->assignByRef('genres', $genres_list);
+	 	//checking fb /twitter / instragram
+		$checkfb = $this->mSession->Get('fbAuth_fbId');
+		$twAuth_name = $this->mSession->Get('twAuth_name');		
+
+		if( $checkfb !='' && $twAuth_name=='' ) 
+		{
+			$this->mSmarty->assign('checkfb', true);		
+		}
+		if( $checkfb =='' && $twAuth_name!='' ) 
+		{
+			$this->mSmarty->assign('twAuth_name', true);		
+		}
+		
 	 
 		
 		if (!empty($_POST['fm']))
 		{
 			$fm = $_POST['fm'];
-			
+
 			include_once 'model/Valid.class.php';
 
 			$errs = array();
@@ -674,6 +689,29 @@ class Base_User extends Base
 				} 
 			}*/
 			
+				// First name Field
+				if (empty($fm['first_name']))
+				{
+					$errs['first_name'] = PLEASE_SPECIFY_FIRST_NAME;
+				}
+				
+				// Last name Field
+				if (empty($fm['last_name']))
+				{
+					$errs['last_name'] = PLEASE_SPECIFY_LAST_NAME;
+				}
+
+				if (!empty($fm['first_name']) && strlen($fm['first_name']) > 26)
+				{
+					$errs['first_name'] = MAX_FIRST_NAME_LENGTH_26_SYMBOLS;
+				}
+
+				if (!empty($fm['last_name']) && strlen($fm['last_name']) > 26)
+				{
+					$errs['last_name'] = MAX_LAST_NAME_LENGTH_26_SYMBOLS;
+				}
+				
+							
 			$genres = array();
 
 			if (!empty($fm['genres']))
@@ -703,10 +741,9 @@ class Base_User extends Base
 					$errs['UserPhone'] = PLEASE_SPECIFY_USER_PHONE_NUMBER_AS_INTEGER;
 				}
 			}
-		
+//		deb($fm);
 		if (empty($errs))
 		{
-		
 			 include_once 'model/Valid.class.php';
 			
 			$month = (isset($fm['mm']) && isset($dd[$fm['mm']])) ? $fm['mm'] : 0;
@@ -734,8 +771,17 @@ class Base_User extends Base
 			else
 				$members_tracks ='';
 			
-			$mUser = UserQuery::create()->findPk($Id);
+			//echo $Id;
+			//echo "<pre>";
+			//print_r($this->mUser->mUserInfo);								
+
 			
+			
+			$mUser = UserQuery::create()->findPk($Id);
+		
+			//print_r($mUser);
+			//deb($fm);
+						
 			if($fm['Status'] == USER_ARTIST){
 				$mUser->setUserPhone($fm['UserPhone']);
 				$mUser->setBandName(ucwords(strtolower(Valid::String($fm, 'band_name'))));
@@ -758,6 +804,37 @@ class Base_User extends Base
 			$mUser->setGender((!empty($fm['gender']) && in_array($fm['gender'], array(1, 2))) ? $fm['gender'] : 0);			
 			$mUser->setLocation( ucwords(strtolower(Valid::String($fm, 'city'))) );			
 			$mUser->setGenres( implode(',',$genres) );		
+
+			//start
+            $mUser->setFirstName(ucwords(strtolower($fm['first_name'])));
+	        $mUser->setLastName(ucwords(strtolower($fm['last_name'])));	
+			if(empty($fm['fb'])) {
+			$ufb = 0;
+			}else {
+			$ufb = 1;
+			}
+					
+			if(empty($fm['tw'])) 
+			{
+				$utw = 0;
+			}
+			else 
+			{
+				$utw = 1;
+			}		
+			if(empty($fm['ig'])) 
+			{
+				$uig = 0;
+			}
+			else 
+			{
+				$uig = 1;
+			}					
+			$mUser->setFbOn($ufb);					
+			$mUser->setTwOn($utw);					
+			$mUser->setInOn($uig);																				
+			//end
+			
 			
 			$mUser->save();
 			$usrId = $mUser->getId();
@@ -769,6 +846,7 @@ class Base_User extends Base
 			//$this->mlObj['mSession']->Set('usrId', $usrId);
 			$this->mlObj['mSession']->Del('usrId');
 			$status = $user['Status'];
+
 			uni_redirect(PATH_ROOT . 'reg/confirm/?status='.$status);
 		}
 		else
@@ -785,8 +863,29 @@ class Base_User extends Base
 	  }	
 	  else
 	  {
-		  $this->mSmarty->assignByRef('fm', $user);		  
-		  
+		  $fm	= array();	
+		  $fm = $user;	
+		    
+		  //for facebook and twitter users - init registration			
+		if($this->mSession->Get('fbAuth_email'))
+		{
+		   $fm['first_name'] = $this->mSession->Get('fbAuth_first_name');		   
+		   $fm['last_name'] = $this->mSession->Get('fbAuth_last_name');
+		   $this->mSession->Del('fbAuth_first_name');
+		   $this->mSession->Del('fbAuth_last_name');
+		}
+		else if($this->mSession->Get('twAuth_name'))
+		{
+		   $fm['name'] = $this->mSession->Get('twAuth_name');					
+		   $fm['first_name'] = $this->mSession->Get('twAuth_first_name');		   
+		   $fm['last_name'] = $this->mSession->Get('twAuth_last_name');
+		   
+			$this->mSession->Del('twAuth_email');
+			$this->mSession->Del('twAuth_first_name');
+			$this->mSession->Del('twAuth_last_name');
+		}
+		  $this->mSmarty->assignByRef('fm', $fm);		  
+
 		  $this->mSmarty->display('mods/user/registrationStep2.html');
 		  exit;
 	  }
@@ -1118,6 +1217,7 @@ class Base_User extends Base
 		$this->mlObj['mSession']->Del('error');		
 		$this->mlObj['mSession']->Del('fbAuth_fbId');
 		$this->mlObj['mSession']->Del('usrId');	
+		$this->mlObj['mSession']->Del('twAuth_name');		
 		//$this->mlObj['mSession']->Del('nactive');	
 
         uni_redirect(PATH_ROOT);
@@ -1826,6 +1926,8 @@ class Base_User extends Base
 					$this->mSession->Set('twAuth_first_name', $first_name);
 					$this->mSession->Set('twAuth_last_name', $last_name);
 					$this->mSession->Set('twAuth_name', $name);
+					
+//					deb($_SESSION);
                     if(!$st)
                     {
 						$this->mlObj['mSession']->set('error', TO_CREATE_YOUR_TWITTER_ACCOUNT_SELECT_STATUS );	
@@ -3551,11 +3653,213 @@ class Base_User extends Base
 		echo json_encode($res);
 		exit;
 	}	
-	public function Connect()
+	public function ConnectFB()
 	{
-		$this->mSmarty->display('mods/profile/edit_artist/connect.html');
+/*		print_r($_REQUEST);
+		echo "#";
+		print_r($this->mUser->mUserInfo['AltEmail']);
+		echo "#";
+		print_r($this->mUser->IsAuth());
+		echo "#";
+		deb($_SESSION);*/
+		
+		$userId = $_SESSION['system_uid'];
+		$userEmail = $_SESSION['system_login'];
+
+
+		
+		$ajaxMode = _v('ajaxMode', '');
+		
+		$cFb_id = _v('id', '');
+		$cFb_firstname = _v('fname', '');
+		$cFb_lastname = _v('lname', '');
+		$cFb_name = _v('name', '');
+		$cFb_email = _v('email', '');		
+		
+		$eml = UserQuery::create()->Select(array('Id'))
+										->where('LOWER(user.email)="' . mysql_escape_string(ToLower($cFb_email)) . '" OR LOWER(user.alt_email) LIKE "%\"'.mysql_escape_string(ToLower($cFb_email)) . '\"%"');
+
+		$eml = $eml->findOne();
+		if (!empty($eml))
+		{
+			$res['q'] = 'err';			
+			$res['err'] = USER_WITH_THAT_EMAIL_ALREADY_EXIST;
+		}
+		else
+		{	
+			$res['q'] = 'ok';
+			$res['msg'] = YOU_ARE_CONNECTED_SUCCESSFULLY;
+			
+			$this->mlObj['mSession']->set('facebook_id', $cFb_id);
+					
+			$altEmailArr = unserialize($this->mUser->mUserInfo['AltEmail']);	
+								
+			//merge the email ids with existing
+			$new_email = $cFb_email;
+	
+			if(!in_array($new_email, $altEmailArr))
+			{		
+				$altEmailTmp = array_merge($altEmailArr, array($new_email));
+			}
+			$add_email = serialize($altEmailTmp);
+
+			if($ajaxMode)
+			{
+				UserQuery::create()->select(array('Id'))->filterById($userId)
+							->update(array('FbId' => $cFb_id, 'FbStart' => 1, 'AltEmail' => $add_email));
+			}
+		}			
+		echo json_encode($res);
 		exit;
 	}
 	
-}
+    public function ConnectTwtGetAuthUrl()
+    {
+        $res = array('q' => ERR );
+        $st = _v('st', 0);
+        if(!in_array($st, array(1, 2)))
+        {
+            $st = 0;
+        }
+
+        require_once('libs/twitteroauth/twitteroauth.php');
+        $con = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET); 
+
+        $request_token = $con->getRequestToken(CONNECT_TWITTER_OAUTH_CALLBACK);
+	    $this->mlObj['mSession']->set('oauth_token', $request_token['oauth_token']);
+        $this->mlObj['mSession']->set('oauth_token_secret', $request_token['oauth_token_secret']);
+        $this->mlObj['mSession']->set('regstatus', $st);
+		
+        if($con->http_code == 200)
+        {
+            $url = $con->getAuthenitcateURL($request_token['oauth_token'], true);
+            $res['q'] = OK;
+            $res['url'] = $url;
+        }
+        else
+        {
+            $res['err'] = COULD_NOT_CONNECT_TO_TWITTER_REFRESH_THE_PAGE_OR_TRY_AGAIN_LATER;
+        }
+        echo json_encode($res);
+        exit();
+    }
+	
+		
+    public function ConnectTwitter()
+    {	
+        require_once('libs/twitteroauth/twitteroauth.php');
+        $token = _v('oauth_token', '');
+        $verifier = _v('oauth_verifier', '');
+		$userId = $this->mlObj['mSession']->get('system_uid');
+        
+		$this->mSmarty->assign('confirm', 1);
+		$fm = $this->mUser->mUserInfo;
+
+        $this->mSmarty->assignByRef('fm', $fm);
+					
+        if ($token && $this->mlObj['mSession']->get('oauth_token') !== $token)
+        {
+	        //clean old tokens
+        	$this->mlObj['mSession']->del('oauth_token');
+	        $this->mlObj['mSession']->del('oauth_token_secret');
+
+			$this->mSmarty->assign('twError', ACCOUNT_WAS_NOT_CONNECTED);
+			if($this->mUser->mUserInfo['Status'] == USER_ARTIST)
+			{
+				$this->mSmarty->display('mods/profile/edit_artist/profile_data.html');
+			}
+			else
+			{
+				$this->mSmarty->display('mods/profile/edit_fan/profile_data.html');
+			}
+			exit();
+        }
+/*echo "<pre>";
+print_r($this->mlObj['mSession']->get('system_uid'));		
+echo "<hr>";
+print_r($_SESSION);
+echo "<hr>userId= ".$userId;
+deb("exit");*/
+        $con = new TwitterOAuth(TWITTER_CONSUMER_KEY,
+                                TWITTER_CONSUMER_SECRET,
+                                $this->mlObj['mSession']->get('oauth_token'),
+                                $this->mlObj['mSession']->get('oauth_token_secret'));
+
+        //get access tokens from twitter
+        $access_token = $con->getAccessToken($verifier);
+
+/*echo "access toke :<br>";		
+print_r($access_token);
+echo "<hr> con :";
+print_r($con);
+echo "<hr>";*/		
+		//clean old tokens
+        $this->mlObj['mSession']->del('oauth_token');
+        $this->mlObj['mSession']->del('oauth_token_secret');
+		
+        if($con->http_code == 200)
+        {            
+			if(!empty($access_token['user_id']))
+            {												
+                $id = $access_token['user_id']; //twitter user id
+                $cUserInfo = '';
+				$cUserInfo = UserQuery::create()->select(array('Id'))
+                        ->filterById($userId)
+						//->filterByTwId('', Criteria::IN)
+                        ->findOne();
+				$eml = 0;
+				$eml = UserQuery::create()->Select(array('Id'))->filterByTwId($access_token['user_id']);
+				$eml = $eml->findOne();
+
+                if ((!empty($cUserInfo)) && (empty($eml)))
+                {			
+        		    $this->mlObj['mSession']->set('access_token', $access_token);
+					$this->mlObj['mSession']->set('twitter_id', $id);
+					
+                    //user found - authenticate
+                    UserQuery::create()->select(array('Id'))->filterById($userId)->update(
+                    array('TwId' => $id, 'TwOauthToken' => $access_token['oauth_token'],'TwOauthTokenSecret' => $access_token['oauth_token_secret']));
+
+					$this->mSmarty->assign('twSuccess', YOU_ARE_CONNECTED_SUCCESSFULLY);
+					if($this->mUser->mUserInfo['Status'] == USER_ARTIST)
+					{
+						$this->mSmarty->display('mods/profile/edit_artist/profile_data.html');
+					}
+					else
+					{
+						$this->mSmarty->display('mods/profile/edit_fan/profile_data.html');
+					}
+					exit();
+					
+				}
+                else
+                {
+					$this->mSmarty->assign('twError', THAT_ACCOUNT_ALREADY_TAKEN);
+					if($this->mUser->mUserInfo['Status'] == USER_ARTIST)
+					{
+						$this->mSmarty->display('mods/profile/edit_artist/profile_data.html');
+					}
+					else
+					{
+						$this->mSmarty->display('mods/profile/edit_fan/profile_data.html');
+					}
+					exit();
+				}
+            }
+        }
+       else
+        {
+			$this->mSmarty->assign('twError', COULD_NOT_FIND_YOUR_TWITTER_ACCOUNT);
+			if($this->mUser->mUserInfo['Status'] == USER_ARTIST)
+			{
+				$this->mSmarty->display('mods/profile/edit_artist/profile_data.html');
+			}
+			else
+			{
+				$this->mSmarty->display('mods/profile/edit_fan/profile_data.html');
+			}
+			exit();
+        }
+	}
+}	
 ?>

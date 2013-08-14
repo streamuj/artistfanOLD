@@ -15,11 +15,11 @@
                   <div class="imgBox">
               <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}" class="playIC"><span></span></a>
                     <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}"></a>
-              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-96x96.png{/if}" alt="Video conversion under process!"  width="210"/>
+              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="Video conversion under process!"  width="210"/>
                    </div>
                   <a href="/u/{$Relatedvideoui.Name}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:50}</a>
 				  <a href="/u/{$Relatedvideoui.Name}" class="nameTxt">{if $Relatedvideoui.BandName}{$Relatedvideoui.BandName}{else}{$Relatedvideoui.FirstName} {$Relatedvideoui.LastName}{/if}</a>
-                      <p class="viewTxt">{$i.VideoCount} Views</p>
+                      {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
                </li>
 {/foreach}
                      
@@ -48,11 +48,11 @@
                   <div class="imgBox">
               <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}" class="playIC"><span></span></a>
                     <a href="{if $i.UserId == $UserInfo.Id}/artist{else}/u/{$Relatedvideoui.Name}{/if}/video/{$i.Id}"></a>
-              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-96x96.png{/if}" alt="Video conversion under process!"  width="210"/>
+              <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" alt="Video conversion under process!"  width="210"/>
                    </div>
                   <a href="/u/{$Relatedvideoui.Name}/video/{$i.Id}" class="titleTxt">{$i.Title|truncate:50}</a>
 				  <a href="/u/{$Relatedvideoui.Name}" class="nameTxt">{if $Relatedvideoui.BandName}{$Relatedvideoui.BandName}{else}{$Relatedvideoui.FirstName} {$Relatedvideoui.LastName}{/if}</a>
-                      <p class="viewTxt">{$i.VideoCount} Views</p>
+                      {*<p class="viewTxt">{$i.VideoCount} Views</p>*}
                </li>
 {/foreach}
                      

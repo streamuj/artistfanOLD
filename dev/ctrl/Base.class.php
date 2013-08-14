@@ -102,7 +102,6 @@ abstract class Base
         header('HTTP/1.1 404 Not Found');
         $this->mSmarty->display('mods/index/404.html');
     }
-
     /**
      * Generate url to redirect after sign in / sign up
      * @return string

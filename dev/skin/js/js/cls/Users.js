@@ -528,7 +528,6 @@ Users.prototype =
             {
                 FB.api('/me', function (response)
                 {
-               //  var st = sel == 1 ? $(':radio[name=status]').filter(':checked').val() : (sel == 2 ? $('#status').val() : 0);
 			   	   var st = sel;
                    st = (undefined == st) ? 0 : st;
                     var email = (undefined != response.email) ? response.email : '';

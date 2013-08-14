@@ -5,10 +5,10 @@
     <meta property="og:url" content="http://{$smarty.const.DOMAIN}/u/{$ui.Name}/video/{$video.Id}"/>
     <meta property="og:type" content="movie"/>
     <meta property="og:description" content="{$video.Title}"/>
-    <meta property="og:image" content="{if $video.FromYt}http://i.ytimg.com/vi/{$video.Video}/0.jpg{elseif $video.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/s_{$video.Video}.jpg{else}/i/ph/video-96x96.png{/if}"/>
-        {if $smarty.request.thanks}
-		<meta http-equiv="refresh" content="2;url=/download/video/{$video.Id}">            
-	    {/if}
+    <meta property="og:image" content="{if $video.FromYt}http://i.ytimg.com/vi/{$video.Video}/0.jpg{elseif $video.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$video.UserId}/s_{$video.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}"/>
+    {if $smarty.request.thanks}
+    <meta http-equiv="refresh" content="2;url=/download/video/{$video.Id}">            
+    {/if}
 {/strip}
 {/block}
 
@@ -35,23 +35,22 @@
             });
         </script>
         {if !$video.FromYt && $video.Status == 2}
-        
-        <script type="text/javascript" src="{$SUB_DOMAIN}sj/mdetect.js"></script>
-        <script src="{$SUB_DOMAIN}sj/jwplayer/jwplayer.js"></script>
-        <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
-        {include file="jwplayer.html"}
+        <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script> 
+        {* include file="jwplayer.html" 
         <script type="text/javascript">
 	        var uagent = navigator.userAgent.toLowerCase();
             var fileRoot;
             var suffix = '';
             if (DetectSmartphone() || DetectTierTablet())
             {
-                fileRoot = 'http://mobile.streamingmediahosting.com/artistfan/_definst_/';
+                fileRoot = '{$smarty.const.STREAMING_HTML5_VOD}';
                 suffix = '/playlist.m3u8';
             } else {
-                fileRoot = 'rtmp://flash.streamingmediahosting.com/artistfan/';
+                fileRoot = '{$smarty.const.STREAMING_MOBILE_VOD}'; 
             }
         </script>
+        *}
+        {include file="smhplayer.html"}
         {/if}
         <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
         <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
@@ -84,7 +83,7 @@
             <iframe width="100%" height="450" src="http://www.youtube.com/embed/{$video.Video}?autoplay=1&cc_load_policy=1&amp;wmode=opaque" frameborder="0" allowfullscreen></iframe>
           {/if} 
            </div>
-                    {if !$video.FromYt && $video.Status == 2}
+                    {* if !$video.FromYt && $video.Status == 2}
                     <script type='text/javascript'>
                                 jwplayer('jwplayer').setup({
                                     controlbar: "bottom",
@@ -97,7 +96,7 @@
                                     jwplayer().play(); 
                                 });
                                 </script>
-                    {/if}
+                    {/if *}
                    
                     {/if}  
                     
@@ -112,7 +111,7 @@
     {/if}
     </div>
     <div class="clear"></div>
-    <p class="viewTxt">{$video.VideoCount} Views</p>
+    {*<p class="viewTxt">{$video.VideoCount} Views</p>*}
     {if !$i['VideoPurchase.Id']}
     <span class="RT" style="margin:0 5px;">
     {if $UserInfo.Status && $IsOther}
@@ -150,7 +149,8 @@
     
     {else}
     <div class="P15">
-        <h3>Videos</h3>
+        <h2 class="LF">Videos</h2>
+        <div class="clear"></div>
         <p class="noBar">No Videos</p>
     </div>
     

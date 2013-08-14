@@ -50,6 +50,34 @@ class Valid
         }
     }
 
+   /**
+     * Validate date from mm/dd/yyyy format 
+     * @param return -1 - empty, -2 - wrong data, else date in yyyy-mm-dd
+     */
+    public static function validDate($ar)
+    {
+        if (empty($ar))
+        {
+        	return -1;
+        }	
+        else
+        {
+        	$dt = explode('/', $ar);
+        	if (count($dt)==3 &&
+                $dt[0]>=1 && $dt[0]<=12 &&
+                $dt[1]>=1 && $dt[1]<=31 &&
+                $dt[2]>=date("Y")-100 && $dt[2]<=date("Y")+100
+               )
+            {
+               	return $dt[2].'-'.$dt[0].'-'.$dt[1];
+            }
+            else
+            {
+            	return -2;
+            }
+        }
+    }
+
 
     /**
      * Validate time from hh:mm AP/PM format

@@ -135,7 +135,7 @@
 	    oProfile.InitEventActions();
         oProfile.GetViewersCount('{if $event}{$event.Code}{else}{$UserInfo.Name}{/if}', 1);
 		$('#recordEvent').click(function(){
-
+			mode="{$smarty.request.mode}";
 			recStatus = (recording) ? 'StopRecord' : 'StartRecord';
 			thisObj = $(this);
 			oErrors.SetWaitFld('recording');
@@ -143,7 +143,7 @@
 			$.ajax({
 				url: '/base/profile/'+recStatus,
 				type: 'post', 
-				data: { event_id : eventCode},
+				data: { event_id : eventCode, 'mode':mode},
 				dataType: 'json',
 				success: function(response){
 					if(response.success)
@@ -202,7 +202,8 @@ function convertFormat(number)
 	
 function startCountDown() 
 {		
-	$('#startBroadcastRecord').show();
+	{*$('#startBroadcastRecord').show();*}
+	$('#startBroadcastRecord').hide();
 	$('#counter').html('');		
 	$.ajax({
 		type:     'POST',

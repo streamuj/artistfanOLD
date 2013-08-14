@@ -21,11 +21,26 @@
 {include file="mods/profile/fanfinder_map.html"}
 <script type="text/javascript">
 	var confirmInfo = {if $errs}{$errs}{else}{$confirm}{/if};
+	var twResponse = {if $twError || $twSuccess}1{else}0{/if};
+	
     var errs = {literal}{{/literal}{foreach key=k item=i name=n from=$errs}{if !$smarty.foreach.n.first}, {/if}'{$k}' : '{$i}'{/foreach}{literal}}{/literal};
 	imgWidth = 1;
 	imgHeight = 1;
     $(document).ready(function()
     {
+		{if $twError}
+			$('.alert_success').hide();
+			$('#connectedTw').removeClass('good');
+			$('#connectedTw').addClass('error').html('{$twError}');
+		{else if $twSuccess}
+			$('.alert_success').hide();
+			$('#connectedTw').removeClass('error');
+			$('#connectedTw').addClass('good').html('{$twSuccess}');
+		{/if}
+		if(confirmInfo && !twResponse)
+		{
+			$('.alert_success').show();
+		}
         oErrors.Show();
 		var jcrop_api;
 		var orginalImage = '{if $UserInfo.Avatar}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}';
@@ -142,6 +157,64 @@
             }
               
         });
+		$('#connectTwitter').click(function(){
+			$.ajax({
+				type:'POST',
+				dataType:'json',
+				url:'/base/user/ConnectTwtGetAuthUrl',
+				success:function (data)
+				{
+				   if (data.q == 'ok')
+				   {
+					 document.location = data.url;
+				   }
+				   else
+				   {
+					   alert(data.err);
+				   }
+				}
+			});
+		});		
+		$('#connectFb').click(function(){
+				FB.login(function (response)
+				{
+					if (response.authResponse)
+					{
+						FB.api('/me', function (response)
+						{
+							var email = (undefined != response.email) ? response.email : '';
+							 $.ajax({
+							   type:'POST',
+							   dataType:'json',
+							   cache:false,
+							   data:{
+								   "id":response.id,
+								   "ajaxinit":1,
+								   "fname":response.first_name,
+								   "lname":response.last_name,
+								   "name":response.name,
+								   "email":response.email
+							   },
+							   url:'/base/user/ConnectFB',
+							   success:function (data)
+							   {
+									if(data.q == 'ok')
+									{
+										$('#connectedFb').removeClass('error');
+										$('#connectedFb').addClass('good').html(data.msg);
+									}
+									else if(data.q == 'err')
+									{
+										$('#connectedFb').removeClass('good');	
+										$('#connectedFb').addClass('error').html(data.err);
+									}
+							   }
+							   
+							  });		   
+						});
+					}
+				});			
+		});
 		
     });
 	function updateCoords(c)
@@ -630,6 +703,16 @@ function deleteProfilePic()
     <tr>
       <td colspan="2" align="center" valign="middle" nowrap="nowrap">&nbsp;</td>
     </tr>
+    {if !$fm.FbId}
+    <tr>
+      <td align="center" valign="left" nowrap="nowrap" id="connectFb"><img src="{$SUB_DOMAIN}si/fb-con-btn.png" style="cursor:pointer;" />&nbsp;</td><td><span id="connectedFb"></span></td>
+    </tr>
+    {/if}
+    {if !$fm.TwId}
+    <tr>
+      <td align="center" valign="left" nowrap="nowrap" id="connectTwitter"><img src="{$SUB_DOMAIN}si/Tw-con-btn.png" style="cursor:pointer;" />&nbsp;</td><td><span id="connectedTw"></span></td>
+    </tr>     
+    {/if}   
     <tr>
       <td colspan="2" align="center" valign="middle" nowrap="nowrap"><input type="submit" class="button wblue" value="Save Changes" /></td>
     </tr>

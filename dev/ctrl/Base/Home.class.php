@@ -204,13 +204,14 @@ class Base_Home extends Base
 			}
        
     }
+	
    /**
      * Show static pages
      * @return void
      */
 	 public function Video()
     {
-        //check admin status
+		 //check admin status
         if(!$this->mUser->CheckAdminStatus())
         {
             uni_redirect(PATH_ROOT);
@@ -264,6 +265,7 @@ class Base_Home extends Base
 			}		
        
     }
+	
     /**
      * Show static pages
      * @return void
@@ -325,6 +327,7 @@ class Base_Home extends Base
 		        $this->mSmarty->display('mods/admin/home/_event_list.html');
 			}
     }
+	
     /**
      * Show static pages
      * @return void
@@ -426,6 +429,7 @@ class Base_Home extends Base
 		echo json_encode($res);
         exit();
 	}
+	
 	public function SaveHomeVideo()
 	{
         $res = array('q' => 'ok');

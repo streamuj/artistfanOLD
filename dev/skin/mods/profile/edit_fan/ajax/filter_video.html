@@ -1,10 +1,11 @@
 {strip}
 {foreach key=k item=i from=$videos}
 <ul  class="vidCol" id="video_{$i.Id}">
-  <li class="tb" > <a href="/fan/video/{$i.Id}"> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}" width="350" height="210" /></a> <a href="/fan/video/{$i.Id}" style="position: absolute;top: 88px;left: 158px;background: url({$SUB_DOMAIN}si/play-btn.png) no-repeat center center;z-index: 99;width: 35px;height: 35px;">{$i.VideoPurchaseId}&nbsp;</a> </li>
+  <li class="tb" > <a href="/fan/video/{$i.Id}"> <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}" width="350" height="210" /></a> <a href="/fan/video/{$i.Id}" style="position: absolute;top: 88px;left: 158px;background: url({$SUB_DOMAIN}si/play-btn.png) no-repeat center center;z-index: 99;width: 35px;height: 35px;">{$i.VideoPurchaseId}&nbsp;</a> </li>
   <li class="P5"><a href="/fan/video/{$i.Id}" class="titleTxt">{$i.Title}</a><span class="RT">{if $i.VideoLength} {$i.VideoLength|date_format:"%M:%S"} {/if}</span></li>
   <li class="clear"></li>
-  <li class="P5"> <span class="pricetag free LF" >{if $i.Price}$ {$i.Price|string_format:'%.2f'}{else}free{/if}</span> <span class="P5 font11 LF">Views: {$i.VideoCount}</span>
+  <li class="P5"> <span class="pricetag free LF" >{if $i.Price}$ {$i.Price|string_format:'%.2f'}{else}free{/if}</span> 
+  	{*<span class="P5 font11 LF">Views: {$i.VideoCount}</span>*}
     <ul class="icBox RT">
       {*<li><a href="/fan/video/{$i.Id}" class="play_button"><img src="{$SUB_DOMAIN}si/play-btn.png" height="24" alt="Play" title="Play" ></a></li>*}
       <li><a href="javascript:void(0);" class="DeleteVideo"  VId="{$i.Id}"><span class=" LF"></span><img width="18" hspace="3" src="{$SUB_DOMAIN}si/remove_gray.png"></a></li>

@@ -1,8 +1,11 @@
 <tr id="trackRow_{$track.Id}" class="trackRow">
-  <td align="center" valign="top" bgcolor="#FFFFFF" nowrap="nowrap"><input type="checkbox" class="tracks" name="track[{$track.Id}]" id="track_{$track.Id}" value="{$track.Id}"/></td>
-  <td align="center" valign="top" nowrap="nowrap" bgcolor="#FFFFFF">{$siNo}</td>
-  <td align="left" valign="top" bgcolor="#FFFFFF" nowrap="nowrap">{$track.Title|truncate:50:'...'}</td>
-  <td align="center" valign="top" bgcolor="#FFFFFF" nowrap="nowrap">{if $track.TrackLength}{$track.TrackLength|date_format:"%M:%S"}{elseif $track.Status == 3}Error{else}In Process{/if}</td>
-  <td align="center" valign="top" bgcolor="#FFFFFF" nowrap="nowrap">{if $track.Genre} {$track.Genre} {else} {$Genres} {/if}</td>
-  <td align="center" valign="top" bgcolor="#FFFFFF" nowrap="nowrap">{if $track.Price > 0}${$track.Price|string_format:'%.2f'}{elseif $album['Price'] > 0}Bonus{else}Free{/if}</td>
+  <td align="center" valign="middle" bgcolor="#FFFFFF" nowrap="nowrap"><input type="checkbox" class="tracks" name="track[{$track.Id}]" id="track_{$track.Id}" value="{$track.Id}"/></td>
+  <td align="center" valign="middle" nowrap="nowrap" bgcolor="#FFFFFF">
+  <input type="text" style="text-align:center" id="{$track.Id}" value="{$track.SortOrder}" onblur="oMusic.MusicSaveOrder(this.id, this.value);"  class="txtBox" size="2"/></td>
+  <td align="left" valign="middle" bgcolor="#FFFFFF" nowrap="nowrap"> &nbsp;{$track.Title|truncate:35:'...'}</td>
+  <td align="center" valign="middle" bgcolor="#FFFFFF" nowrap="nowrap"> <a href="/artist/edittrack?id={$track.Id}" class="iconSet"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a>
+  </td>
+  <td align="center" valign="middle" bgcolor="#FFFFFF" nowrap="nowrap">{if $track.TrackLength}{$track.TrackLength|date_format:"%M:%S"}{elseif $track.Status == 3}Error{else}In Process{/if}</td>
+  <td align="center" valign="middle" bgcolor="#FFFFFF" nowrap="nowrap">{if $track.Genre} {$track.Genre} {else} {$Genres} {/if}</td>
+  <td align="center" valign="middle" bgcolor="#FFFFFF" nowrap="nowrap">{if $track.Price > 0}${$track.Price|string_format:'%.2f'}{elseif $album['Price'] > 0}Bonus{else}Free{/if}</td>
 </tr>

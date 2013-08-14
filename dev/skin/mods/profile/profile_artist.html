@@ -59,6 +59,7 @@
 					{
 						if (status == google.maps.GeocoderStatus.OK)
 						{
+							{*
 							 {if $i.Gender == 1}
 								markerColor = '0000FF';
 							 {else if $i.Gender == 2}
@@ -66,7 +67,8 @@
 							 {else}
 								markerColor = 'FFFFFF';
 							 {/if}						
-
+							*}
+							
 							var marker = add_marker(results[0].geometry.location, "{$i.Location}", "<div class='map-marker'><strong>{$i.Location}</strong><br />{$i.FanCount}{if $i.FanCount gt 1} Fans{else} Fan {/if}<br /><br /><a href='/artist/fanfinder?loc={$i.Location}&country={$i.Country}'>See list</a></div>");
 							marker.setMap(map);
 						}
@@ -81,7 +83,9 @@
         var infowindow = new google.maps.InfoWindow({
             content: box_html
         });
-        var marker = new google.maps.Marker({
+		
+		{*
+		  var marker = new google.maps.Marker({
               position: latlng,
               map: map,
               title: title,
@@ -91,6 +95,14 @@
 				new google.maps.Point(10, 34)
 			)
         });
+        *}
+		
+		var marker = new google.maps.Marker({
+              position: latlng,
+              map: map,
+              title: title
+        });
+				
         google.maps.event.addListener(marker, 'click', function()
         {
             infowindow.open(map,marker);
@@ -167,7 +179,7 @@
       {if $music}
       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mGrid">
         <tr> {assign var="album" value = $music[0]}
-          <td width="20%" align="left" valign="top"><div class="Mpic"> <a href="/artist/music/{$album.AlbumId}"><img src="{$SUB_DOMAIN}{if $album.Profile_data_Images}/{$album.Profile_data_Images}{else}si/ph/track-22x22.png{/if}" width="50"  /></a></div></td>
+          <td width="20%" align="left" valign="top"><div class="Mpic"> <a href="/artist/music/{$album.AlbumId}"><img src="{if $album.Profile_data_Images}/{$album.Profile_data_Images}{else}{$SUB_DOMAIN}si/ph/track-22x22.png{/if}" width="50"  /></a></div></td>
           <td width="80%" align="left" valign="top"> {foreach key=k item=i from=$music}
             <table width="100%" border="0" cellspacing="0" cellpadding="3">
               <tr>

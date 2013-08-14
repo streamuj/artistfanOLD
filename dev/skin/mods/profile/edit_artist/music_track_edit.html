@@ -25,7 +25,7 @@
             action: '/artist/UploadTrack',
             params: { 'rand_id': $('#rand_id').val() },
             allowedExtensions: [{$validExt}],
-            sizeLimit: 15360000, 
+            sizeLimit: {$smarty.const.MUSIC_FILE_SIZE}, 
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('track');
@@ -68,7 +68,7 @@
             action: '/artist/UploadTrack',
             params: { 'rand_id': $('#rand_id').val(), 'preview': 1 },
 			allowedExtensions: [{$validExt}],						
-            sizeLimit: 15360000,
+            sizeLimit: {$smarty.const.MUSIC_FILE_SIZE},
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('track_preview');
@@ -237,7 +237,7 @@
    
   <table border="0" align="right" cellpadding="5" cellspacing="0">
             <tr>
-            	 <td> <a href="/artist/music?redirect=1&albumId={$fm.AlbumId}" class="button Basic LF" style="color:#000000">Back</a> </td>
+            	 <td> <a href="/artist/musicUploadStep3?AlbumId={$fm.AlbumId}" class="button Basic LF" style="color:#000000">Back</a> </td>
             </tr>
    </table>
    

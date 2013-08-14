@@ -32,7 +32,7 @@
 		featureDate.setDate(today.getDate()+{$smarty.const.ALLOWED_DATE});
 	    $("#DateRelease").datepicker({
             dateFormat: 'mm/dd/yy',
-			minDate: today,
+			minDate: 0,
 			maxDate: featureDate
         });
 
@@ -138,7 +138,7 @@
             action: '/artist/UploadTrack',
             params: { 'rand_id': $('#rand_id').val() },
             allowedExtensions: [{$validExt}],
-            sizeLimit: 15360000,
+            sizeLimit: {$smarty.const.MUSIC_FILE_SIZE},
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('track');
@@ -176,7 +176,7 @@
             action: '/artist/UploadTrack',
             params: { 'rand_id': $('#rand_id').val(), 'preview': 1 },
         	allowedExtensions: [{$validExt}],
-            sizeLimit: 15360000, 
+            sizeLimit: {$smarty.const.MUSIC_FILE_SIZE}, 
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('track_preview');
@@ -259,7 +259,7 @@
               <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px;">Release Date <span class="red">*</span></span>  </td>
               <td align="left" valign="top"><table border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td width="150"><input type="text" class="txtBox" id="DateRelease" name="fm[DateRelease]" value="{$fm.DateRelease}" size="10" /> </td>
+                  <td width="150"><input type="text" class="txtBox" id="DateRelease" name="fm[DateRelease]" value="{$fm.DateRelease}" size="10" readonly="readonly"/> </td>
                   <td width="57" nowrap="nowrap"> Genre <span class="red">*</span></td>
                   <td width="10">&nbsp;</td>
                   <td width="151" class="xform">

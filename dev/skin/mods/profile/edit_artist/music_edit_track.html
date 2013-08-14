@@ -21,7 +21,7 @@
             action: '/artist/UploadTrack',
             params: { 'rand_id': $('#rand_id').val() },
             allowedExtensions: [{$validExt}],
-            sizeLimit: 15360000, 
+            sizeLimit: {$smarty.const.MUSIC_FILE_SIZE}, 
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('Track');
@@ -63,7 +63,7 @@
             action: '/artist/UploadTrack',
             params: { 'rand_id': $('#rand_id').val(), 'preview': 1 },
 			allowedExtensions: [{$validExt}],						
-            sizeLimit: 15360000,
+            sizeLimit: {$smarty.const.MUSIC_FILE_SIZE},
             debug: false,
             onSubmit: function(id, fileName){
                 oErrors.SetWaitFld('track_preview');
@@ -248,20 +248,21 @@ function deleteMusicAlbum()
       </td>
     </tr>
     <tr>
-      <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px">Price <span class="red">*</span></span></td>
+      <td width="1%" align="left" valign="top" nowrap="nowrap"><span style="line-height:34px">Price <span class="red">* </span></span></td>
       <td><table border="0" cellspacing="0" cellpadding="0">
         <tr>
         
           <td><input type="text" name="fm[Price]" id="Price" size="10" class="txtBox" value="{if $fm.Price}{$fm.Price}{else}0.00{/if}" /></td>
           {if $free}
               <td>&nbsp;</td>
-              <td><input type="radio" name="priceClass" class="PriceFreeTag" value="2" id="PriceFree" onclick="javascript:hidePrice();" /></td>
+              <td> <input type="checkbox" class="checkbox" id="PriceFree" name="fm[PriceFree]" onClick="oProfile.CheckFree()" value="1"{if $fm.PriceFree} checked="checked"{/if} /></td>
               <td  class="PriceFreeTag">Free</td>
+         {else}
+              <td>&nbsp;</td>
+         <td> <input type="checkbox" class="checkbox" name="" id="PriceFree1" onClick="oProfile.CheckFree1()" value="2" {if $fm.Price} checked="checked"{/if} /></td>
+              <td class="bonusTag">Bonus</td>
+              <td>&nbsp;</td> 
           {/if}
-          <td>&nbsp;</td>
-          <td> <input type="radio" name="priceClass" value="2" id="PriceFree1" onclick="javascript:hidePrice();"/></td>
-          <td>Bonus</td>
-          <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td><input type="button" onclick="oProfile.EditTrack();" value="{if $id}Update{else}Upload{/if}" class="button" /></td>
           <td>&nbsp;</td>

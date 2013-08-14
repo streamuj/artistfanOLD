@@ -1,0 +1,31 @@
+<table  border="0" cellspacing="1" cellpadding="3" id="trackTable">
+           
+            <tr {if !$albumInfo.Tracks} style="display:none;"  {/if} class="hideTr">
+            
+              <td width="45" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><label>
+                <input type="checkbox" name="selectAllTrack" id="selectAllTrack" onclick="oProfile.SelectMusicTrack();" />
+              </label></td>
+              <td width="10" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px;"><strong> Sort </strong></p></td>
+              <td align="left" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><strong>Track Name</strong></td>
+              <td align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><strong>Edit</strong></td>
+              <td width="1%" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:50px;"><strong>Track Length</strong></p></td>
+              <td width="1%" align="left" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:50px;"><strong>Genre</strong></p></td>
+              <td width="1%" align="left" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"><p style="padding:0 10px; min-width:50px;"><strong>Price</strong></p>                </td>
+            </tr>
+             {if $albumInfo.Tracks > 0}
+                {foreach $trackList as $track}
+                {include file="mods/profile/edit_artist/ajax/edit_track.html" album = $albumInfo siNo=$track@iteration }
+                {/foreach}
+             {else}
+             	<p class="noBar">No Tracks </p>
+             {/if}
+           <tfoot>
+            <tr {if !$albumInfo.Tracks} style="display:none;"  {/if} class="hideTr">
+              <td width="1%" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"> <span><a href="javascript:void(0)" class="black delTrack"><strong>Delete</strong></a> </span> </td> <td width="1%" align="center" valign="middle" nowrap="nowrap" bgcolor="#EEEEEE"> <a href="javascript:void(0)" class="black" onclick="oProfile.UpdateMusicOrder('{$albumInfo.Id}');"><strong>Save</strong></a> </td>
+              <td colspan="3" align="left" valign="middle" style="border-right:none;" bgcolor="#EEEEEE"> </td>
+              <td align="right" valign="middle" style="border-left:none;" bgcolor="#EEEEEE" nowrap="nowrap"><strong style="padding:0 10px;">Total Price</strong></td>
+              <td align="center" valign="middle" bgcolor="#EEEEEE"><strong><span id="albumPrice">${$albumInfo.TracksPrice|string_format:'%.2f'}</span></strong></td>
+            </tr>
+           </tfoot>  
+
+          </table>

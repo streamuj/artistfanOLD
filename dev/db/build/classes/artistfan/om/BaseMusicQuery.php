@@ -180,7 +180,7 @@ abstract class BaseMusicQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `USER_ID`, `TITLE`, `ALBUM_ID`, `GENRE`, `DATE_RELEASE`, `LABEL`, `PRICE`, `TRACK`, `TRACK_PREVIEW`, `TRACK_LENGTH`, `TRACK_PREVIEW_LENGTH`, `PDATE`, `ACTIVE`, `DELETED`, `STATUS`, `UPC_CODE` FROM `music` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `USER_ID`, `TITLE`, `ALBUM_ID`, `GENRE`, `DATE_RELEASE`, `LABEL`, `PRICE`, `TRACK`, `TRACK_PREVIEW`, `TRACK_LENGTH`, `TRACK_PREVIEW_LENGTH`, `PDATE`, `ACTIVE`, `DELETED`, `STATUS`, `UPC_CODE`, `PAY_MORE`, `SORT_ORDER FROM `music` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -882,6 +882,47 @@ abstract class BaseMusicQuery extends ModelCriteria
 		}
 		return $this->addUsingAlias(MusicPeer::PAY_MORE, $payMore, $comparison);
 	}
+	
+	/**
+	 * Filter the query on the sort_order column
+	 *
+	 * Example usage:
+	 * <code>
+	 * $query->filterBySortOrder(1234); // WHERE sort_order = 1234
+	 * $query->filterBySortOrder(array(12, 34)); // WHERE sort_order IN (12, 34)
+	 * $query->filterBySortOrder(array('min' => 12)); // WHERE sort_order > 12
+	 * </code>
+	 *
+	 * @param     mixed $sortOrder The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    MusicQuery The current query, for fluid interface
+	 */
+	public function filterBySortOrder($sortOrder = null, $comparison = null)
+	{
+		if (is_array($sortOrder)) {
+			$useMinMax = false;
+			if (isset($sortOrder['min'])) {
+				$this->addUsingAlias(MusicPeer::SORT_ORDER, $sortOrder['min'], Criteria::GREATER_EQUAL);
+				$useMinMax = true;
+			}
+			if (isset($sortOrder['max'])) {
+				$this->addUsingAlias(MusicPeer::SORT_ORDER, $sortOrder['max'], Criteria::LESS_EQUAL);
+				$useMinMax = true;
+			}
+			if ($useMinMax) {
+				return $this;
+			}
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+		}
+		return $this->addUsingAlias(MusicPeer::SORT_ORDER, $sortOrder, $comparison);
+	}
+
 
 	/**
 	 * Filter the query by a related User object

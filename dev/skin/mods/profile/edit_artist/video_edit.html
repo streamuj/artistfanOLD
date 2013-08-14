@@ -13,17 +13,20 @@
     {
 	    $("#VideoDate").datepicker({
             dateFormat: 'mm/dd/yy',
-			minDate: 0 	
+			minDate: 2 	
         });	
         oErrors.Show();
-		{if $fm.VideoType==$smarty.const.YT_VIDEO}
+	{*	{if $fm.VideoType==$smarty.const.YT_VIDEO}
 		    $('#yt_video').show();
 			$('#upload_video').hide();
 		{else}		
         	$('#yt_video').hide();		
 			$('#upload_video').show();					
 		{/if}
-		
+	*}
+		$('#yt_video').hide();		
+		$('#upload_video').show();	
+			
         var uploader = new qq.FileUploader({
             element: $('#file-uploader')[0],
             action: '/artist/UploadVideo',
@@ -88,10 +91,11 @@
                     $('#yt_video').hide();					
 					$('#upload_video').show();
                     break;
-                case 3:
+              {*  case 3:
                     $('#yt_video').show();
 					$('#upload_video').hide();
                     break;
+			   *}
             }
         });
 		
@@ -120,7 +124,8 @@
           
             <input type="radio" id="VideoType1" class="video_type radio" name="fm[VideoType]" value="1"{if $fm.VideoType==$smarty.const.MUSIC_VIDEO || !$fm.VideoType} checked="checked"{/if} {if $fm.VideoType==$smarty.const.YT_VIDEO} disabled="disabled"{/if}/> <label for="VideoType1">Music video </label><br /><br /> 
             <input type="radio" id="VideoType2" class="video_type radio" name="fm[VideoType]" value="2"{if $fm.VideoType==$smarty.const.RE_LIVE_STREAM} checked="checked" {/if} {if $fm.VideoType==$smarty.const.YT_VIDEO} disabled="disabled"{/if}  /> <label for="VideoType2">Recorded live stream</label><br /><br />
-            <input type="radio" id="VideoType3" class="video_type radio" name="fm[VideoType]"  value="3"{if $fm.VideoType==$smarty.const.YT_VIDEO} checked="checked"{/if}  {if $fm.Duration} disabled="disabled"{/if}/> <label for="VideoType3">Add youtube video</label><br /> 
+           
+           {* <input type="radio" id="VideoType3" class="video_type radio" name="fm[VideoType]"  value="3"{if $fm.VideoType==$smarty.const.YT_VIDEO} checked="checked"{/if}  {if $fm.Duration} disabled="disabled"{/if}/> <label for="VideoType3">Add youtube video</label><br /> *}
         <td id="err_VideoType" class="err"></td>
     </tr>
     {else}
@@ -130,7 +135,8 @@
           
             <input type="radio" id="VideoType1" class="video_type radio" name="fm[VideoType]" value="1"{if $fm.VideoType==$smarty.const.MUSIC_VIDEO} checked="checked"{else}disabled="disabled"{/if}/> <label for="VideoType1">Music video </label><br /><br /> 
             <input type="radio" id="VideoType2" class="video_type radio" name="fm[VideoType]" value="2"{if $fm.VideoType==$smarty.const.RE_LIVE_STREAM} checked="checked" {else} disabled="disabled" {/if} /> <label for="VideoType2">Recorded live stream</label><br /><br />
-            <input type="radio" id="VideoType3" class="video_type radio" name="fm[VideoType]"  value="3"{if $fm.VideoType==$smarty.const.YT_VIDEO} checked="checked"{else}disabled="disabled"{/if} /> <label for="VideoType3">Add youtube video</label><br /> 
+            
+            {*<input type="radio" id="VideoType3" class="video_type radio" name="fm[VideoType]"  value="3"{if $fm.VideoType==$smarty.const.YT_VIDEO} checked="checked"{else}disabled="disabled"{/if} /> <label for="VideoType3">Add youtube video</label><br /> *}
         <td id="err_VideoType" class="err"></td>
     </tr>
     {/if}
@@ -142,8 +148,8 @@
       </tr>
 
     <tr>
-        <td width="20%" align="left" valign="middle">Release Date<span style="color:red;"></span></td>
-        <td width="80%" align="left" valign="middle"><label>{if !$id}<input type="text" id="VideoDate" class="txtBox" name="fm[VideoDate]" value="{$fm.VideoDate}"   size="10"  />{else}{$fm.VideoDate|date_format} <input type="hidden" id="VideoDate" class="txtBox" name="fm[VideoDate]" value="{$fm.VideoDate}"   size="10"  />{/if}
+        <td width="20%" align="left" valign="middle">Release Date<span style="color:red;">*</span></td>
+        <td width="80%" align="left" valign="middle"><label>{if $editDate || !$id}<input type="text" id="VideoDate" class="txtBox" name="fm[VideoDate]" value="{$fm.VideoDate}"   size="10"  readonly="readonly"/>{else}{$fm.VideoDate|date_format} <input type="hidden" id="VideoDate" class="txtBox" name="fm[VideoDate]" value="{$fm.VideoDate}"   size="10"  />{/if}
 		</label><span id="err_VideoDate" class="err"></span>                
         </td>
 

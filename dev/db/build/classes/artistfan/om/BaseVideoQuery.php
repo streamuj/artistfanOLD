@@ -156,7 +156,7 @@ abstract class BaseVideoQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `USER_ID`, `TITLE`, `PRICE`, `VIDEO`, `VIDEO_PREVIEW`, `PDATE`, `ACTIVE`, `DELETED`, `FROM_YT`, `STATUS` , `FEATURED`, `PAY_MORE`, `VIDEO_LENGTH` , `VIDEO_COUNT`, `VIDEO_TYPE`, `VIDEO_DATE`, `VIDEO_IMAGE`   FROM `video` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `USER_ID`, `TITLE`, `PRICE`, `VIDEO`, `VIDEO_PREVIEW`, `PDATE`, `ACTIVE`, `DELETED`, `FROM_YT`, `STATUS` , `FEATURED`, `PAY_MORE`, `VIDEO_LENGTH` , `VIDEO_COUNT`, `VIDEO_TYPE`, `VIDEO_DATE`, `VIDEO_IMAGE`, `EMAIL_SENT`   FROM `video` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);

@@ -22,7 +22,7 @@ class User extends BaseUser
     public static function GetUser($user_id, $check = 0)
     {
         $user = UserQuery::create()->Select(array('Id', 'Email', 'Status', 'Pass', 'FirstName', 'LastName', 'BandName', 'Name', 'Blocked', 'BlockReason',
-            'Avatar', 'Location', 'About', 'Wallet', 'WalletBlock', 'IsOnline', 'AltEmail', 'UserPhone'));
+            'Avatar', 'Location', 'About', 'Wallet', 'WalletBlock', 'IsOnline', 'AltEmail', 'UserPhone', 'State', 'HashTag'));
 		
         if($check == 0)
         {
@@ -51,7 +51,7 @@ class User extends BaseUser
     {
         return UserQuery::create()->select(array('Id', 'Email', 'Status', 'EmailConfirmed','Pass', 'FirstName', 'LastName', 'BandName', 'Name', 'Blocked', 'BlockReason',
             'Avatar', 'Country', 'Location', 'Zip', 'HideLoc', 'About', 'Likes', 'Dob', 'Gender', 'Ip', 'LastLogin', 'LastReload', 'RegDate',
-            'YearsActive', 'Genres', 'Members', 'Website', 'Bio', 'RecordLabel', 'RecordLabelLink', 'Wallet', 'WalletBlock', 'Featured', 'IsOnline', 'AltEmail', 'UserPhone'))
+            'YearsActive', 'Genres', 'Members', 'Website', 'Bio', 'RecordLabel', 'RecordLabelLink', 'Wallet', 'WalletBlock', 'Featured', 'IsOnline', 'AltEmail', 'UserPhone', 'State', 'HashTag'))
                 ->filterById($user_id)
                 ->findOne();
     }
@@ -59,7 +59,7 @@ class User extends BaseUser
     public static function GetUserByLogin($user_name)
     {
         return UserQuery::create()->Select(array('Id', 'Email', 'Status', 'Pass', 'FirstName', 'LastName', 'BandName', 'Name', 'Blocked', 'BlockReason',
-            'Avatar', 'Location', 'About', 'Wallet', 'IsOnline', 'AltEmail', 'UserPhone'))
+            'Avatar', 'Location', 'About', 'Wallet', 'IsOnline', 'AltEmail', 'UserPhone', 'State', 'HashTag'))
                 ->filterByBlocked(0)
                 ->filterByEmailConfirmed(1)
                 ->filterByName($user_name)
@@ -129,7 +129,7 @@ class User extends BaseUser
      */
     public static function GetArtistsList($alpha, $page, $items_on_page )
     {
-        $artists = UserQuery::create()->select(array('Id', 'FirstName', 'LastName', 'BandName', 'Name', 'Avatar', 'Genres', 'Location'))
+        $artists = UserQuery::create()->select(array('Id', 'FirstName', 'LastName', 'BandName', 'Name', 'Avatar', 'Genres', 'Location', 'State', 'HashTag'))
                     ->withColumn("CASE
                         WHEN user.band_name != '' AND user.band_name IS NOT NULL THEN user.band_name
                         ELSE CONCAT(user.first_name, user.last_name)
@@ -220,7 +220,7 @@ class User extends BaseUser
     public static  function GetUsersList( $status, $page = '', $items_on_page = '', $filters = '' )
     {
         $result = array('rcnt' => 0, 'list' => array());
-        $users = UserQuery::create()->select(array('Id', 'Email', 'EmailConfirmed', 'FirstName', 'LastName', 'BandName', 'Name', 'Avatar', 'Genres', 'Dob', 'Gender', 'Location', 'Blocked', 'UserPhone'))
+        $users = UserQuery::create()->select(array('Id', 'Email', 'EmailConfirmed', 'FirstName', 'LastName', 'BandName', 'Name', 'Avatar', 'Genres', 'Dob', 'Gender', 'Location', 'Blocked', 'UserPhone', 'State', 'HashTag'))
                 -> withColumn("CASE
                         WHEN user.band_name != '' AND user.band_name IS NOT NULL THEN user.band_name
                         ELSE CONCAT(user.first_name, user.last_name)

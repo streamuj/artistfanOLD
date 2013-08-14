@@ -13,10 +13,10 @@
 	var suffix = '';
 	if (DetectSmartphone() || DetectTierTablet())
 	{
-		fileRoot = 'http://mobile.streamingmediahosting.com/artistfan/_definst_/';
+		fileRoot = '{$smarty.const.STREAMING_HTML5_VOD}';
 		suffix = '/playlist.m3u8';
 	} else {
-		fileRoot = 'rtmp://flash.streamingmediahosting.com/artistfan/';
+		fileRoot = '{$smarty.const.STREAMING_MOBILE_VOD}';
 	}
 {/if}
   $(document).ready(function(){

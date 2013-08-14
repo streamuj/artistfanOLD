@@ -34,7 +34,7 @@
             $("body").delegate("#DateRelease", "click", function(event){
             $('#DateRelease').datepicker({
                     dateFormat: 'mm/dd/yy',
-                    minDate: today,
+                    minDate: 0,
                     maxDate: featureDate,
                     showOn: 'focus'
                   }).focus();

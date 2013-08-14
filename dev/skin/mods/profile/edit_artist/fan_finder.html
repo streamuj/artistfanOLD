@@ -25,14 +25,14 @@
             if (status == google.maps.GeocoderStatus.OK)
             {
 			 
-			 {if $i.Gender == 1}
+		{*	 {if $i.Gender == 1}
 			 	markerColor = '0000FF';
 			 {else if $i.Gender == 2}
 			 	markerColor = 'FAAFBE';
 			 {else}
 				markerColor = 'FFFFFF';
 			 {/if}
-			 
+			*} 
                 var marker = add_marker(results[0].geometry.location, "{$i.Location}, {$i.Country}", "<div class='map-marker'><strong>{$i.Location}</strong><br />{$i.FanCount}{if $i.FanCount gt 1} Fans{else} Fan {/if}<br /><br /><a href='/artist/fanfinder?loc={$i.Location}&country={$i.Country}'>See list</a></div>", {if $location==$i.Location}1{else}0{/if});
                 marker.setMap(map);
                 {if $location}
@@ -48,7 +48,7 @@
         var infowindow = new google.maps.InfoWindow({
             content: box_html
         });
-
+		{*
         var marker = new google.maps.Marker({
               position: latlng,
               map: map,
@@ -59,7 +59,13 @@
 				new google.maps.Point(10, 34)
 	 		  )
         });
-
+        *}
+		var marker = new google.maps.Marker({
+              position: latlng,
+              map: map,
+              title: title
+        });
+		
         google.maps.event.addListener(marker, 'click', function()
         {
             infowindow.open(map,marker);

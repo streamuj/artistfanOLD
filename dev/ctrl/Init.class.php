@@ -22,7 +22,6 @@ class Init extends Base
         require_once 'ctrl/Security/Session.class.php';
         $mSession = new Security_Session();
         $this->SetClass('mSession', $mSession);
-
         //init Cache
         /*
         require_once 'libs/Cache/Memcached.class.php';
@@ -68,7 +67,7 @@ class Init extends Base
         Propel::getConnection()->useDebug(DEBUG ? true : false);
         set_include_path(BPATH . "dev/db/build/classes" . PATH_SEPARATOR . get_include_path());
         include_once 'dev/db/Query.class.php';
-
+		ini_set('error_log', BPATH.'errors.log');
 
         //init Smarty
         require 'libs/Smarty/Smarty.class.php';
@@ -102,12 +101,14 @@ class Init extends Base
 
         $mSmarty->assign('FbApiId', FACEBOOK_API_ID);
         $mSmarty->assign('DOMAIN', DOMAIN);
+		require_once(dirname(__FILE__).DS.'Error.php');
 		
 		if (!get_magic_quotes_gpc()) {
 			//$mesg = addslashes($mesg);
 			array_walk_recursive($_REQUEST, 'addBackSlashes');
 		 }
-		 
+		 set_error_handler(array($this, 'ErrorHandler'));
+		 set_exception_handler(array($this, 'ExceptionHandler'));
 
         //start current controller
         require_once 'ctrl/Security/Dispatch.class.php';
@@ -115,6 +116,58 @@ class Init extends Base
         $moDispatch->Dispatch();
         $moDispatch->Start($this->mlObj);
     }
+	
+	public function ExceptionHandler($exception)
+	{
+		global $currentUrl;
+		$msg = "Error In URL: {$currentUrl}<br />";
+		$msg .= "<b>Exception: </b> $exception<br />\n";
+		sendEmail('admin@artistfan.com', 'Artistfan', 'bks@usaweb.net', 'Bala',  DOMAIN. ' Artistfan Error', $msg);
+		
+		try{
+			$errObj = new Error();
+			$errObj->Insert($currentUrl, "Exception: $exception");
+		} catch(Exception $ex){
+			error_log($msg);
+		}
+		require_once(BPATH.'files/index.php');
+		exit();
+	}
+	
+	public function ErrorHandler($errno, $errstr, $errfile, $errline)
+	{
+		global $currentUrl;
+		$msg = "Error In URL: {$currentUrl}<br />";
+		switch ($errno) {
+			case E_USER_ERROR:
+				$msg .= "<b>My ERROR</b> [$errno] $errstr<br />\n";
+				$msg .= "  Fatal error on line $errline in file $errfile";
+				$msg .= ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
+				require_once(BPATH.'files/index.php');
+				sendEmail('admin@artistfan.com', 'Artistfan', 'bks@usaweb.net', 'Bala', DOMAIN. ' Artistfan Error', $msg);
+				try{
+					$errObj = new Error();
+					$errObj->Insert($currentUrl, "Exception: $exception");
+				} catch(Exception $ex){
+					error_log($msg);
+				}
+				exit(1);
+				break;
+			case E_USER_WARNING:
+				$msg .= "<b>My WARNING</b> [$errno] $errstr<br />\n";
+				sendEmail('admin@artistfan.com', 'Artistfan', 'bks@usaweb.net', 'Bala', DOMAIN. ' Artistfan Warning Error', $msg);
+				break;
+		
+			case E_USER_NOTICE:
+				$msg .= "<b>My NOTICE</b> [$errno] $errstr<br />\n";
+				break;
+		
+			default:
+				$msg .= "Unknown error type: [$errno] $errstr<br />\n";
+				break;
+		}
+		return true;
+	}
 
 
     /**

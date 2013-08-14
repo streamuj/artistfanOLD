@@ -12,6 +12,8 @@ class Base_Popup extends Base
     public function __construct($glObj)
     {
         parent :: __construct($glObj);
+		
+		$this->mlObj['mSession']->Del('redirect');
 
         if (!$this->mUser->IsAuth())
         {
@@ -383,6 +385,17 @@ public function confirmationforPhotoAlbum()
 public function videoFocusPublish()
 	{
     return $this->mSmarty->display('mods/profile/blocks/video_focus_publish.html');		
+	}		
+public function BonusAlbum()
+	{
+    $id = _v('id', 0);	
+	$Albumdetails =	MusicAlbum::GetAlbum($id,0,1);	
+    $ui = User::GetUserFullInfo($Albumdetails['UserId']);
+	$this->mSmarty->assign('ui', $ui);
+    $this->mSmarty->assign('Albumdetails', $Albumdetails);
+	$content = $this->mSmarty->fetch('mods/profile/blocks/_bonusmusic_album.html');
+	echo json_encode(array('message'=>$content));
+	exit;				
 	}		
 
 }

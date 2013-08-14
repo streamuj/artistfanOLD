@@ -348,7 +348,7 @@ abstract class BaseUserQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `EMAIL`, `STATUS`, `EMAIL_CONFIRMED`, `FIRST_NAME`, `LAST_NAME`, `BAND_NAME`, `NAME`, `PASS`, `AVATAR`, `COUNTRY`, `LOCATION`, `HIDE_LOC`, `ZIP`, `ABOUT`, `LIKES`, `YEARS_ACTIVE`, `GENRES`, `MEMBERS`, `WEBSITE`, `BIO`, `RECORD_LABEL`, `RECORD_LABEL_LINK`, `DOB`, `GENDER`, `CHECKSUM`, `IP`, `LAST_LOGIN`, `LAST_RELOAD`, `BLOCKED`, `BLOCK_REASON`, `REG_DATE`, `WALLET`, `WALLET_BLOCK`, `FB_ID`, `FB_TOKEN`, `FB_START`, `TW_START`, `TW_ID`, `TW_OAUTH_TOKEN`, `TW_OAUTH_TOKEN_SECRET`, `FEATURED`, `IS_ADMIN`, `IS_ONLINE`, `ALT_EMAIL`, `USER_PHONE`,`STATE`, `HASH_TAG`  FROM `user` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `EMAIL`, `STATUS`, `EMAIL_CONFIRMED`, `FIRST_NAME`, `LAST_NAME`, `BAND_NAME`, `NAME`, `PASS`, `AVATAR`, `COUNTRY`, `LOCATION`, `HIDE_LOC`, `ZIP`, `ABOUT`, `LIKES`, `YEARS_ACTIVE`, `GENRES`, `MEMBERS`, `WEBSITE`, `BIO`, `RECORD_LABEL`, `RECORD_LABEL_LINK`, `DOB`, `GENDER`, `CHECKSUM`, `IP`, `LAST_LOGIN`, `LAST_RELOAD`, `BLOCKED`, `BLOCK_REASON`, `REG_DATE`, `WALLET`, `WALLET_BLOCK`, `FB_ID`, `FB_TOKEN`, `FB_START`, `TW_START`, `TW_ID`, `TW_OAUTH_TOKEN`, `TW_OAUTH_TOKEN_SECRET`, `FEATURED`, `IS_ADMIN`, `IS_ONLINE`, `ALT_EMAIL`, `USER_PHONE`,`STATE`, `HASH_TAG`, `FB_ON`, `TW_ON`, `IN_ON`  FROM `user` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -1968,6 +1968,107 @@ abstract class BaseUserQuery extends ModelCriteria
 		}
 		return $this->addUsingAlias(UserPeer::HASH_TAG, $hashTag, $comparison);
 	}
+	public function filterByFbOn($fbOn = null, $comparison = null)
+	{
+		if (is_array($fbOn)) {
+			$useMinMax = false;
+			if (isset($fbOn['min'])) {
+				$this->addUsingAlias(UserPeer::FB_ON, $fbOn['min'], Criteria::GREATER_EQUAL);
+				$useMinMax = true;
+			}
+			if (isset($fbOn['max'])) {
+				$this->addUsingAlias(UserPeer::FB_ON, $fbOn['max'], Criteria::LESS_EQUAL);
+				$useMinMax = true;
+			}
+			if ($useMinMax) {
+				return $this;
+			}
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+		}
+		return $this->addUsingAlias(UserPeer::FB_ON, $fbOn, $comparison);
+	}
+
+	/**
+	 * Filter the query on the tw_on column
+	 *
+	 * Example usage:
+	 * <code>
+	 * $query->filterByTwOn(1234); // WHERE tw_on = 1234
+	 * $query->filterByTwOn(array(12, 34)); // WHERE tw_on IN (12, 34)
+	 * $query->filterByTwOn(array('min' => 12)); // WHERE tw_on > 12
+	 * </code>
+	 *
+	 * @param     mixed $twOn The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    UserQuery The current query, for fluid interface
+	 */
+	public function filterByTwOn($twOn = null, $comparison = null)
+	{
+		if (is_array($twOn)) {
+			$useMinMax = false;
+			if (isset($twOn['min'])) {
+				$this->addUsingAlias(UserPeer::TW_ON, $twOn['min'], Criteria::GREATER_EQUAL);
+				$useMinMax = true;
+			}
+			if (isset($twOn['max'])) {
+				$this->addUsingAlias(UserPeer::TW_ON, $twOn['max'], Criteria::LESS_EQUAL);
+				$useMinMax = true;
+			}
+			if ($useMinMax) {
+				return $this;
+			}
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+		}
+		return $this->addUsingAlias(UserPeer::TW_ON, $twOn, $comparison);
+	}
+
+	/**
+	 * Filter the query on the in_on column
+	 *
+	 * Example usage:
+	 * <code>
+	 * $query->filterByInOn(1234); // WHERE in_on = 1234
+	 * $query->filterByInOn(array(12, 34)); // WHERE in_on IN (12, 34)
+	 * $query->filterByInOn(array('min' => 12)); // WHERE in_on > 12
+	 * </code>
+	 *
+	 * @param     mixed $inOn The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    UserQuery The current query, for fluid interface
+	 */
+	public function filterByInOn($inOn = null, $comparison = null)
+	{
+		if (is_array($inOn)) {
+			$useMinMax = false;
+			if (isset($inOn['min'])) {
+				$this->addUsingAlias(UserPeer::IN_ON, $inOn['min'], Criteria::GREATER_EQUAL);
+				$useMinMax = true;
+			}
+			if (isset($inOn['max'])) {
+				$this->addUsingAlias(UserPeer::IN_ON, $inOn['max'], Criteria::LESS_EQUAL);
+				$useMinMax = true;
+			}
+			if ($useMinMax) {
+				return $this;
+			}
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+		}
+		return $this->addUsingAlias(UserPeer::IN_ON, $inOn, $comparison);
+	}	
  
 	/**
 	 * Filter the query by a related UserFollow object

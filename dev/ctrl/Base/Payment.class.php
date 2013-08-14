@@ -13,6 +13,8 @@ class Base_Payment extends Base
     public function __construct($glObj)
     {
         parent :: __construct($glObj);
+		
+		$this->mlObj['mSession']->Del('redirect');
 
         if (!$this->mUser->IsAuth())
         {
@@ -436,14 +438,14 @@ public function validate_phoneUS($number){
 
 		}		
 			
-	if($phone)
-			{
+		if($phone)
+		{
 			$user_phone = $this->validate_phoneUS($phone);	
 				if ($user_phone!==true)
 				{
 					$this->mSmarty->assign('errorphone', PLEASE_SPECIFY_PHONE_NUMBER_AS_INTEGER);
 				}
-			}
+		}
 		if($cvv!=''){
 		if(!preg_match('/^[0-9]{3}$/', $cvv)){
 		 		$error = true;			
@@ -708,9 +710,10 @@ public function validate_phoneUS($number){
 			$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];		
 //			$wallprice	=	$photo['Price']+$adminPrice;
 //			$mesg	=	 "<a href=/u/".$this->mUser->mUserInfo['Name']." class=icon_03>{$userName}</a> just bought {artist} photo: ".$photo['Title'].' Price: $'.$wallprice;
-			
+
 $wallprice	=	sprintf("%0.2f",$photo['Price']+$adminPrice);	
-$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$userName.'</a> has purchased '.'<b>'.$photo['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Photos";			
+
+$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'"  >'.$userName.'</a> has purchased '.'<b>'.$photo['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Photos";			
 			
 			$image	=	'files/photo/thumbs/'.$photo['UserId'].'/'.$photo['Image'];
   		    $wallConfirmation	=	 Wall::Add( $photo['UserId'],  $this->mUser->mUserInfo['Id'], $mesg, $image, $video, $timeline = 1, $mCache = '' );
@@ -742,7 +745,7 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 					$toName = $this->mUser->mUserInfo['Name'];
 					$subject = PHOTO_PURCHASED_INFO_FROM;
 					$message = $this->mSmarty->fetch('mails/photo-ebill.html');
-					sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);
+					//sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);
 					
 			  }		
 							
@@ -841,8 +844,9 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 							// admin purchase  End
 
 			$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+
 			$wallprice	=	sprintf("%0.2f",$music['Price']+$adminPrice);	
-			$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$userName.'</a> has purchased '.'<b>'.$music['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Music Tracks";
+			$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" >'.$userName.'</a> has purchased '.'<b>'.$music['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Music Tracks";
 		//	$mesg	=	 "Music Track has purchased ".$music['Title'];
 						//$image	=	'files/photo/thumbs/'.$photo['UserId'].'/'.$photo['Image'];
 						$image	=	'i/ph/album-96x96.png';
@@ -859,21 +863,33 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
                     //fan rating
                     UserFollow::ChangeRating($this->mUser->mUserInfo['Id'], $music['UserId'], ($music['Price'] > 0 ? 'buy_track' : 'add_track'));
 
-                 
-
                     $res['q'] = OK;
                     $res['track'] = $music['Track'];
 					
+        			$album = MusicAlbum::GetAlbum($music['AlbumId']);					
+	                $this->mSmarty->assign('albumrawdatas', $album); 
+
 					$UserInfo = User::GetUserFullInfo($music['UserId']);					
 					$res['ArtistName']	= $UserInfo['Name'];
 					$this->mSession->Set('DownloadCode',true);													
 					// Ebill via mail  start 
+			/*	
 			if($this->mUser->mUserInfo['Email'])
 			 {
-	                $this->mSmarty->assign('name', $this->mUser->mUserInfo['Name']);  					
+					$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];		
+	                $this->mSmarty->assign('name', $userName);  
+																			
 					$musicrawdatas =  Music::GetMusic($music['Id']);
-	                $this->mSmarty->assign('musicrawdatas',$musicrawdatas);										
-	                $this->mSmarty->assign('ArtistName', $UserInfo['Name']);															
+	                $this->mSmarty->assign('musicrawdatas',$musicrawdatas);		
+					
+					$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];		
+					
+	                $this->mSmarty->assign('artistName', $UserInfo['Name']); 					
+	                $this->mSmarty->assign('artistFLName', $artistFLName);  
+	                $this->mSmarty->assign('artistLocation', $UserInfo['Location']); 
+	                $this->mSmarty->assign('artistState', $UserInfo['State']); 
+					
+																			
 					if( $this->mUser->mUserInfo['BandName']) {
 					$toNameModify =  $this->mUser->mUserInfo['BandName'];
 					}else{
@@ -886,13 +902,157 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 					$toName = $toNameModify;
 					$subject = MUSIC_PURCHASED_INFO_FROM;
 					$message = $this->mSmarty->fetch('mails/music-ebill.html');					
-					sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);
+					echo $message; die;
+					//sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);			
 					
+			  }*/ 									
+			// Ebill via mail  End	
+			// Ebill via mandrillapp  Start
+			
+			if($this->mUser->mUserInfo['Email'])
+			 {
+			 
+				$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+				$musicrawdatas =  Music::GetMusic($music['Id']);
+				$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];
+                $artistName =  $UserInfo['Name']; 					                
+                $artistLocation =  $UserInfo['Location']; 
+                $artistState = $UserInfo['State']; 										
+				if( $musicrawdatas['Image'] )
+					{ 
+						$musicimagepath = SUB_DOMAIN.'track/images/'.$musicrawdatas['UserId'].'/m_'.$musicrawdatas['Image']; 						
+					} else
+					{
+						$musicimagepath = SUB_DOMAIN.'i/ph/album-96x96.png'; 											
+					 }				
+				$artistNameURL = ROOT_HTTP_PATH.'/u/'.$artistName;	
+				$MusicURL =  ROOT_HTTP_PATH.'/u/'.$artistName.'/music/'.$musicrawdatas['Id'];							
+				if( $this->mUser->mUserInfo['BandName']) 
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['BandName']);
+					}
+					else
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName']);		
+					}								
+						
+				
+			require_once('libs/mandrill/src/Mandrill.php');		
+				try{
+				$mandrill = new Mandrill(MANDRILL_KEY);
+				//$template_name = 'Artist Welcome Email';				
+				$template_name = 'music-ebill';   
+				$template_content = array(
+					array(
+						'name' => 'header_subject',
+						'content' => 'Welcome *|NAME|*'
+					),
+					array(
+						'name' =>'copy_right',
+						'content'=>'<em>Copyright &copy; *|YEAR|* *|DOMAIN|*. All rights reserved.</em>'
+					),
+					array(
+						'name' =>'tw',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name' =>'fb',
+						'content'=>'artistfanmedia'
+					),		
+				);
+				$merge_vars = array(
+					array(
+						'name' => 'NAME',
+						'content' =>$userName,
+					),
+					array(
+						'name'=>'YEAR',
+						'content'=>date('Y')
+					),
+					array(
+						'name'=>'DOMAIN',
+						'content'=>'www.artistfan.com'
+					),
+					array(
+						'name'=>'TWITTER',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'FACEBOOK',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'PINTEREST',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'INSTAGRAM',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'MUSICIMAGEPATH',
+						'content'=>$musicimagepath
+					),
+					array(
+						'name'=>'ARTISTURL',
+						'content'=>$artistNameURL
+					),
+					array(
+						'name'=>'ARTISTFL',
+						'content'=>$artistFLName
+					),	
+					array(
+						'name'=>'MUSICURL',
+						'content'=>$MusicURL
+					),											
+					array(
+						'name'=>'ALBUMTITLE',
+						'content'=>$musicrawdatas['Title']
+					),
+					array(
+						'name'=>'LOCATION',
+						'content'=>$artistLocation
+					),
+					array(
+						'name'=>'STATE',
+						'content'=>$artistState
+					),
+				);
+				$template = $mandrill->templates->render($template_name, $template_content, $merge_vars);
+				$message = array(
+					'html' => $template['html'],
+					'subject' => MUSIC_PURCHASED_INFO_FROM,
+					'from_email' => ADMIN_EMAIL,
+					'from_name' => SITE_NAME,
+					'to' => array(
+								array(
+									'email' =>$this->mUser->mUserInfo['Email'],
+									'name'=>$userName,
+								),
+								
+						),
+					'important' => false,
+					'track_opens' => null,
+					'track_clicks' => null,
 					
-			  }		
-							
-// Ebill via mail  End	
-                
+				);
+				$async = false;
+				$ip_pool = 'Main Pool';
+				$send_at = date();				
+				//$result = $mandrill->messages->send($message, $async, $ip_pool, $send_at);														
+				}
+				catch(Mandrill_Error $e) {				
+				echo '<pre>';
+				var_dump($e);
+				echo '<hr>';
+				// Mandrill errors are thrown as exceptions
+				echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+				// A mandrill error occurred: Mandrill_Invalid_Key - Invalid API key
+				//throw $e;
+				}					
+			 
+			 }
+			// Ebill via mandrillapp  End	                
 
             }
             else
@@ -988,9 +1148,11 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 			$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
 			
 			$wallprice	=	sprintf("%0.2f",$album['Price']+$adminPrice);
+		
+			
 
 	//$mesg	=	 '<a href="/u/"'.$this->mUser->mUserInfo['Name'].' class="icon_03">'.$userName.'</a> just bought {artist} Music Album: '.$album['Title']."Price: $".$wallprice;
-$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$userName.'</a> has purchased '.'<b>'.$album['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Music Album";
+$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" >'.$userName.'</a> has purchased '.'<b>'.$album['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Music Album";
 		//	$mesg	=	 "Music Track has purchased ".$music['Title'];
 						//$image	=	'files/photo/thumbs/'.$photo['UserId'].'/'.$photo['Image'];
 						//$image	=	$album['Image']; 
@@ -1010,15 +1172,28 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 			$UserInfo = User::GetUserFullInfo($album['UserId']);					
 			
 			// Ebill via mail  start 
-		if($this->mUser->mUserInfo['Email']) {
-	                $this->mSmarty->assign('name', $this->mUser->mUserInfo['Name']);  
-	                $this->mSmarty->assign('ArtistName', $UserInfo['Name']);  					
-					$albumrawdatas = MusicAlbum::GetAlbum($album['Id']);
-	                $this->mSmarty->assign('albumrawdatas', $albumrawdatas);
-					if( $this->mUser->mUserInfo['BandName']) {
-					$toNameModify =  $this->mUser->mUserInfo['BandName'];
-					}else{
-					$toNameModify =  $this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName'];		
+		if($this->mUser->mUserInfo['Email']) {/*					
+		
+					$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];		
+	                $this->mSmarty->assign('name', $userName); 
+					
+					$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];		
+					
+	                $this->mSmarty->assign('artistName', $UserInfo['Name']); 					
+	                $this->mSmarty->assign('artistFLName', $artistFLName);  
+	                $this->mSmarty->assign('artistLocation', $UserInfo['Location']); 
+	                $this->mSmarty->assign('artistState', $UserInfo['State']); 					
+
+					$albumrawdatas = MusicAlbum::GetAlbum($album['Id']);					
+	                $this->mSmarty->assign('albumrawdatas', $albumrawdatas);	
+									
+					if( $this->mUser->mUserInfo['BandName']) 
+					{
+						$toNameModify =  $this->mUser->mUserInfo['BandName'];
+					}
+					else
+					{
+						$toNameModify =  $this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName'];		
 					}
 	                $this->mSmarty->assign('ArtistBandname', ucfirst($toNameModify));																														
 					$fromEmail = ADMIN_EMAIL;
@@ -1026,13 +1201,157 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 					$toEmail = $this->mUser->mUserInfo['Email'];
 					$toName = $toNameModify;					
 					$subject = ALBUM_MUSIC_PURCHASED_INFO_FROM;
-					$message = $this->mSmarty->fetch('mails/musicalbum-ebill.html');					
-					sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);
+					$message = $this->mSmarty->fetch('mails/musicalbum-ebill.html');
+					echo ($message);die;
+					//sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);
 					
-			  }		
+			  */}		
 							
 // Ebill via mail  End	
-					 
+	//mandrillapp start
+		if($this->mUser->mUserInfo['Email']) {
+				$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+				$albumrawdatas = MusicAlbum::GetAlbum($album['Id']);
+				$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];
+                $artistName =  $UserInfo['Name']; 					                
+                $artistLocation =  $UserInfo['Location']; 
+                $artistState = $UserInfo['State']; 										
+				if( $albumrawdatas['Image'] )
+					{ 
+						$musicimagepath = SUB_DOMAIN.'track/images/'.$albumrawdatas['UserId'].'/m_'.$albumrawdatas['Image']; 						
+					} else
+					{
+						$musicimagepath = SUB_DOMAIN.'i/ph/album-96x96.png'; 											
+					 }				
+				$artistNameURL = ROOT_HTTP_PATH.'/u/'.$artistName;	
+				$MusicURL =  ROOT_HTTP_PATH.'/u/'.$artistName.'/music/'.$albumrawdatas['Id'];							
+				if( $this->mUser->mUserInfo['BandName']) 
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['BandName']);
+					}
+					else
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName']);		
+					}								
+						
+				
+			require_once('libs/mandrill/src/Mandrill.php');		
+				try{
+				$mandrill = new Mandrill(MANDRILL_KEY);
+				//$template_name = 'Artist Welcome Email';
+				$template_name = 'musicalbum-ebill';   
+				$template_content = array(
+					array(
+						'name' => 'header_subject',
+						'content' => 'Welcome *|NAME|*'
+					),
+					array(
+						'name' =>'copy_right',
+						'content'=>'<em>Copyright &copy; *|YEAR|* *|DOMAIN|*. All rights reserved.</em>'
+					),
+					array(
+						'name' =>'tw',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name' =>'fb',
+						'content'=>'artistfanmedia'
+					),		
+				);
+				$merge_vars = array(
+					array(
+						'name' => 'NAME',
+						'content' =>$userName,
+					),
+					array(
+						'name'=>'YEAR',
+						'content'=>date('Y')
+					),
+					array(
+						'name'=>'DOMAIN',
+						'content'=>'www.artistfan.com'
+					),
+					array(
+						'name'=>'TWITTER',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'FACEBOOK',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'PINTEREST',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'INSTAGRAM',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'MUSICIMAGEPATH',
+						'content'=>$musicimagepath
+					),
+					array(
+						'name'=>'ARTISTURL',
+						'content'=>$artistNameURL
+					),
+					array(
+						'name'=>'ARTISTFL',
+						'content'=>$artistFLName
+					),	
+					array(
+						'name'=>'MUSICURL',
+						'content'=>$MusicURL
+					),											
+					array(
+						'name'=>'ALBUMTITLE',
+						'content'=>$albumrawdatas['Title']
+					),
+					array(
+						'name'=>'LOCATION',
+						'content'=>$artistLocation
+					),
+					array(
+						'name'=>'STATE',
+						'content'=>$artistState
+					),
+				);
+				$template = $mandrill->templates->render($template_name, $template_content, $merge_vars);
+				
+				$message = array(
+					'html' => $template['html'],
+					'subject' => ALBUM_MUSIC_PURCHASED_INFO_FROM,
+					'from_email' => ADMIN_EMAIL,
+					'from_name' => SITE_NAME,
+					'to' => array(
+								array(
+									'email' =>$this->mUser->mUserInfo['Email'],
+									'name'=>$userName,
+								),								
+						),
+					'important' => false,
+					'track_opens' => null,
+					'track_clicks' => null,
+					
+				);
+				$async = false;
+				$ip_pool = 'Main Pool';
+				$send_at = date();				
+				$result = $mandrill->messages->send($message, $async, $ip_pool, $send_at);														
+				}
+				catch(Mandrill_Error $e) {
+				
+				echo '<pre>';
+				var_dump($e);
+				echo '<hr>';
+				// Mandrill errors are thrown as exceptions
+				echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+				// A mandrill error occurred: Mandrill_Invalid_Key - Invalid API key
+				//throw $e;
+				}			
+		
+		}
+	//mandrillapp End				 
 					 
 					 }
 				}
@@ -1125,11 +1444,10 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 
 
                         //log
-						
-
-			$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+			
+	$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
 	$wallprice	=	sprintf("%0.2f",$video['Price']+$adminPrice);	
-$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$userName.'</a> has purchased '.'<b>'.$video['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} videos";
+$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" >'.$userName.'</a> has purchased '.'<b>'.$video['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} videos";
                       
 //						$mesg	=	 "Video has purchased ".$video['Title'];
 						//$image	=	'files/video/thumbnail/'.$video['UserId'].'/s_'.$video['Video'].'.jpg';
@@ -1149,29 +1467,188 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 					$this->mSession->Set('VideoDownloadCode',true);					
 					$UserInfo = User::GetUserFullInfo($video['UserId']);										
 // Ebill via mail  start 
+/*
 		if($this->mUser->mUserInfo['Email']){
-		
-	                $this->mSmarty->assign('name', $this->mUser->mUserInfo['Name']);  
-					$videorawdatas = Video::GetVideoInfo($id);
-	                $this->mSmarty->assign('videorawdatas', $videorawdatas);															
-	                $this->mSmarty->assign('ArtistName', $UserInfo['Name']);
-					if( $this->mUser->mUserInfo['BandName']) {
-					$toNameModify =  $this->mUser->mUserInfo['BandName'];
-					}else{
-					$toNameModify =  $this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName'];		
-					}
-	                $this->mSmarty->assign('ArtistBandname', ucfirst($toNameModify));										
+			
+					$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];		
+	                $this->mSmarty->assign('name', $userName); 
+					
+					$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];		
+					
+	                $this->mSmarty->assign('artistId', $UserInfo['Id']); 
+	                $this->mSmarty->assign('artistName', $UserInfo['Name']); 										
+	                $this->mSmarty->assign('artistFLName', $artistFLName);  
+	                $this->mSmarty->assign('artistLocation', $UserInfo['Location']); 
+	                $this->mSmarty->assign('artistState', $UserInfo['State']); 
+					
+					$videorawdatas = Video::GetVideoInfo($id);	
+	                $this->mSmarty->assign('videorawdatas', $videorawdatas);	
+															
 					$fromEmail = ADMIN_EMAIL;
 					$fromName = SITE_NAME;
 					$toEmail = $this->mUser->mUserInfo['Email'];
 					$toName = $toNameModify;
 					$subject = VIDEO_PURCHASED_INFO_FROM;
-					$message = $this->mSmarty->fetch('mails/video-ebill.html');
-					sendEmail($fromEmail, $fromName,$toEmail, $toName, $subject, $message);
+					$message = $this->mSmarty->fetch('mails/video-ebill.html');					
+					//sendEmail($fromEmail, $fromName,$toEmail, $toName, $subject, $message);
 					
 			  }		
 							
 // Ebill via mail  End						
+*/
+// Ebill via mandrillapp  Start
+		if($this->mUser->mUserInfo['Email']){
+		
+				$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+				$videorawdatas = Video::GetVideoInfo($id);	
+				$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];
+                $artistName =  $UserInfo['Name']; 					                
+                $artistLocation =  $UserInfo['Location']; 
+                $artistState = $UserInfo['State']; 
+				if($videorawdatas['FromYt'])
+				{
+					$videoimagepath = 'http://'.'i.ytimg.com/vi/'.$videorawdatas['Video'].'/0.jpg';				
+				}
+				elseif($videorawdatas['Video'])
+				{
+					$videoimagepath = SUB_DOMAIN.'video/thumbnail/'.$UserInfo['Id'].'/s_'.$videorawdatas['Video'].'.jpg';
+				}
+				else 
+				{
+					$videoimagepath = SUB_DOMAIN.'si/ph/video-96x96.png';
+				}
+
+				$artistNameURL = ROOT_HTTP_PATH.'/u/'.$artistName;	
+				$VideoURL =  ROOT_HTTP_PATH.'/u/'.$artistName.'/video/'.$videorawdatas['Id'];							
+				if( $this->mUser->mUserInfo['BandName']) 
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['BandName']);
+					}
+					else
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName']);		
+					}								
+						
+				
+			require_once('libs/mandrill/src/Mandrill.php');		
+				try{
+				$mandrill = new Mandrill(MANDRILL_KEY);
+				//$template_name = 'Artist Welcome Email';
+				$template_name = 'video-ebill';   
+				$template_content = array(
+					array(
+						'name' => 'header_subject',
+						'content' => 'Welcome *|NAME|*'
+					),
+					array(
+						'name' =>'copy_right',
+						'content'=>'<em>Copyright &copy; *|YEAR|* *|DOMAIN|*. All rights reserved.</em>'
+					),
+					array(
+						'name' =>'tw',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name' =>'fb',
+						'content'=>'artistfanmedia'
+					),		
+				);
+				$merge_vars = array(
+					array(
+						'name' => 'NAME',
+						'content' =>$userName,
+					),
+					array(
+						'name'=>'YEAR',
+						'content'=>date('Y')
+					),
+					array(
+						'name'=>'DOMAIN',
+						'content'=>'www.artistfan.com'
+					),
+					array(
+						'name'=>'TWITTER',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'FACEBOOK',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'PINTEREST',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'INSTAGRAM',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'VIDEOIMAGEPATH',
+						'content'=>$videoimagepath
+					),
+					array(
+						'name'=>'ARTISTURL',
+						'content'=>$artistNameURL
+					),
+					array(
+						'name'=>'ARTISTFL',
+						'content'=>$artistFLName
+					),	
+					array(
+						'name'=>'VIDEOURL',
+						'content'=>$VideoURL
+					),											
+					array(
+						'name'=>'ALBUMTITLE',
+						'content'=>$videorawdatas['Title']
+					),
+					array(
+						'name'=>'LOCATION',
+						'content'=>$artistLocation
+					),
+					array(
+						'name'=>'STATE',
+						'content'=>$artistState
+					),
+				);
+				$template = $mandrill->templates->render($template_name, $template_content, $merge_vars);
+				$message = array(
+					'html' => $template['html'],
+					'subject' => VIDEO_PURCHASED_INFO_FROM,
+					'from_email' => ADMIN_EMAIL,
+					'from_name' => SITE_NAME,
+					'to' => array(
+								array(
+									'email' =>$this->mUser->mUserInfo['Email'],
+									'name'=>$userName,
+								),
+								
+						),
+					'important' => false,
+					'track_opens' => null,
+					'track_clicks' => null,
+					
+				);
+				$async = false;
+				$ip_pool = 'Main Pool';
+				$send_at = date();		
+				$result = $mandrill->messages->send($message, $async, $ip_pool, $send_at);														
+				}
+				catch(Mandrill_Error $e) {
+				
+				echo '<pre>';
+				var_dump($e);
+				echo '<hr>';
+				// Mandrill errors are thrown as exceptions
+				echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+				// A mandrill error occurred: Mandrill_Invalid_Key - Invalid API key
+				//throw $e;
+
+				}			
+		
+		
+		}
+// Ebill via mandrillapp  End						
                 
             }
             else
@@ -1278,9 +1755,11 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
 
 						//
 						
-			$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
-			$wallprice	=	sprintf("%0.2f",$event['Price']+$adminPrice);	
-$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$userName.'</a> has purchased '.'<b>'.$event['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Events";                      
+		
+
+		$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+		$wallprice	=	sprintf("%0.2f",$event['Price']+$adminPrice);	
+$mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" >'.$userName.'</a> has purchased '.'<b>'.$event['Title'].'</b>"'."<br/><font color=green><b>$".$wallprice."</b></font> From {artist} Events";                      
 //						$mesg	=	 "Video has purchased ".$video['Title'];
 						//$image	=	'files/video/thumbnail/'.$video['UserId'].'/s_'.$video['Video'].'.jpg';
 						$image	=	'';
@@ -1312,22 +1791,215 @@ $mesg	=	 '<a href="/u/'.$this->mUser->mUserInfo['Name'].'" class="icon_03">'.$us
                     $res['q'] = OK;
 					$this->mSession->Set('DownloadCode',true);													
 // Ebill via mail  start 
+		/*
 		if($this->mUser->mUserInfo['Email']) {		
-	                $this->mSmarty->assign('name', $this->mUser->mUserInfo['Name']);  
-					$eventrawdatas = Event::GetEvent($event['Id']);					
-	                $this->mSmarty->assign('eventrawdatas', $eventrawdatas);										
+					
+					$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+		
+	                $this->mSmarty->assign('name', $userName);  
+					$eventrawdatas = Event::GetEvent($event['Id'], '', 1);		
+								
+	                $this->mSmarty->assign('eventrawdatas', $eventrawdatas);	
+					
+					$this->mSmarty->assign('Image', ROOT_HTTP_PATH.'/files/photo/mid/'.$eventrawdatas['UserId'].'/'.$eventrawdatas['EventPhoto']);
+											
 	                $this->mSmarty->assign('ArtistUserInfo', $this->mUser->mUserInfo);					
 	                $this->mSmarty->assign('ArtistName', $artisttoartist);
 					$fromEmail = ADMIN_EMAIL;
 					$fromName = SITE_NAME;
 					$toEmail = $this->mUser->mUserInfo['Email'];
-					$toName = $this->mUser->mUserInfo['Name'];
+					$toName = $userName;
 					$subject = EVENT_PURCHASED_INFO_FROM;
 					$message = $this->mSmarty->fetch('mails/event_ticket_info_mail.html');
-					sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
+					echo $message;die;
+					//sendEmail($fromEmail,$fromName, $toEmail, $toName, $subject, $message);					
 			  }		
-							
+				*/			
 // Ebill via mail  End					
+				
+// Ebill via mandrillapp  start
+		
+		if($this->mUser->mUserInfo['Email']) {
+		
+
+				$userName = $this->mUser->mUserInfo['BandName'] ?  $this->mUser->mUserInfo['BandName'] :  $this->mUser->mUserInfo['FirstName'].' '. $this->mUser->mUserInfo['LastName'];
+				$eventrawdatas = Event::GetEvent($event['Id'], '', 1);					
+				
+				$eventmonths = purchasedtime($eventrawdatas['EventDate'],1);				
+				$eventday = purchasedtime($eventrawdatas['EventDate'],2);
+				$eventtime = purchasedtime($eventrawdatas['EventDate'],3);
+				
+				$artistFLName = $UserInfo['BandName'] ?  $UserInfo['BandName'] :  $UserInfo['FirstName'].' '. $UserInfo['LastName'];
+                $artistName =  $UserInfo['Name']; 					                
+                $artistLocation =  $eventrawdatas['Location']; 
+                $artistState = $UserInfo['State']; 										
+				
+				$eventimagepath = ROOT_HTTP_PATH.'/files/photo/mid/'.$eventrawdatas['UserId'].'/'.$eventrawdatas['EventPhoto'];				
+				
+				$artistNameURL = ROOT_HTTP_PATH.'/u/'.$artistName;	
+				
+				$EventURL =  ROOT_HTTP_PATH.'/u/'.$eventrawdatas['Name'].'/events/'.$eventrawdatas['Id'];							
+				if( $this->mUser->mUserInfo['BandName']) 
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['BandName']);
+					}
+					else
+					{
+						$toNameModify =  ucfirst($this->mUser->mUserInfo['FirstName'].' '.$this->mUser->mUserInfo['LastName']);		
+					}								
+						
+				$EventDesc = truncated($eventrawdatas['Descr'],35);
+				$EventArtist_URL = ROOT_HTTP_PATH.'/u/'.$eventrawdatas['Name'];	
+				if($eventrawdatas['BandName'])
+				{
+				$EventArtistName = $eventrawdatas['BandName'];
+				}
+				else
+				{
+				$EventArtistName = $eventrawdatas['FirstName'].' '.$eventrawdatas['LastName'];				
+				}
+			require_once('libs/mandrill/src/Mandrill.php');		
+				try{
+				$mandrill = new Mandrill(MANDRILL_KEY);
+				//$template_name = 'Artist Welcome Email';
+				$template_name = 'event-ticket-info-mail';   
+				$template_content = array(
+					array(
+						'name' => 'header_subject',
+						'content' => 'Welcome *|NAME|*'
+					),
+					array(
+						'name' =>'copy_right',
+						'content'=>'<em>Copyright &copy; *|YEAR|* *|DOMAIN|*. All rights reserved.</em>'
+					),
+					array(
+						'name' =>'tw',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name' =>'fb',
+						'content'=>'artistfanmedia'
+					),		
+				);
+				$merge_vars = array(
+					array(
+						'name' => 'NAME',
+						'content' =>$userName,
+					),
+					array(
+						'name'=>'YEAR',
+						'content'=>date('Y')
+					),
+					array(
+						'name'=>'DOMAIN',
+						'content'=>'www.artistfan.com'
+					),
+					array(
+						'name'=>'TWITTER',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'FACEBOOK',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'PINTEREST',
+						'content'=>'artistfanmedia'
+					),	
+					array(
+						'name'=>'INSTAGRAM',
+						'content'=>'artistfanmedia'
+					),
+					array(
+						'name'=>'EVENTIMAGEPATH',
+						'content'=>$eventimagepath
+					),
+					array(
+						'name'=>'ARTISTURL',
+						'content'=>$artistNameURL
+					),
+					array(
+						'name'=>'ARTISTFL',
+						'content'=>$artistFLName
+					),	
+					array(
+						'name'=>'EVENTURL',
+						'content'=>$EventURL
+					),											
+					array(
+						'name'=>'EVENTTITLE',
+						'content'=>$eventrawdatas['Title']
+					),
+					array(
+						'name'=>'EVENTDESC',
+						'content'=>$EventDesc
+					),					
+					array(
+						'name'=>'LOCATION',
+						'content'=>$artistLocation
+					),
+					array(
+						'name'=>'STATE',
+						'content'=>$artistState
+					),
+					array(
+						'name'=>'EVENTMONTHS',
+						'content'=>$eventmonths
+					),
+					array(
+						'name'=>'EVENTDAY',
+						'content'=>$eventday
+					),
+					array(
+						'name'=>'EVENTTIME',
+						'content'=>$eventtime
+					),
+					array(
+						'name'=>'EVENTARTISTURL',
+						'content'=>$EventArtist_URL
+					),
+					array(
+						'name'=>'EVENTARTISTNAME',
+						'content'=>$EventArtistName
+					),
+					
+				);
+				$template = $mandrill->templates->render($template_name, $template_content, $merge_vars);
+				$message = array(
+					'html' => $template['html'],
+					'subject' => EVENT_PURCHASED_INFO_FROM,
+					'from_email' => ADMIN_EMAIL,
+					'from_name' => SITE_NAME,
+					'to' => array(
+								array(
+									'email' =>$this->mUser->mUserInfo['Email'],
+									'name'=>$userName,
+								),
+						),
+					'important' => false,
+					'track_opens' => null,
+					'track_clicks' => null,
+					
+				);
+				$async = false;
+				$ip_pool = 'Main Pool';
+				$send_at = date();				
+				$result = $mandrill->messages->send($message, $async, $ip_pool, $send_at);														
+				}
+				catch(Mandrill_Error $e) {
+				
+				echo '<pre>';
+				var_dump($e);
+				echo '<hr>';
+				// Mandrill errors are thrown as exceptions
+				echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+				// A mandrill error occurred: Mandrill_Invalid_Key - Invalid API key
+				//throw $e;
+				}				
+		
+		}
+		
+// Ebill via mandrillapp  end
 					
 					
                 

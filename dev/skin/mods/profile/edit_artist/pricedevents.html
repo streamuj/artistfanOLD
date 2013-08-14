@@ -77,12 +77,8 @@
   </div>
   <div class="clear"></div>
   <div id="event_list">
-
-    {* Start  *}
 {if $follower_events}    
  {foreach key=k item=i from=$follower_events} 
-         {*if $i.Status!=4 || $i.EventDate|ispast*}
-    
 <div class="eventListBox">
 <table border="0" cellspacing="0" cellpadding="8">
   <tr>
@@ -100,17 +96,12 @@
 </td>
 <td align="center" width="1%" nowrap="nowrap">
 
- {if $i.Status<3}
- 	 {* <a href="/u/{$i.Name}/events/{$i.Id}" class="button btn-gray_ALT"> Details</a> *}
- {/if}
- 
  {if $i.Status==3}<div class="good status-good">Cancelled</div>
  
  {elseif $i.Status==4 || $i.EventDate|ispast}
 	<div class="good status-good">Finished</div>
  
  {elseif $i.EventType>1}
- {* /u/{$i.Name}/events/{$i.Id} *}
  	{if !$i.EventPurchase && !$i.EventAttend}<p><a href="javascript:void(0);" class="button wblue btn-yellow-Priced BuyEvents" mid="{$i.Id}" price="{$i.Price}">
     	
         {if $i.Price>0}
@@ -130,15 +121,11 @@
       
               </tr>
 </table>
-</div>
- 	{*/if*}
-                     
+</div>     
           {/foreach}
-        {else}
+{else}
 <h3 align="center" class="noBar M0">No Events</h3>
 {/if}
-                        
-    {* End *}
   </div>
    <div class="clear"></div>
   </div>

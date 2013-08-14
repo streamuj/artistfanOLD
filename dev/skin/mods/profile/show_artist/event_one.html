@@ -46,12 +46,11 @@
                         <p>Also, please use our <a href="#">Events FAQ</a> if you have questions.</p>
                     </div>
                 {/if}
-    
 	{if $smarty.get.thanks}
 	<p class="alert alert_success" align="center"> Thank you for purchasing {$event.Title|truncate:25:'...'} </p>
     {/if}
 <div style="width:100%; border-bottom:1px solid #cccccc;" class="Vidlarge">
-<div style=""><img   alt="event" src="{$SUB_DOMAIN}photo/slide/{$event.UserId}/{$event.EventPhoto}"></div>
+<div style=""><img   alt="event" src="{$SUB_DOMAIN}{if $event.EventPhoto}photo/slide/{$event.UserId}/{$event.EventPhoto}{else}si/noEventPhoto.jpg{/if}"></div>
 <div class="clear"></div>
 <div class="boBox">
 <div class="desBox LF boBox">

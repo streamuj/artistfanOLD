@@ -2,15 +2,15 @@
 
 {block name="javascript"}
 
-<script type="text/javascript" src="/sj/jquery.form.js"></script>
-<script type="text/javascript" src="/sj/cls/Home.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/jquery.form.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Home.js"></script>
 
-<link rel="stylesheet" href="/ss/jquery.Jcrop.css" />
-<link rel="stylesheet" href="/ss/fileuploader.css" />
+<link rel="stylesheet" href="{$smarty.const.SUB_DOMAIN}ss/jquery.Jcrop.css" />
+<link rel="stylesheet" href="{$smarty.const.SUB_DOMAIN}ss/fileuploader.css" />
 
-<script type="text/javascript" src="/sj/fileuploader.js"></script>
-<script type="text/javascript" src="/sj/cls/Errors.js"></script>
-<script type="text/javascript" src="/sj/jquery.Jcrop.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/fileuploader.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/cls/Errors.js"></script>
+<script type="text/javascript" src="{$smarty.const.SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
 
 <script type="text/javascript" language="javascript">
 	
@@ -40,7 +40,7 @@
 			
 			oErrors.Show();
 			var jcrop_api;
-			var orginalImage = '/si/placeholder.gif';
+			var orginalImage = '{$smarty.const.SUB_DOMAIN}si/placeholder.gif';
 			var uploader = new qq.FileUploader({
 				element: $('#file-uploader')[0],
 				action: '/base/home/UploadAlbumImage',
@@ -53,7 +53,7 @@
 				onSubmit: function(id, fileName){
 					oErrors.SetWaitFld('image');
 		
-					var loadImage = "/si/loading.gif";
+					var loadImage = "{$smarty.const.SUB_DOMAIN}si/loading.gif";
 					$('#slide_image').attr('src', loadImage);				
 				},
 				onProgress: function(id, fileName, loaded, total){},
@@ -92,9 +92,9 @@
 							$(this).Jcrop({
 								onChange: showPreview,
 								onSelect: showPreview,
-								aspectRatio: 700/239,
+								aspectRatio: {$smarty.const.ALBUM_SLIDE_WIDTH}/{$smarty.const.ALBUM_SLIDE_HEIGHT},
 								onSelect: updateCoords,
-								setSelect: [ 0, 0, 700/2, 239/2 ]
+								setSelect: [ 0, 0, {$smarty.const.ALBUM_SLIDE_WIDTH}/2, {$smarty.const.ALBUM_SLIDE_HEIGHT}/2 ]
 								}, function(){
 								  jcrop_api = this;
 							});
@@ -135,8 +135,8 @@
 			{
 				if (parseInt(coords.w) > 0)
 				{
-					var rx = 700 / coords.w;
-					var ry = 239 / coords.h;
+					var rx = {$smarty.const.ALBUM_SLIDE_WIDTH} / coords.w;
+					var ry = {$smarty.const.ALBUM_SLIDE_HEIGHT} / coords.h;
 					$('#cropImage').css({
 						width: Math.round(rx * imgWidth) + 'px', 
 						height: Math.round(ry * imgHeight) + 'px',

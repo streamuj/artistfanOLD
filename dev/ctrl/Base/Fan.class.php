@@ -12,6 +12,8 @@ class Base_Fan extends Base
     public function __construct($glObj)
     {
         parent :: __construct($glObj);
+		
+		$this->mlObj['mSession']->Del('redirect');
 
         if (!$this->mUser->IsAuth())
         {
@@ -327,17 +329,17 @@ class Base_Fan extends Base
 		
 		$ui = & $this->mUser->mUserInfo;
 		$this->mSmarty->assign('ui', $ui);
-				
+
         $id = _v('id', 0);
         if (!$id)
         {
             //show events list
             $page = _v('page', 1);
             $pcnt = 10;
-            $df = _v('df', '');
+            $df = _v('df', 'tm');
             $df = !in_array($df, array('tw', 'nw', 'tm', 'nm', 'up', 'all','pa')) ? '' : $df;
             $this->mSmarty->assignByRef('df', $df);
-						
+					
 			$follow = UserFollow::GetFollowersUserList($this->mUser->mUserInfo['Id'], USER_ARTIST);
 
 			$artist_arr = array();
@@ -354,7 +356,7 @@ class Base_Fan extends Base
 			Event::FinishEventNotBroadcasted($artist_ids);
 						
 			$follower_events = Event::FelowArtistEventList($this->mUser->mUserInfo['Id'], $artist_arr, $page, $pcnt, Event::GetPeriod($df), '', '', '', $df);
-								
+
 			$this->mSmarty->assignByRef('follower_events', $follower_events);	
 			$rcnt = Event::FelowArtistEventListCount($this->mUser->mUserInfo['Id'], $artist_arr, Event::GetPeriod($df), '', '', $df);
             

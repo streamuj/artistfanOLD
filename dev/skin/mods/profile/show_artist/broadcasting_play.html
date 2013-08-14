@@ -6,28 +6,21 @@
 {if $event && $event.EventPhoto}
 <meta property="og:image" content="{$SUB_DOMAIN}photo/thumbs/{$event.UserId}/{$event.EventPhoto}"/>
 {else}
-<meta property="og:image" content="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}files/images/avatars/s_{$ui.Avatar}{/if}"/>
+<meta property="og:image" content="http://{$smarty.const.DOMAIN}/{if !$ui.Avatar}i/ph/user-234x234.png{else}{$SUB_DOMAIN}images/avatars/s_{$ui.Avatar}{/if}"/>
 {/if}
 {/block}
 {block name="javascript"}
-
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Profile.js"></script>
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Popup.js"></script>
-
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
-<script type="text/javascript" src="{$SUB_DOMAIN}sj/swfobject.js"></script>
 {if $event_id}
-<script type="text/javascript" src="{$SUB_DOMAIN}sj/mdetect.js"></script>
-<script type="text/javascript" src="{$SUB_DOMAIN}sj/smh.swobject.js"></script>
+{include file="jwplayer.html"}
 {/if}
-
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.countdown.js"></script>
 <script type="text/javascript">
-
 	var event = "{$event_id}";
 	var eventCode ="{if $event}{$event.Code}{else}u{$UserInfo.Name}{/if}";
 	var online = 1;
-	{*var chat = new Chat(eventCode);	chat.init();*}
 	var name = '{$UserInfo.Name}';
 	var avatar = '{$UserInfo.Avatar}';
 	var eTime = {$eTime};	
@@ -48,24 +41,19 @@
 					
 					reTime = data.reTime;
 					
-					//MINUTES  CONVERTED AS SECONDS AFTER IF CHECK EXISTING BROADCAST
+					/*MINUTES  CONVERTED AS SECONDS AFTER IF CHECK EXISTING BROADCAST*/
 						
-					if(eTime > reTime && reTime!=0) 
-					{
+					if(eTime > reTime && reTime!=0){
 						eTime = eTime - reTime;
-					} 
-					else if(eTime < reTime) 
-					{
-						grace_time = (eTime - reTime) + grace_time
+					} else if(eTime < reTime) {
+						grace_time = (eTime - reTime) + grace_time;
 						eTime = 0;
 					}										
 					
 					if(eTime > 0)
 					{
 						startCountdown(eTime, grace_time);
-					}
-					else if(grace_time )
-					{
+					} else if(grace_time ) {
 						finalCountdown(grace_time);
 					}
                 }
@@ -116,8 +104,8 @@
 		$('#gTimeAlert').html('<span style="padding-left:10px; color:red;">This event will finish in '+timer.substring(4)+' minutes </span>');
 	
 		$(function(){
-		$('#counter').empty();
-		$('#counter').countdown({
+			$('#counter').empty();
+			$('#counter').countdown({
 			  image: '{$SUB_DOMAIN}si/digits.png',
 			  startTime: timer,
 			  timerEnd: function(){ grace_time = 0; $('#counter').empty();}
@@ -146,123 +134,83 @@
 		oProfile.CheckEventFinish('{$event_id}', '{$ui.Id}');
     });
 </script>
-{if $event_id && $access}
-<script type="text/javascript">
-window.onload=function ()
-{
-var uagent = navigator.userAgent.toLowerCase();
-	if (DetectSmartphone() || DetectTierTablet())
-	{
-		var mobile = { };
-		mobile.account  = "artistfan";
-		mobile.media = "{$smarty.const.STREAMING_MOBILE_CLIENT_SERVER}/{$flow}";
-		mobile.autoplay = "true";
-		mobile.mimetype = "video/mp4";
-		mobile.width    = "640";
-		mobile.target   = "broadcast";
-		mobile.maxwidth = "525";
-		bootStrap(mobile);
-	} else {
-		var flashvars = { account: "artistfan", media: "{$smarty.const.STREAMING_FLASH_CLIENT_SERVER}/{$flow}", autoplay: "true", };
-		var params = { };
-		params.quality = "high";
-		params.bgcolor = "#000000";
-		params.allowscriptaccess = "sameDomain";
-		params.allowfullscreen = "true";
-		var attributes = {};
-		attributes.id = "Player";
-		attributes.name = "Player";
-		attributes.align = "middle";
-		swfobject.embedSWF("{$SUB_DOMAIN}sj/smh.player.swf","broadcast", "768", "480", "10.1.0", false, flashvars, params, attributes);
-	}
-}
-</script>
-{/if}
 {/block}
 
 {block name="my_cabinet"}
-
 <div>
-    <div class="alert alert_success" id="eventFinish" style="display:none;">
-      <p><strong>The event is finished. Thank you for watching</strong></p>
+  <div class="alert alert_success" id="eventFinish" style="display:none;">
+    <p><strong>The event is finished. Thank you for watching</strong></p>
+  </div>
+  {if (!$event && $event_id) || ($event && $event.Status < 3)}
+  <div class="liveVidBroadcast">
+    <div class="vidL" style="padding:0px;margin-top:10px;">
+      <div class="video" id="broadcast"></div>
+      <script type="text/javascript">
+                  jwplayer('broadcast').setup({
+					image: "{$SUB_DOMAIN}photo/slide/{$event.UserId}/{$event.EventPhoto}",
+					width: 768,
+					height: 480,
+					autostart: true,
+					sources: [{
+							file:"{$smarty.const.STREAMING_FLASH_CLIENT_SERVER}{$flow}"
+						}, {
+							file:"{$smarty.const.STREAMING_MOBILE_CLIENT_SERVER}{$flow}{$smarty.const.STREAMING_HTML5_SUFFIX}"
+						}]
+					
+				  });
+				  </script>
     </div>
-    {if (!$event && $event_id) || ($event && $event.Status < 3)}
-        <div class="liveVidBroadcast">
-        	<div class="vidL">
-                <div class="video-holder" id="broadcastHolder" style="padding:0px;margin-top:10px;">
-			      <div class="video" id="broadcast"> </div> 
-    			</div>    
-	    	</div>
-	        <div class="clear"></div>
-        
-            <div class="Dbox">
-                <div class="LF Tbox">
-                    <div class="P10">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td>
-                        	<div id="counter"></div>
-                            <div id="finalCounter"></div>
-                        </td>
-                      </tr>
-                    </table>                        
-
-                    <p class="font11">
-                        <em>Date: {$event.EventDate}</em><br />
-                        <em>Location: {$event.Location}</em>
-                     </p>
-                     </div>
-                </div>
-                
-                <div class="P10">
-                    <h2 class=" font21">{$event.Title}</h2>
-                    <p class="font12">{$event.Descr|nl2br} </p>                
-                </div>
-                
-                <div class="clear"></div>
-            </div>
-            <div class="clear"></div>
-             <div id="gTimeAlert"></div>
+    <div class="clear"></div>
+    <div class="Dbox">
+      <div class="LF Tbox">
+        <div class="P10">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td><div id="counter"></div>
+                <div id="finalCounter"></div></td>
+            </tr>
+          </table>
+          <p class="font11"> <em>Date: {$event.EventDate}</em><br />
+            <em>Location: {$event.Location}</em> </p>
         </div>
-        
-       
-        
-        
-        <div class="clear"></div>
-        {*
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" id="chatTR">
-          <tr>
-            <td align="left" valign="top">
-            <div class="P10 font16"><span id="viewers_count">0</span> fans are watching this broadcast </div>
-            
-            <div class="chatBox">
+      </div>
+      <div class="P10">
+        <h2 class=" font21">{$event.Title}</h2>
+        <p class="font12">{$event.Descr|nl2br} </p>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    <div id="gTimeAlert"></div>
+  </div>
+  <div class="clear"></div>
+  {*
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" id="chatTR">
+    <tr>
+      <td align="left" valign="top"><div class="P10 font16"><span id="viewers_count">0</span> fans are watching this broadcast </div>
+        <div class="chatBox">
           <div class="chatTitleBar"><strong>{if $UserInfo.BandName}{$UserInfo.BandName|truncate:25:'':true}{else}{$UserInfo.FirstName|cat:' '|cat:$UserInfo.LastName|truncate:25:'':true}{/if}</strong><a href="/fan/settings" class="minIc" target="_blank"><img src="{$SUB_DOMAIN}si/ic-setting3.png" vspace="8" /></a></div>
-
-          <div class="chatListBox" id="chat-area" >          	
-                <ul >
-                </ul>
+          <div class="chatListBox" id="chat-area" >
+            <ul >
+            </ul>
           </div>
-          
           <div class="chatWriteBox">
-                  <form id="send-message-area" action="">
-                    <textarea id="sendie" class="writeBox" maxlength='120'></textarea>
-                  </form>
+            <form id="send-message-area" action="">
+              <textarea id="sendie" class="writeBox" maxlength='120'></textarea>
+            </form>
           </div>
         </div></td>
-            <td align="left" valign="top"><div class="P10 font16">Fans</div>
-              <div class="chatBox chatIN">
+      <td align="left" valign="top"><div class="P10 font16">Fans</div>
+        <div class="chatBox chatIN">
           <div class="chatListBox list">
             <ul class="viewers_list" pid="1">
-              
             </ul>
-      </div>
-      </div></td>
-          </tr>
-        </table>  
-        *}      
-        <div class="clear"></div>    
-    {/if}
- </div>
-
+          </div>
+        </div></td>
+    </tr>
+  </table>
+  *}
+  <div class="clear"></div>
+  {/if} </div>
 {include file="mods/profile/blocks/_buy_block.html"}
 {/block}

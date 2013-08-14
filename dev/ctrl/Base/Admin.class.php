@@ -12,7 +12,7 @@ class Base_Admin extends Base
     public function __construct($glObj)
     {
         parent :: __construct($glObj);
-
+		$this->mlObj['mSession']->Del('redirect');
         if(!$this->mUser->CheckAdminStatus())
         {
             uni_redirect( PATH_ROOT . 'base/user/AdminLogin' );
@@ -540,6 +540,7 @@ class Base_Admin extends Base
     public function Music()
     {
         $tp = _v('tp', 0);
+		
         if(!in_array($tp, array(0, 1)))
         {
             $tp = 0;

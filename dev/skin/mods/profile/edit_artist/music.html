@@ -161,9 +161,9 @@ function deleteMusicTrack()
             
             <a class="trackLink trackTitle play_track" href="javascript:void(0)" mid="{$track.Id}">{$track.Title|truncate:60:'...'} </a>
             
-            <span  class="RT" style="min-width:80px; text-align:center">{if $track.Price>0} ${$track.Price|string_format:'%.2f'}{elseif $i.Price>0} Bonus {else} FREE {/if}</span>
-            <a href="javascript:void(0)" id="{$track.Id}" class="TrackdeleteInc iconSet RT"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a>
-            <a href="/artist/edittrack?id={$track.Id}" class="iconSet RT"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a>
+            <span  class="RT trackLink" style="width:35px;">{if $track.Price>0} ${$track.Price|string_format:'%.2f'}{elseif $i.Price>0} Bonus {else} FREE {/if}</span>
+          {*  <a href="javascript:void(0)" id="{$track.Id}" class="TrackdeleteInc iconSet RT"><img src="{$SUB_DOMAIN}si/remove_gray.png" height="18"></a>
+            <a href="/artist/edittrack?id={$track.Id}" class="iconSet RT"><img src="{$SUB_DOMAIN}si/edit_gray.png" height="18"></a> *}
            <span class="RT trackLink">{if $track.TrackLength} {$track.TrackLength|date_format:"%M:%S"} {else} In process {/if}</span>
 
         </li>

@@ -156,6 +156,13 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 	protected $pay_more;
 
 	/**
+	 * The value for the sort_order field.
+	 * Note: this column has a database default value of: 0
+	 * @var        int
+	 */
+	protected $sort_order;
+
+	/**
 	 * @var        User
 	 */
 	protected $aUser;
@@ -220,6 +227,7 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 		$this->status = 0;
 		$this->upc_code = 0;
 		$this->pay_more = 0;
+		$this->sort_order = 0;
 	}
 
 	/**
@@ -815,6 +823,27 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 
 		return $this;
 	} // setPayMore()
+	
+	/**
+	 * Set the value of [sort_order] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     Music The current object (for fluent API support)
+	 */
+	public function setSortOrder($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->sort_order !== $v) {
+			$this->sort_order = $v;
+			$this->modifiedColumns[] = MusicPeer::SORT_ORDER;
+		}
+
+		return $this;
+	} // setSortOrder()
+
 
 	/**
 	 * Indicates whether the columns in this object are only set to default values.
@@ -893,6 +922,11 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 			if ($this->pay_more !== 0) {
 				return false;
 			}
+			
+			if ($this->sort_order !== 0) {
+				return false;
+			}
+
 
 		// otherwise, everything was equal, so return TRUE
 		return true;
@@ -934,6 +968,7 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 			$this->status = ($row[$startcol + 15] !== null) ? (int) $row[$startcol + 15] : null;
 			$this->upc_code = ($row[$startcol + 16] !== null) ? (string) $row[$startcol + 16] : null;
 			$this->pay_more = ($row[$startcol + 17] !== null) ? (int) $row[$startcol + 17] : null;
+			$this->sort_order = ($row[$startcol + 18] !== null) ? (int) $row[$startcol + 18] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -1263,6 +1298,11 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 		if ($this->isColumnModified(MusicPeer::PAY_MORE)) {
 			$modifiedColumns[':p' . $index++]  = '`PAY_MORE`';
 		}
+		
+		if ($this->isColumnModified(MusicPeer::SORT_ORDER)) {
+			$modifiedColumns[':p' . $index++]  = '`SORT_ORDER`';
+		}
+
 
 		$sql = sprintf(
 			'INSERT INTO `music` (%s) VALUES (%s)',
@@ -1328,6 +1368,9 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 					case '`PAY_MORE`':
 						$stmt->bindValue($identifier, $this->pay_more, PDO::PARAM_INT);
 						break;	
+					case '`SORT_ORDER`':
+						$stmt->bindValue($identifier, $this->sort_order, PDO::PARAM_INT);
+						break;
 				}
 			}
 			$stmt->execute();
@@ -1761,6 +1804,7 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 		if ($this->isColumnModified(MusicPeer::STATUS)) $criteria->add(MusicPeer::STATUS, $this->status);
 		if ($this->isColumnModified(MusicPeer::UPC_CODE)) $criteria->add(MusicPeer::UPC_CODE, $this->upc_code);
 		if ($this->isColumnModified(MusicPeer::PAY_MORE)) $criteria->add(MusicPeer::PAY_MORE, $this->pay_more);
+		if ($this->isColumnModified(MusicPeer::SORT_ORDER)) $criteria->add(MusicPeer::SORT_ORDER, $this->sort_order);
 
 		return $criteria;
 	}
@@ -2237,6 +2281,7 @@ abstract class BaseMusic extends BaseObject  implements Persistent
 		$this->status = null;
 		$this->upc_code = null;
 		$this->pay_more = null;
+		$this->sort_order = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();

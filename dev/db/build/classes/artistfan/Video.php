@@ -1,4 +1,5 @@
 <?php
+
 /**  
  * Skeleton subclass for representing a row from the 'video' table.
  *
@@ -21,7 +22,7 @@ class Video extends BaseVideo {
     public static function GetVideoInfo( $id, $user_id = 0, $artist_info = 0, $my_video = 0 )
     {
 
-    	$video = VideoQuery::create()->select(array('Id', 'UserId', 'Title', 'Price', 'Video', 'VideoPreview', 'Pdate', 'Active', 'FromYt', 'Deleted', 'Status','Featured','PayMore', 'VideoLength', 'VideoCount', 'VideoType', 'VideoDate'))
+    	$video = VideoQuery::create()->select(array('Id', 'UserId', 'Title', 'Price', 'Video', 'VideoPreview', 'Pdate', 'Active', 'FromYt', 'Deleted', 'Status','Featured','PayMore', 'VideoLength', 'VideoCount', 'VideoType', 'VideoDate', 'VideoImage', 'EmailSent'))
     	->filterById( $id );
         if ($user_id)
         {
@@ -385,6 +386,11 @@ class Video extends BaseVideo {
     public static function GetVideoListWithPurchase( $user_id, $user_id_purchase, $active = 1, $page = 0, $items_on_page = 0 )
     {
 		$result = array('rcnt' => 0, 'list' => array());
+	
+		if(!$user_id_purchase)
+		{
+			return $result;
+		}
 		
     	$video = VideoQuery::create()->select(array('Id', 'UserId', 'Title', 'Price', 'Video', 'VideoPreview', 'Pdate', 'Active', 'FromYt', 'Status', 'VideoPurchase.Id','PayMore', 'VideoPurchase.IsDelete'))
     	->leftJoinVideoPurchase()
@@ -495,7 +501,7 @@ class Video extends BaseVideo {
     {
         $result = array('rcnt' => 0, 'list' => array());
         $video = VideoQuery::create()->select(array('Id', 'UserId', 'Title', 'Video', 'VideoPreview', 'Pdate', 'Featured', 'Price', 'Active', 'FromYt',
-                        'Deleted', 'Status', 'VideoCount','u.FirstName', 'u.LastName', 'u.BandName', 'u.Name', 'u.Email'))
+                        'Deleted', 'Status', 'VideoCount', 'VideoDate', 'u.FirstName', 'u.LastName', 'u.BandName', 'u.Name', 'u.Email'))
                 -> leftJoin('User u');
 
         if($filter)
@@ -814,10 +820,65 @@ public static function GetLatestVideo($user_id, $active = 1)
         return $result;
     }
 		
+	public static function getProcessingVideoList( $user_id, $active = 1, $status = 1, $page = 0, $items_on_page = 0, $mCache = '', $video_type = 1)
+	{
+		$result = array('rcnt' => 0, 'list' => array());
+		if (!empty($mCache))
+        {
+            $video = $mCache->get('video_onwall' . $user_id, 12*3600);
+            if (!empty($video))
+            {
+                return @unserialize($video);
+            }
+        }
+    	$video = VideoQuery::create()->select(array('Id', 'UserId', 'Title', 'Price', 'Video', 'VideoPreview', 'Pdate', 'Active', 'FromYt', 'Status','PayMore','VideoLength', 'VideoCount'))
+    	->filterByUserId( $user_id )->filterByDeleted(0);
+        if ($active)
+        {
+            $video = $video->filterByActive( $active );
+        }
+		if($status)
+		{
+			 $status =array(1,4,5);
+			 $video = $video->filterByStatus($status, Criteria::IN);
+		}
+		if($video_type == 1)
+		{
+			$video_type =array(1,3);
+		}		
+		if($video_type)
+		{
+			$video = $video->filterByVideoType($video_type, Criteria::IN);
+		}
 		
+        //save to cache
+        if (!empty($mCache))
+        {
+            $mCache->set('video_onwall' . $user_id, serialize($video), 12*3600);
+        }
 		
-		
-		 public static function GetEditArtistVideoList( $user_id, $active = 1, $page = 0, $items_on_page = 0, $mCache = '', $video_type = 1 )
+		 $result['rcnt'] = $video -> count();
+		 
+        if ($items_on_page)
+        {
+            $video = $video->setOffset((($page - 1) * $items_on_page))->limit($items_on_page);
+			 
+        }
+
+         $video = $video->orderByPdate('DESC')->find()->toArray();
+		 $result['list'] = $video;
+		  
+		  foreach($result['list'] as &$vId){
+			 $vPurchase = VideoPurchase::Get($_SESSION['system_uid'],$vId['Id']);
+			 $vId['purchase'] = $vPurchase;			  			 
+		  }
+		  
+        return $result;
+	
+	}
+
+
+    public static function GetEditArtistVideoList( $user_id, $active = 1, $page = 0, $items_on_page = 0, $mCache = '', $video_type = 1 )
     {
 		$result = array('rcnt' => 0, 'list' => array());
 		if (!empty($mCache))
@@ -843,9 +904,6 @@ public static function GetLatestVideo($user_id, $active = 1)
 			$video = $video->filterByVideoType($video_type, Criteria::IN);
 		}
 		
-		//$Videodate	=	date('Y-m-d', getEstTime());		
-		//$video = $video->filterByVideoDate($Videodate, '<=');
-		
         //save to cache
         if (!empty($mCache))
         {
@@ -860,7 +918,7 @@ public static function GetLatestVideo($user_id, $active = 1)
 			 
         }
 
-         $video = $video->orderByPdate('DESC')->find()->toArray();
+         $video = $video->orderById('DESC')->find()->toArray();
 		 $result['list'] = $video;
 		  
 		  foreach($result['list'] as &$vId){
@@ -871,5 +929,26 @@ public static function GetLatestVideo($user_id, $active = 1)
         return $result;
 		
     }	
+
+	//Send email notification while add a new video after finish conversion
+
+	public static function GetVideoEmailSendList()
+	{		
+			$Videodate	=	date('Y-m-d', getEstTime());	
+			$sql = 'SELECT id as Id, video as Video, from_yt as FromYt, status as Status, title as Title, user_id as UserId, video_count as VideoCount, price as Price, video_image as Image, video_date as VideoDate			 
+			FROM video 	
+			WHERE deleted = 0 AND active =1 AND email_sent = 0 AND status = 2 AND from_yt != 1 AND video_date <= "'.$Videodate.'"';	
+
+
+	        $res = Query::GetAll( $sql );
+			return $res;
+	}
+	//if covertion is finished cron will send mail to user(fellow artist & fans),update column email_send as 1
+	public static function UpdateVideoEmailSend($video_id)
+    {
+		$sql = 'UPDATE video SET email_sent = 1, pdate = '.DBDATE.'  WHERE id = ' .(int)$video_id;
+		$res = Query::Execute($sql);
+		return $res;
+    }		
 
 } // Video

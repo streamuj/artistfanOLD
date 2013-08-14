@@ -7,7 +7,7 @@
               <tr><td><strong>{$i.Title|truncate:20}</strong></td></tr>
                   <tr>
                     <td> <a href="/fan/video/{$i.Id}">
-                         <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}/i/ph/video-96x96.png{/if}"width="170" height="170" alt="" /></a></td>
+                         <img src="{if $i.FromYt}http://i.ytimg.com/vi/{$i.Video}/0.jpg{elseif $i.Status == 2}{$SUB_DOMAIN}video/thumbnail/{$i.UserId}/s_{$i.Video}.jpg{else}{$SUB_DOMAIN}si/ph/video-350x210.png{/if}"width="170" height="170" alt="" /></a></td>
                   </tr>
                   <tr>
                     <td align="center" valign="top">

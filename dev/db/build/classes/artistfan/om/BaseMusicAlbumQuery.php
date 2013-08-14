@@ -172,7 +172,7 @@ abstract class BaseMusicAlbumQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `USER_ID`, `TITLE`, `DESCR`, `DATE_RELEASE`, `IMAGE`, `PRICE`, `PDATE`, `ACTIVE`, `DELETED`, `FEATURED`, `ALBUM_PAY_MORE`, `GENRE`, `LABEL`, `IS_SINGLE` FROM `music_album` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `USER_ID`, `TITLE`, `DESCR`, `DATE_RELEASE`, `IMAGE`, `PRICE`, `PDATE`, `ACTIVE`, `DELETED`, `FEATURED`, `ALBUM_PAY_MORE`, `GENRE`, `LABEL`, `IS_SINGLE`, `EMAIL_SENT` FROM `music_album` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);

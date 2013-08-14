@@ -11,8 +11,9 @@ class Base_Player extends Base
 {
     public function __construct($glObj)
     {
-     parent :: __construct($glObj);
-	 if (!$this->mUser->IsAuth()) 
+     	parent :: __construct($glObj);
+	 	$this->mlObj['mSession']->Del('redirect');
+		if (!$this->mUser->IsAuth()) 
         {
             uni_redirect( PATH_ROOT . 'base/user/login' );
         }		
@@ -113,12 +114,15 @@ class Base_Player extends Base
                 {
 				  // $MusicAlbumPrice = MusicAlbum::GetAlbum($id, 1, 1);					
                     $track = Music::GetMusic($id, 1, 1);	
-					//deb($track);				
+					$MusicAlbumPrice = MusicAlbum::GetAlbum($track['AlbumId'], 1, 1);									
                     if(!empty($track))
                     {
                         if($this->mUser->IsAuth())
                         {
                             $track['MusicPurchase'] = MusicPurchase::Get($this->mUser->mUserInfo['Id'], $id);
+							if(!$track['MusicPurchase']) {
+								$track['MusicPurchase'] = MusicPurchase::GetAlbum($this->mUser->mUserInfo['Id'], $track['AlbumId']);
+							}
                         }
                         else
                         {
@@ -250,6 +254,7 @@ class Base_Player extends Base
         $this->mSmarty->assign('explore', $explore);
         $this->mSmarty->assign('albumTracks', $album['Tracks']);
         $this->mSmarty->assign('albumImage', $album['Image']);		
+	    $this->mSmarty->assign('albumPrice', $MusicAlbumPrice['Price']);							
 		$this->mSmarty->assign('ui', $this->mUser->mUserInfo);
 		if($explore)
 		{

@@ -15,7 +15,7 @@
       <div class="proInfo">
         <h2><a href="/fan/profile"> {if $UserInfo.BandName}{$UserInfo.BandName}{else}{$UserInfo.FirstName|cat:' '|cat:$UserInfo.LastName}{/if} </a> </h2>
        {if $UserInfo.Country || $UserInfo.Location}
-        <p class="LF font11"> <a href="/u/{$UserInfo.Name}/profile">{if $UserInfo.Country} {$UserInfo.Country} , {/if} {$UserInfo.Location} </a></p>
+        <p class="LF font11"> <a href="/fan/profile">{if $UserInfo.Country} {$UserInfo.Country} , {/if} {$UserInfo.Location} </a></p>
         {/if} </div>
     </div>
     <ul class="SideNav">

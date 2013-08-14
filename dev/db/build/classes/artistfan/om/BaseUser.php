@@ -354,6 +354,28 @@ abstract class BaseUser extends BaseObject  implements Persistent
 	 * @var        string
 	 */
 	protected $hash_tag;
+	
+	/**
+	 * The value for the fb_on field.
+	 * Note: this column has a database default value of: 1
+	 * @var        int
+	 */
+	protected $fb_on;
+
+	/**
+	 * The value for the tw_on field.
+	 * Note: this column has a database default value of: 1
+	 * @var        int
+	 */
+	protected $tw_on;
+
+	/**
+	 * The value for the in_on field.
+	 * Note: this column has a database default value of: 1
+	 * @var        int
+	 */
+	protected $in_on;
+	
 
 	/**
 	 * @var        array UserFollow[] Collection to store aggregation of UserFollow objects.
@@ -601,6 +623,10 @@ abstract class BaseUser extends BaseObject  implements Persistent
 		$this->is_online = 0;
 		$this->alt_email = '';
 		$this->user_phone = '';
+		$this->fb_on = 1;
+		$this->tw_on = 1;
+		$this->in_on = 1;
+		
 	}
 
 	/**
@@ -1120,6 +1146,36 @@ abstract class BaseUser extends BaseObject  implements Persistent
 	{
 		return $this->hash_tag;
 	}
+	
+	/**
+	 * Get the [fb_on] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getFbOn()
+	{
+		return $this->fb_on;
+	}
+
+	/**
+	 * Get the [tw_on] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getTwOn()
+	{
+		return $this->tw_on;
+	}
+
+	/**
+	 * Get the [in_on] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getInOn()
+	{
+		return $this->in_on;
+	}	
 
 	/**
 	 * Set the value of [id] column.
@@ -2084,6 +2140,66 @@ abstract class BaseUser extends BaseObject  implements Persistent
 
 		return $this;
 	} // setHashTag()
+	
+	/**
+	 * Set the value of [fb_on] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     User The current object (for fluent API support)
+	 */
+	public function setFbOn($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->fb_on !== $v) {
+			$this->fb_on = $v;
+			$this->modifiedColumns[] = UserPeer::FB_ON;
+		}
+
+		return $this;
+	} // setFbOn()
+
+	/**
+	 * Set the value of [tw_on] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     User The current object (for fluent API support)
+	 */
+	public function setTwOn($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->tw_on !== $v) {
+			$this->tw_on = $v;
+			$this->modifiedColumns[] = UserPeer::TW_ON;
+		}
+
+		return $this;
+	} // setTwOn()
+
+	/**
+	 * Set the value of [in_on] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     User The current object (for fluent API support)
+	 */
+	public function setInOn($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->in_on !== $v) {
+			$this->in_on = $v;
+			$this->modifiedColumns[] = UserPeer::IN_ON;
+		}
+
+		return $this;
+	} // setInOn()	
 
 	/**
 	 * Indicates whether the columns in this object are only set to default values.
@@ -2242,6 +2358,17 @@ abstract class BaseUser extends BaseObject  implements Persistent
 			if ($this->user_phone !== '') {
 				return false;
 			}
+			if ($this->fb_on !== 1) {
+				return false;
+			}
+
+			if ($this->tw_on !== 1) {
+				return false;
+			}
+
+			if ($this->in_on !== 1) {
+				return false;
+			}
 					
 
 		// otherwise, everything was equal, so return TRUE
@@ -2314,6 +2441,9 @@ abstract class BaseUser extends BaseObject  implements Persistent
 			$this->user_phone = ($row[$startcol + 45] !== null) ? (string) $row[$startcol + 45] : null;
 			$this->state = ($row[$startcol + 46] !== null) ? (string) $row[$startcol + 46] : null;
 			$this->hash_tag = ($row[$startcol + 47] !== null) ? (string) $row[$startcol + 47] : null;
+			$this->fb_on = ($row[$startcol + 48] !== null) ? (int) $row[$startcol + 48] : null;
+			$this->tw_on = ($row[$startcol + 49] !== null) ? (int) $row[$startcol + 49] : null;
+			$this->in_on = ($row[$startcol + 50] !== null) ? (int) $row[$startcol + 50] : null;			
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -2997,6 +3127,15 @@ abstract class BaseUser extends BaseObject  implements Persistent
 		if ($this->isColumnModified(UserPeer::HASH_TAG)) {
 			$modifiedColumns[':p' . $index++]  = '`HASH_TAG`';
 		}
+		if ($this->isColumnModified(UserPeer::FB_ON)) {
+			$modifiedColumns[':p' . $index++]  = '`FB_ON`';
+		}
+		if ($this->isColumnModified(UserPeer::TW_ON)) {
+			$modifiedColumns[':p' . $index++]  = '`TW_ON`';
+		}
+		if ($this->isColumnModified(UserPeer::IN_ON)) {
+			$modifiedColumns[':p' . $index++]  = '`IN_ON`';
+		}		
 		
 		$sql = sprintf(
 			'INSERT INTO `user` (%s) VALUES (%s)',
@@ -3151,7 +3290,16 @@ abstract class BaseUser extends BaseObject  implements Persistent
 						break;
 					case '`HASH_TAG`':
 						$stmt->bindValue($identifier, $this->hash_tag, PDO::PARAM_STR);
-						break;				
+						break;	
+					case '`FB_ON`':
+						$stmt->bindValue($identifier, $this->fb_on, PDO::PARAM_INT);
+						break;
+					case '`TW_ON`':
+						$stmt->bindValue($identifier, $this->tw_on, PDO::PARAM_INT);
+						break;
+					case '`IN_ON`':
+						$stmt->bindValue($identifier, $this->in_on, PDO::PARAM_INT);
+						break;									
 				}
 			}
 			$stmt->execute();
@@ -3561,7 +3709,16 @@ abstract class BaseUser extends BaseObject  implements Persistent
 				break;
 			case 47:
 				return $this->getHashTag();
-				break;			
+				break;
+			case 48:
+				return $this->getFbOn();
+				break;
+			case 49:
+				return $this->getTwOn();
+				break;
+			case 50:
+				return $this->getInOn();
+				break;							
 			default:
 				return null;
 				break;
@@ -3639,6 +3796,9 @@ abstract class BaseUser extends BaseObject  implements Persistent
 			$keys[45] => $this->getUserPhone(),			
 			$keys[46] => $this->getState(),
 			$keys[47] => $this->getHashTag(),
+			$keys[48] => $this->getFbOn(),
+			$keys[49] => $this->getTwOn(),
+			$keys[50] => $this->getInOn(),			
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->collUserFollowsRelatedByUserId) {
@@ -3867,6 +4027,15 @@ abstract class BaseUser extends BaseObject  implements Persistent
 			case 47:
 				$this->setHashTag($value);
 				break;			
+			case 48:
+				$this->setFbOn($value);
+				break;
+			case 49:
+				$this->setTwOn($value);
+				break;
+			case 50:
+				$this->setInOn($value);
+				break;				
 		} // switch()
 	}
 
@@ -3939,6 +4108,9 @@ abstract class BaseUser extends BaseObject  implements Persistent
 		if (array_key_exists($keys[45], $arr)) $this->setUserPhone($arr[$keys[45]]);	
 		if (array_key_exists($keys[46], $arr)) $this->setState($arr[$keys[46]]);
 		if (array_key_exists($keys[47], $arr)) $this->setHashTag($arr[$keys[47]]);	
+		if (array_key_exists($keys[48], $arr)) $this->setFbOn($arr[$keys[48]]);
+		if (array_key_exists($keys[49], $arr)) $this->setTwOn($arr[$keys[49]]);
+		if (array_key_exists($keys[50], $arr)) $this->setInOn($arr[$keys[50]]);		
 	}
 
 	/**
@@ -3998,6 +4170,9 @@ abstract class BaseUser extends BaseObject  implements Persistent
 		if ($this->isColumnModified(UserPeer::USER_PHONE)) $criteria->add(UserPeer::USER_PHONE, $this->user_phone);		
 		if ($this->isColumnModified(UserPeer::STATE)) $criteria->add(UserPeer::STATE, $this->state);
 		if ($this->isColumnModified(UserPeer::HASH_TAG)) $criteria->add(UserPeer::HASH_TAG, $this->hash_tag);
+		if ($this->isColumnModified(UserPeer::FB_ON)) $criteria->add(UserPeer::FB_ON, $this->fb_on);
+		if ($this->isColumnModified(UserPeer::TW_ON)) $criteria->add(UserPeer::TW_ON, $this->tw_on);
+		if ($this->isColumnModified(UserPeer::IN_ON)) $criteria->add(UserPeer::IN_ON, $this->in_on);		
 
 		return $criteria;
 	}
@@ -4107,6 +4282,9 @@ abstract class BaseUser extends BaseObject  implements Persistent
 		$copyObj->setUserPhone($this->getUserPhone());		
 		$copyObj->setState($this->getState());
 		$copyObj->setHashTag($this->getHashTag());
+		$copyObj->setFbOn($this->getFbOn());
+		$copyObj->setTwOn($this->getTwOn());
+		$copyObj->setInOn($this->getInOn());		
 
 		if ($deepCopy && !$this->startCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -7048,7 +7226,9 @@ abstract class BaseUser extends BaseObject  implements Persistent
 		$this->user_phone = null;
 		$this->state = null;
 		$this->hash_tag = null;
-		
+		$this->fb_on = null;
+		$this->tw_on = null;
+		$this->in_on = null;		
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();

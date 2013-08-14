@@ -23,7 +23,7 @@
     </tr>
 	<tr>
 		    <td  class="mngHometxt">Category  <span style="color:#FF0000;">*</span></td>
-            <td class="mngHometxt"> :            	
+            <td class="mngHometxt"> :             	
             	<select name="Category" id="Category" {if $status == 'musicAlbum' ||  $status == 'video'}onchange="getAlbumSlide(this.value);" {/if}>
                     <option value="">--Select--</option>
                     {foreach item=i key=k from=$homeCategory}
@@ -57,7 +57,7 @@
                 </tr>      
                   <tr>
                     <td align="left" valign="middle" colspan="2" >
-                                <img src="/si/placeholder.gif" id="slide_image" />
+                                <img src="{$smarty.const.SUB_DOMAIN}si/placeholder.gif" id="slide_image" />
                                     <input type="hidden" name="x1" value="" id="x1" />
                                     <input type="hidden" name="y1" value="" id="y1" />
                                     <input type="hidden" name="x2" value="" id="x2" />
@@ -69,10 +69,12 @@
                 <tr>
                     <td>&nbsp;</td>
                    <td><span id="image_err"></span>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="left" valign="top" nowrap="nowrap" id="cropedTxt" colspan="2"></td>
                 </tr>  
                 <tr>
-                    <td align="left" valign="top" nowrap="nowrap" id="cropedTxt"></td>
-                    <td>
+                    <td colspan="2">
                     <div style="float:left; margin-top:5px; position:relative; overflow:hidden; width:{$smarty.const.ALBUM_SLIDE_WIDTH}px; height:{$smarty.const.ALBUM_SLIDE_HEIGHT}px; display:none;">
                     <img id="cropImage" src="{if $UserInfo.Avatar}{$SUB_DOMAIN}images/avatars/s_{$UserInfo.Avatar}{else}/i/ph/user-48x48.png{/if}" style="position: relative;" alt="Crop Image Preview" />        </div>        </td>
                 </tr>

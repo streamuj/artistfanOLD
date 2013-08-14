@@ -8,6 +8,17 @@
 <link rel="stylesheet" href="{$SUB_DOMAIN}ss1/jqtransform.css" type="text/css" media="all" />
 <link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.Jcrop.css" />
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Errors.js"></script>
+
+{* Start *}
+		<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.checkbox.css" />
+		<link rel="stylesheet" href="{$SUB_DOMAIN}ss/jquery.safari-checkbox.css" />
+		<script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.checkbox.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('input.socialmediaonoff').checkbox();								
+			});
+		</script>
+{* End *}
 <script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery.Jcrop.min.js"></script>
 <script language="javascript">
 	$(function(){
@@ -120,7 +131,7 @@
 				marginTop: '-' + Math.round(ry * coords.y) + 'px' ,
 			});
 		}
-	};
+	};	
 </script>
 {/strip}
 {/block}
@@ -167,13 +178,13 @@
       <table cellspacing="0" cellpadding="3" border="0">
         <tbody>
           <tr>
-            <td valign="middle" align="left">Country</td>
+            <td valign="middle" align="left">Country </td>
             <td valign="middle" align="left"  colspan="3"><select name="fm[country]" id="country" class="txtBox drop">                
                          {foreach key=k item=i from=$countries}                         
-                <option value="{$i.Iso2}"{if $i.Iso2==$GeoIp.country} selected="selected"{/if}>{$i.Name}</option>                
+                <option value="{$i.Iso2}" {if $i.Iso2==$fm.country} selected="selected" {elseif $i.Iso2==$GeoIp.country} selected="selected"{/if}>{$i.Name}</option>                
                         {/foreach}                       
               </select>
-              </label>
+              </label> 
               <span id="err_country"></span> </td>
           </tr>
           <tr>
@@ -279,6 +290,12 @@
     </table>
     <br />
     <div class="clear"></div>
+    <h5 style="padding-bottom:5px">First Name</h5>
+	<input type="text" class="txtBox2"  id="first_name" name="fm[first_name]" value="{$fm.first_name}" maxlength="20">
+	<div id="err_first_name"></div>    
+    <h5 style="padding-bottom:5px">Last Name</h5>
+	<input type="text" class="txtBox2"  id="last_name" name="fm[last_name]" value="{$fm.last_name}"  maxlength="20">
+    <div id="err_last_name"></div>
     {if $fm.Status == 2}
     <h5 style="padding-bottom:5px">Phone</h5>
     <input type="text" name="fm[UserPhone]" id="user_phone" value="{$fm.UserPhone}"  class="txtBox" size="20" />
@@ -360,6 +377,25 @@
     </table>
     <br />
     {/if}
+    <!--Start -->
+<div style="border-radius: 3px; background-color: #ececec; margin-top:20px; margin-bottom: 20px;" class="boBox P10">
+      <p class="LF P5">Linked Social Network</p>
+      <label>      
+      </label>
+      <br/>
+      <div class="clear"></div>
+      <div align="left" class="M10" id="HideAvator">
+      <table width="100%">
+      <tr><td>Facebook</td><td>Twitter</td><td>Instagram</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>      
+      <tr><td><input type="checkbox" class="socialmediaonoff" name="fm[fb]" id="fb" {if $checkfb} checked="checked" {else} disabled="disabled" {/if}  ></td><td><input type="checkbox"  class="socialmediaonoff" name="fm[tw]"  id="tw" {if $twAuth_name} checked="checked" {else} disabled="disabled" {/if}  ></td><td><input type="checkbox" class="socialmediaonoff" name="fm[ig]" id="ig" disabled="disabled" ></td></tr>            
+      </table>       
+       </div>
+      <div class="clear"></div>
+    </div>    
+    <br/>    
+    <!--End -->
+
     <h5 style="padding-bottom:5px; border-bottom: 1px solid #ececec; ">{if $fm.Status == 2} Music Genre Tags {else} Choose your favorite genres {/if}</h5>
     <div id="err_genres"></div>
     <p style="margin-top:20px; margin-bottom:10px;">Select Genres that best describe your music <span style="color:red">(only up to 3)</span></p>

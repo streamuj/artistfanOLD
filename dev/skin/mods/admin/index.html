@@ -3,10 +3,12 @@
 <head>
 <title>{$SITE_NAME}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <script type="text/javascript" src="/sj/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="/sj/jquery.keyfilter.js"></script>
-    <script type="text/javascript" src="/sj/main.js"></script>        
-    <script type="text/javascript" src="/sj/cls/Users.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/main.js"></script>        
+    <script type="text/javascript" src="{$SUB_DOMAIN}sj/cls/Users.js"></script>
+    <script type="application/javascript">
+    	var subDomain = "{$smarty.const.SUB_DOMAIN}";
+    </script>
     {block name="css"}{/block}
     <link rel="stylesheet" href="/ss2/style.css" type="text/css" />
 <!--[if IE]>
@@ -37,8 +39,9 @@
                 <li{if 'events'==$amodule} class="active"{/if}><span><a href="/base/admin/Events">Events </a></span></li>
                 <li{if 'pages'==$amodule} class="active"{/if}><span><a href="/base/pages/indexadmin">Pages</a></span></li>
                 <li{if 'Adbanner'==$amodule} class="active"{/if}><span><a href="/base/Adbanner/Banner">Manage Ads</a></span></li>
-                <li{if 'HomeSlide'==$amodule} class="active"{/if}><span><a href="/base/HomeSlide/slide">Manage Home slide</a></span></li>                
+              {*  <li{if 'HomeSlide'==$amodule} class="active"{/if}><span><a href="/base/HomeSlide/slide">Manage Home slide</a></span></li>  *}
                 <li{if 'home'==$amodule} class="active"{/if}><span><a href="/base/home/artist">Manage Home page</a></span></li>
+                <li{if 'error'==$amodule} class="active"{/if}><span><a href="/base/error/getList">Error Log</a></span></li>                
                 
             </ul>
 	</div>

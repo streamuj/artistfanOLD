@@ -2,118 +2,131 @@
 {block name="title"}Payout Info mail from {$DOMAIN}{/block}
 {block name="content"}
 {strip}
-{if $mode == 'direct'}
-<table align="center" border="0" cellpadding="20" cellspacing="0" width="330">
-  <tbody>
-    <tr>
-      <td align="left" valign="top"><h1 {$headerStyle}>Hi, {$userName}</h1><p {$paraHeadStyle}>{if $mail_to == 'artist'}Your ACH Direct Payment Request Sent To Admin {else}{$artistFullName} Requested For ACH Direct Payment  <br /><a {$anchorStyle} href="http://{$DOMAIN}/u/{$artist_name}">Click Here</a> To View Artist  {/if}</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" valign="top">
+<tr>
+    <td align="center" valign="top" bgcolor="#F4F4F4">
+<table width="650" border="0" cellspacing="20" cellpadding="0" align="center">
+      <tr>
+        <td><h1 style="color:#202020; font-family: Helvetica,Arial, sans-serif; margin:0; padding:6px 0; font-size:36px;">Hello {$userName}!</h1></td>
+      </tr>
+      {if $mode == 'direct'}
+      <tr>
+      <td align="left" valign="top"><p {$paraHeadStyle}>{if $mail_to == 'artist'}Your ACH Direct Payment Request Sent To Admin {else}{$artistFullName} Requested For ACH Direct Payment  <br /><a {$anchorStyle} href="{$smarty.const.ROOT_HTTP_PATH}/u/{$artist_name}">Click Here</a> To View Artist  {/if}</p>
     	</td>
     </tr>
-    <tr>
-        <td align="center" valign="top" bgcolor="#333333" >
-        <table width="240" border="0" cellpadding="5" cellspacing="0" >  
-        {if $mail_to != 'artist'}
-      <tr><td align="center" colspan="2" ><a {$anchorStyle}  href="http://{$DOMAIN}/u/{$artist_name}"><img src="{$smarty.const.SUB_DOMAIN}/images/avatars/s_{$avatar}" /></a></td></tr>
-      {/if}         
+      <tr>
+        <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:18px 0 0;">
           <tr>
-            <td align="left"  nowrap="nowrap" {$dataTxt} > Withdraw Amount</td>
-            <td align="left" {$dataTxt}>$ {$amount|string_format:'%.2f'}&nbsp;</td>
+            <td width="1%" align="left" valign="top">
+                    <img src="{$smarty.const.SUB_DOMAIN}/images/avatars/s_{$avatar}" width="280" style="border:3px #fff solid" />
+            </td>
+            <td width="89%" align="left" valign="middle" style="padding-left:25px">
+                <table width="240" border="0" cellpadding="5" cellspacing="0" >                            
+                      <tr>
+                        <td align="left"  nowrap="nowrap" {$dataTxt} > Withdraw Amount</td>
+                        <td align="left" {$dataTxt}>: $ {$amount|string_format:'%.2f'}&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td align="left" nowrap="nowrap" {$dataTxt}>Routing / ABA Code </td>
+                        <td align="left" {$dataTxt} >: {$routing_code}&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td align="left" nowrap="nowrap"  {$dataTxt}>Bank Account Number</td>
+                        <td align="left"  {$dataTxt}>: {$acc_no}&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td align="left" nowrap="nowrap" {$dataTxt}>Bank Account Holder Name</td>
+                        <td align="left" {$dataTxt} nowrap="nowrap">: {$hoder_name|truncate:30:'...'}&nbsp;</td>
+                     </tr>
+                     <tr>
+                        <td align="left" nowrap="nowrap" {$dataTxt}>Account Type </td>
+                        <td {$dataTxt} nowrap="nowrap">: {$acc_type|truncate:30:'...'}&nbsp;</td>
+                     </tr>    
+                  </table>
+            </td>
           </tr>
-          <tr>
-            <td align="left" nowrap="nowrap" {$dataTxt}>Routing / ABA Code </td>
-            <td align="left" {$dataTxt} >{$routing_code}&nbsp;</td>
-          </tr>
-          <tr>
-            <td align="left" nowrap="nowrap"  {$dataTxt}>Bank Account Number</td>
-            <td align="left"  {$dataTxt}>{$acc_no}&nbsp;</td>
-          </tr>
-          <tr>
-            <td align="left" nowrap="nowrap" {$dataTxt}>Bank Account Holder Name</td>
-            <td align="left" {$dataTxt}>{$hoder_name}&nbsp;</td>
-         </tr>
-         <tr>
-            <td align="left" nowrap="nowrap" {$dataTxt}>Account Type </td>
-            <td {$dataTxt} >{$acc_type}&nbsp;</td>
-     	 </tr>    
-      </table>    
-    </td>
-   </tr>  
-  </tbody>
-
-</table>
+        </table></td>
+      </tr>
 {elseif $mode == 'check'}
-<table align="center" border="0" cellpadding="20" cellspacing="0" width="330">
-  <tbody>
-    <tr>
-      <td align="left" valign="top"> <h1 {$headerStyle}>Hi, {$userName}</h1><p {$paraHeadStyle}>{if $mail_to == 'artist'}Check Payment Request Sent To Admin {else}{$artistFullName} Requested For Check Payment <a {$anchorStyle}  href="http://{$DOMAIN}/u/{$artist_name}">Click Here</a> To View Artist {/if}</p> </td>
+      <tr>
+      <td align="left" valign="top"><p {$paraHeadStyle}>{if $mail_to == 'artist'}Check Payment Request Sent To Admin {else}{$artistFullName} Requested For Check Payment <a {$anchorStyle}  href="{$smarty.const.ROOT_HTTP_PATH}/u/{$artist_name}">Click Here</a> To View Artist {/if}</p>
+    	</td>
     </tr>
-    
-    <tr>
-        <td align="center" valign="top" bgcolor="#333333">
-        <table width="240" border="0" cellpadding="5" cellspacing="0" >
-        {if $mail_to != 'artist'}
-      <tr><td align="center" colspan="2" ><a {$anchorStyle}  href="http://{$DOMAIN}/u/{$artist_name}"><img src="{$smarty.const.SUB_DOMAIN}/images/avatars/s_{$avatar}" /></a></td></tr>
-      {/if}
       <tr>
-        <td  align="left" nowrap="nowrap" {$dataTxt}>Withdraw Amount : </td>
-        <td  align="left" {$dataTxt}>$ {$amount|string_format:'%.2f'}&nbsp;</td>
+        <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:18px 0 0;">
+          <tr>
+            <td width="1%" align="left" valign="top">
+                    <img src="{$smarty.const.SUB_DOMAIN}/images/avatars/s_{$avatar}" width="280" style="border:3px #fff solid" />
+            </td>
+            <td width="89%" align="left" valign="middle" style="padding-left:25px">
+                <table width="240" border="0" cellpadding="5" cellspacing="0" >                            
+                      <tr>
+                        <td  align="left" nowrap="nowrap" {$dataTxt}>Withdraw Amount </td>
+                        <td  align="left" {$dataTxt}>: $ {$amount|string_format:'%.2f'}&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td  align="left" nowrap="nowrap" {$dataTxt}>Check address to </td>
+                        <td align="left" {$dataTxt}>: {$mail_name}&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td  align="left" nowrap="nowrap" {$dataTxt}>Address 1 </td>
+                        <td align="left" {$dataTxt}>: {$mail_addr1}&nbsp;</td>
+                      </tr>
+                      {if $mail_addr2}
+                      <tr>
+                        <td align="left" nowrap="nowrap" {$dataTxt}>Address 2 </td>
+                        <td align="left" {$dataTxt}>: {$mail_addr2}&nbsp;</td>
+                      </tr>
+                      {/if}
+                      <tr>
+                        <td align="left" nowrap="nowrap" {$dataTxt}>City </td>
+                        <td align="left" {$dataTxt}>: {$mail_city}&nbsp;</td>
+                      </tr>
+                      {if $mail_state}
+                      <tr>
+                        <td  align="left" nowrap="nowrap" {$dataTxt}>State </td>
+                        <td align="left" {$dataTxt}>: {$mail_state}&nbsp;</td>
+                      </tr>  
+                      {/if}
+                      <tr>
+                        <td  align="left" nowrap="nowrap" {$dataTxt}>Zip  </td>
+                        <td align="left" {$dataTxt}>: {$mail_zip}&nbsp;</td>
+                      </tr>   
+                  </table>
+            </td>
+          </tr>
+        </table></td>
       </tr>
-      <tr>
-        <td  align="left" nowrap="nowrap" {$dataTxt}>Check address to :</td>
-        <td align="left" {$dataTxt}>{$mail_name}&nbsp;</td>
-      </tr>
-      <tr>
-        <td  align="left" nowrap="nowrap" {$dataTxt}>Address 1 : </td>
-        <td align="left" {$dataTxt}>{$mail_addr1}&nbsp;</td>
-      </tr>
-      <tr>
-        <td align="left" nowrap="nowrap" {$dataTxt}>Address 2 :</td>
-        <td align="left" {$dataTxt}>{$mail_addr2}&nbsp;</td>
-      </tr>
-      <tr>
-        <td align="left" nowrap="nowrap" {$dataTxt}>City :</td>
-        <td align="left" {$dataTxt}>{$mail_city}&nbsp;</td>
-      </tr>
-      <tr>
-        <td  align="left" nowrap="nowrap" {$dataTxt}>State :</td>
-        <td align="left" {$dataTxt}>{$mail_state}&nbsp;</td>
-      </tr>  
-      <tr>
-        <td  align="left" nowrap="nowrap" {$dataTxt}>Zip : </td>
-        <td align="left" {$dataTxt}>{$mail_zip}&nbsp;</td>
-      </tr>                     
-     </table>    
-    </td>
-   </tr>  
-  </tbody>
-
-</table>
 {else}
-<table align="center" border="0" cellpadding="20" cellspacing="0" width="330">
-  <tbody>
-    <tr>
-      <td align="left" valign="top"> <h1 {$headerStyle}>Hi, {$userName}</h1> <p {$paraHeadStyle}>{if $mail_to == 'artist'}Your Paypal Payment Request Sent To Admin {else}{$artistFullName} Requested For Paypal Payment<br/><a {$anchorStyle}  href="http://{$DOMAIN}/u/{$artist_name}">Click Here</a> To view artist {/if}</p> </td>
+      <tr>
+      <td align="left" valign="top"><p {$paraHeadStyle}>{if $mail_to == 'artist'}Your Paypal Payment Request Sent To Admin {else}{$artistFullName} Requested For Paypal Payment<br/><a {$anchorStyle}  href="{$smarty.const.ROOT_HTTP_PATH}/u/{$artist_name}">Click Here</a> To view artist {/if}</p>
+    	</td>
     </tr>
-    <tr>
-        <td align="center" valign="top" bgcolor="#333333">
-        <table width="240" border="0" cellpadding="5" cellspacing="0"  >
-        {if $mail_to != 'artist'}
-      <tr><td align="center" colspan="2"><a {$anchorStyle}  href="http://{$DOMAIN}/u/{$artist_name}"><img src="{$smarty.const.SUB_DOMAIN}/images/avatars/s_{$avatar}" /></a></td></tr>
-      {/if}        
       <tr>
-        <td  align="left" nowrap="nowrap" {$dataTxt}>Withdraw Amount :</td>
-        <td  align="left" {$dataTxt}>$ {$amount|string_format:'%.2f'}&nbsp;</td>
+        <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:18px 0 0;">
+          <tr>
+            <td width="1%" align="left" valign="top">
+                    <img src="{$smarty.const.SUB_DOMAIN}/images/avatars/s_{$avatar}" width="280" style="border:3px #fff solid" />
+            </td>
+            <td width="89%" align="left" valign="middle" style="padding-left:25px">
+                <table width="240" border="0" cellpadding="5" cellspacing="0" >                            
+                      <tr>
+                        <td  align="left" nowrap="nowrap" {$dataTxt}>Withdraw Amount </td>
+                        <td  align="left" {$dataTxt}>&nbsp; : $ {$amount|string_format:'%.2f'}&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td align="left" {$dataTxt}>Paypal id </td>
+                        <td align="left" {$dataTxt}>&nbsp; : <span style="color:#505050;">{$paypal_id}</span>&nbsp;</td>
+                      </tr>   
+                  </table>
+            </td>
+          </tr>
+        </table></td>
       </tr>
-      <tr>
-        <td align="left" {$dataTxt}>Paypal id :</td>
-        <td align="left" {$dataTxt}><span style="color:#fff;">{$paypal_id}</span>&nbsp;</td>
-      </tr>
-    </table>    
-    </td>
-   </tr>  
-  </tbody>
-
-</table>
 {/if}
+    </table>
+  </td>
+ </tr>
+</table>
 {/strip}
 {/block}

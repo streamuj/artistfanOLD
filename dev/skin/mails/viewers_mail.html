@@ -1,76 +1,29 @@
+{extends file="mails/base_mail.html"}
+{block name="content"}
 {strip}
-<body style="margin:0; padding:0; background:#eeeeee;">
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-  <tbody><tr>
-    <td align="center" bgcolor="#000000" valign="top"><table border="0" cellpadding="20" cellspacing="0" width="600">
-      <tbody><tr>
-        <td><table border="0" cellpadding="0" cellspacing="0" width="100%">
-            <tbody>
-              
-              <tr>
-                <td align="left" valign="top"><a href="#"><img src="http&#58;//artistfandemo.usaweb.net/si/logo-email.png" alt="Artistfan" border="0" height="43" width="208"></a></td>
-                <td align="left" valign="top" width="20">&nbsp;</td>
-                <td style="color:#FFFFFF;font-family:Helvetica;font-size:10px;line-height:125%;" align="left" valign="top" width="200">&nbsp;</td>
-              </tr>
-            </tbody>
-        </table></td>
-      </tr>
-    </tbody></table></td>
-  </tr>
-  <tr>
-    <td align="center" bgcolor="#eeeeee" valign="top">
-	
-<table align="center" border="0" cellpadding="20" cellspacing="0" width="600">
-  <tbody>
-    <tr>
-      <td align="left" valign="top"><h1  style="font-family:Arial, Helvetica, sans-serif; color:#000; margin:0; padding:0">Hi {$name}!</h1>
-       <p style="font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#333333;  padding:5px 0; margin:0;"></p> </td>
-    </tr>
-    <tr>
-    <td align="center" valign="top">
-    
-<table width="300" border="0" cellpadding="0" cellspacing="0">
-  <tr>
-    <td>
-<img src="{if $Avatar}{$SUB_DOMAIN}images/avatars/s_{$Avatar}{else}/i/ph/user-48x48.png{/if}" width="300"  />
-    </td>
-  </tr>
-  <tr>
-    <td bgcolor="#333333"><table width="100%" border="0" cellspacing="0" cellpadding="20">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" valign="top">
+<tr>
+    <td align="center" valign="top" bgcolor="#F4F4F4">
+<table width="650" border="0" cellspacing="20" cellpadding="0" align="center">
       <tr>
-        <td>
-        <div style="font-family:Arial, Helvetica, sans-serif; color:#fff;">
-        <p style="color:#fff; font-size:13px;margin-top:3px;">{$message}</p>
-        </div>        </td>
+        <td><h1 style="color:#202020; font-family: Helvetica,Arial, sans-serif; margin:0; padding:6px 0; font-size:36px;">Hello {$name}!</h1></td>
       </tr>
-    </table></td>
-  </tr>
-</table></td>
-  </tr>  
-</tbody></table>
-
-</td>
-  </tr>
-  <tr>
-    <td align="center" bgcolor="#eeeeee" valign="bottom"><table style="border-top:1px solid #CCC;" border="0" cellpadding="20" cellspacing="0" width="100%">
-      <tbody><tr>
-        <td style="border-top:1px solid #FFFFFF;" align="center" valign="top"><table border="0" cellpadding="10" cellspacing="0" width="600">
-            <tbody>
-              <tr>
-                <td style="font-size:10px;font-family:Arial, Helvetica, sans-serif;" colspan="3" valign="top"><a href="#" style="color:#606060;font-weight:normal;text-decoration:underline;font-size:10px;">Follow on Twitter</a> | <a href="#" style="color:#606060;font-weight:normal;text-decoration:underline;font-size:10px;">Like us on Facebook</a>&nbsp;
-</td>
-              </tr>
-              <tr>
-                <td colspan="3" style="font-size:10px;font-family:Arial, Helvetica, sans-serif;color:#808080;line-height:150%;" align="left" valign="top"><em>Copyright &copy;
-{$smarty.now|date_format:'%Y'} {$smarty.const.DOMAIN} All rights
-reserved.</em>
-                  </td>
-              </tr>
-            </tbody>
+      
+      <tr>
+        <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:18px 0 0;">
+          <tr>
+            <td width="1%" align="left" valign="top">
+            		<img src="{$Image}" alt="nope" width="280" style="border:3px #fff solid" />
+            </td>
+            <td width="89%" align="left" valign="middle" style="padding-left:25px">
+                     <p style="color:#505050; font-family:Helvetica; font-size: 14px; text-align: left; margin:0; padding:10px 0; line-height:1.7em">{$message}</p>
+            </td>
+          </tr>
         </table></td>
       </tr>
-    </tbody></table></td>
-  </tr>
-</tbody></table>
-</body>
+    </table>
+  </td>
+ </tr>
+</table>
 {/strip}
+{/block}

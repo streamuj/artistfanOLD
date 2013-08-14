@@ -85,7 +85,9 @@ abstract class BaseVideoPeer {
 	/** the column name for the VIDEO_IMAGE field */
 	const VIDEO_IMAGE = 'video.VIDEO_IMAGE';
 
-
+	/** the column name for the EMAIL_SENT field */
+	const EMAIL_SENT = 'video.EMAIL_SENT';
+	
 	/** The default string format for model objects of the related table **/
 	const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -105,12 +107,12 @@ abstract class BaseVideoPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'UserId', 'Title', 'Price', 'Video', 'VideoPreview', 'Pdate', 'Active', 'Deleted', 'FromYt', 'Status', 'Featured', 'PayMore', 'VideoLength', 'VideoCount', 'VideoType', 'VideoDate', 'VideoImage', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'userId', 'title', 'price', 'video', 'videoPreview', 'pdate', 'active', 'deleted', 'fromYt', 'status', 'featured', 'payMore', 'videoLength', 'videoCount', 'videoType', 'videoDate', 'videoImage', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::USER_ID, self::TITLE, self::PRICE, self::VIDEO, self::VIDEO_PREVIEW, self::PDATE, self::ACTIVE, self::DELETED, self::FROM_YT, self::STATUS, self::FEATURED, self::PAY_MORE, self::VIDEO_LENGTH, self::VIDEO_COUNT, self::VIDEO_TYPE, self::VIDEO_DATE, self::VIDEO_IMAGE, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USER_ID', 'TITLE', 'PRICE', 'VIDEO', 'VIDEO_PREVIEW', 'PDATE', 'ACTIVE', 'DELETED', 'FROM_YT', 'STATUS', 'FEATURED', 'PAY_MORE', 'VIDEO_LENGTH', 'VIDEO_COUNT', 'VIDEO_TYPE', 'VIDEO_DATE', 'VIDEO_IMAGE', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'user_id', 'title', 'price', 'video', 'video_preview', 'pdate', 'active', 'deleted', 'from_yt', 'status', 'featured','pay_more', 'video_length', 'video_count', 'video_type',  'video_date', 'video_image', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'UserId', 'Title', 'Price', 'Video', 'VideoPreview', 'Pdate', 'Active', 'Deleted', 'FromYt', 'Status', 'Featured', 'PayMore', 'VideoLength', 'VideoCount', 'VideoType', 'VideoDate', 'VideoImage', 'EmailSent', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'userId', 'title', 'price', 'video', 'videoPreview', 'pdate', 'active', 'deleted', 'fromYt', 'status', 'featured', 'payMore', 'videoLength', 'videoCount', 'videoType', 'videoDate', 'videoImage', 'emailSent', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::USER_ID, self::TITLE, self::PRICE, self::VIDEO, self::VIDEO_PREVIEW, self::PDATE, self::ACTIVE, self::DELETED, self::FROM_YT, self::STATUS, self::FEATURED, self::PAY_MORE, self::VIDEO_LENGTH, self::VIDEO_COUNT, self::VIDEO_TYPE, self::VIDEO_DATE, self::VIDEO_IMAGE, self::EMAIL_SENT,),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USER_ID', 'TITLE', 'PRICE', 'VIDEO', 'VIDEO_PREVIEW', 'PDATE', 'ACTIVE', 'DELETED', 'FROM_YT', 'STATUS', 'FEATURED', 'PAY_MORE', 'VIDEO_LENGTH', 'VIDEO_COUNT', 'VIDEO_TYPE', 'VIDEO_DATE', 'VIDEO_IMAGE', 'EMAIL_SENT',),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'user_id', 'title', 'price', 'video', 'video_preview', 'pdate', 'active', 'deleted', 'from_yt', 'status', 'featured','pay_more', 'video_length', 'video_count', 'video_type',  'video_date', 'video_image', 'email_sent', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,)
 	);
 
 	/**
@@ -120,12 +122,12 @@ abstract class BaseVideoPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UserId' => 1, 'Title' => 2, 'Price' => 3, 'Video' => 4, 'VideoPreview' => 5, 'Pdate' => 6, 'Active' => 7, 'Deleted' => 8, 'FromYt' => 9, 'Status' => 10, 'Featured' => 11, 'PayMore' => 12, 'VideoLength' => 13, 'VideoCount' => 14, 'VideoType' => 15,'VideoDate' => 16, 'VideoImage' => 17, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'userId' => 1, 'title' => 2, 'price' => 3, 'video' => 4, 'videoPreview' => 5, 'pdate' => 6, 'active' => 7, 'deleted' => 8, 'fromYt' => 9, 'status' => 10, 'featured' => 11, 'payMore' => 12, 'videoLength' => 13, 'videoCount' => 14, 'videoType' => 15, 'videoDate' => 16, 'videoImage' => 17, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::USER_ID => 1, self::TITLE => 2, self::PRICE => 3, self::VIDEO => 4, self::VIDEO_PREVIEW => 5, self::PDATE => 6, self::ACTIVE => 7, self::DELETED => 8, self::FROM_YT => 9, self::STATUS => 10,  self::FEATURED => 11, self::PAY_MORE => 12, self::VIDEO_LENGTH => 13, self::VIDEO_COUNT => 14,  self::VIDEO_TYPE => 15, self::VIDEO_DATE => 16, self::VIDEO_IMAGE => 17, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USER_ID' => 1, 'TITLE' => 2, 'PRICE' => 3, 'VIDEO' => 4, 'VIDEO_PREVIEW' => 5, 'PDATE' => 6, 'ACTIVE' => 7, 'DELETED' => 8, 'FROM_YT' => 9, 'STATUS' => 10, 'FEATURED' => 11, 'PAY_MORE' => 12, 'VIDEO_LENGTH' => 13, 'VIDEO_COUNT' => 14, 'VIDEO_TYPE' => 15,  'VIDEO_DATE' => 16, 'VIDEO_IMAGE' => 17, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'user_id' => 1, 'title' => 2, 'price' => 3, 'video' => 4, 'video_preview' => 5, 'pdate' => 6, 'active' => 7, 'deleted' => 8, 'from_yt' => 9, 'status' => 10, 'featured' => 11, 'pay_more' => 12, 'video_length' => 13, 'video_count' => 14, 'video_type' => 15,  'video_date' => 16, 'video_image' => 17, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UserId' => 1, 'Title' => 2, 'Price' => 3, 'Video' => 4, 'VideoPreview' => 5, 'Pdate' => 6, 'Active' => 7, 'Deleted' => 8, 'FromYt' => 9, 'Status' => 10, 'Featured' => 11, 'PayMore' => 12, 'VideoLength' => 13, 'VideoCount' => 14, 'VideoType' => 15,'VideoDate' => 16, 'VideoImage' => 17, 'EmailSent' => 18,),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'userId' => 1, 'title' => 2, 'price' => 3, 'video' => 4, 'videoPreview' => 5, 'pdate' => 6, 'active' => 7, 'deleted' => 8, 'fromYt' => 9, 'status' => 10, 'featured' => 11, 'payMore' => 12, 'videoLength' => 13, 'videoCount' => 14, 'videoType' => 15, 'videoDate' => 16, 'videoImage' => 17, 'emailSent' => 18,  ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::USER_ID => 1, self::TITLE => 2, self::PRICE => 3, self::VIDEO => 4, self::VIDEO_PREVIEW => 5, self::PDATE => 6, self::ACTIVE => 7, self::DELETED => 8, self::FROM_YT => 9, self::STATUS => 10,  self::FEATURED => 11, self::PAY_MORE => 12, self::VIDEO_LENGTH => 13, self::VIDEO_COUNT => 14,  self::VIDEO_TYPE => 15, self::VIDEO_DATE => 16, self::VIDEO_IMAGE => 17, self::EMAIL_SENT => 18,),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USER_ID' => 1, 'TITLE' => 2, 'PRICE' => 3, 'VIDEO' => 4, 'VIDEO_PREVIEW' => 5, 'PDATE' => 6, 'ACTIVE' => 7, 'DELETED' => 8, 'FROM_YT' => 9, 'STATUS' => 10, 'FEATURED' => 11, 'PAY_MORE' => 12, 'VIDEO_LENGTH' => 13, 'VIDEO_COUNT' => 14, 'VIDEO_TYPE' => 15,  'VIDEO_DATE' => 16, 'VIDEO_IMAGE' => 17, 'EMAIL_SENT' => 18,  ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'user_id' => 1, 'title' => 2, 'price' => 3, 'video' => 4, 'video_preview' => 5, 'pdate' => 6, 'active' => 7, 'deleted' => 8, 'from_yt' => 9, 'status' => 10, 'featured' => 11, 'pay_more' => 12, 'video_length' => 13, 'video_count' => 14, 'video_type' => 15,  'video_date' => 16, 'video_image' => 17, 'email_sent' => 18,),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,)
 	);
 
 	/**
@@ -215,6 +217,7 @@ abstract class BaseVideoPeer {
 			$criteria->addSelectColumn(VideoPeer::VIDEO_TYPE);
 			$criteria->addSelectColumn(VideoPeer::VIDEO_DATE);
 			$criteria->addSelectColumn(VideoPeer::VIDEO_IMAGE);
+			$criteria->addSelectColumn(VideoPeer::EMAIL_SENT);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.USER_ID');
@@ -234,6 +237,7 @@ abstract class BaseVideoPeer {
 			$criteria->addSelectColumn($alias . '.VIDEO_TYPE');
 			$criteria->addSelectColumn($alias . '.VIDEO_DATE');
 			$criteria->addSelectColumn($alias . '.VIDEO_IMAGE');
+			$criteria->addSelectColumn($alias . '.EMAIL_SENT');
 		}
 	}
 

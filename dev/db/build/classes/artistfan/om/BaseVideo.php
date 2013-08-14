@@ -155,7 +155,14 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 	 * @var        string
 	 */
 	protected $video_image;
-
+	
+	/**
+	 * The value for the email_sent field.
+	 * Note: this column has a database default value of: 0
+	 * @var        int
+	 */
+	protected $email_sent;
+	
 	/**
 	 * @var        User
 	 */
@@ -210,6 +217,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 		$this->video_type = 1;
 		$this->video_date = NULL;
 		$this->video_image = '';
+		$this->email_sent = 0;
 	}
 
 	/**
@@ -429,7 +437,17 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 	{
 		return $this->video_image;
 	}
-
+	
+	/**
+	 * Get the [email_sent] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getEmailSent()
+	{
+		return $this->email_sent;
+	}
+	
 	/**
 	 * Set the value of [id] column.
 	 * 
@@ -815,6 +833,26 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 	} // setVideoImage()
 
 	/**
+	 * Set the value of [email_sent] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     Video The current object (for fluent API support)
+	 */
+	public function setEmailSent($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->email_sent !== $v) {
+			$this->email_sent = $v;
+			$this->modifiedColumns[] = VideoPeer::EMAIL_SENT;
+		}
+
+		return $this;
+	} // setEmailSent()
+
+	/**
 	 * Indicates whether the columns in this object are only set to default values.
 	 *
 	 * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -886,6 +924,10 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 			if ($this->video_image !== '') {
 				return false;
 			}
+			
+			if ($this->email_sent !== 0) {
+				return false;
+			}			
 		// otherwise, everything was equal, so return TRUE
 		return true;
 	} // hasOnlyDefaultValues()
@@ -926,6 +968,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 			$this->video_type = ($row[$startcol + 15] !== null) ? (int) $row[$startcol + 15] : null;
 			$this->video_date = ($row[$startcol + 16] !== null) ? (string) $row[$startcol + 16] : null;
 			$this->video_image = ($row[$startcol + 17] !== null) ? (string) $row[$startcol + 17] : null;
+			$this->email_sent = ($row[$startcol + 18] !== null) ? (int) $row[$startcol + 18] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -1231,6 +1274,9 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 		if ($this->isColumnModified(VideoPeer::VIDEO_IMAGE)) {
 			$modifiedColumns[':p' . $index++]  = '`VIDEO_IMAGE`';
 		}
+		if ($this->isColumnModified(VideoPeer::EMAIL_SENT)) {
+			$modifiedColumns[':p' . $index++]  = '`EMAIL_SENT`';
+		}		
 		$sql = sprintf(
 			'INSERT INTO `video` (%s) VALUES (%s)',
 			implode(', ', $modifiedColumns),
@@ -1294,7 +1340,10 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 						break;
 					case '`VIDEO_IMAGE`':
 						$stmt->bindValue($identifier, $this->video_image, PDO::PARAM_STR);
-						break;					
+						break;	
+					case '`EMAIL_SENT`':
+						$stmt->bindValue($identifier, $this->email_sent, PDO::PARAM_INT);
+						break;								
 				}
 			}
 			$stmt->execute();
@@ -1498,7 +1547,10 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 				break;
 			case 17:
 				return $this->getVideoImage();
-				break;			
+				break;	
+			case 18:
+				return $this->getEmailSent();
+				break;		
 			default:
 				return null;
 				break;
@@ -1546,6 +1598,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 			$keys[15] => $this->getVideoType(),
 			$keys[16] => $this->getVideoDate(),			
 			$keys[17] => $this->getVideoImage(),
+			$keys[18] => $this->getEmailSent(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aUser) {
@@ -1638,7 +1691,10 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 				break;
 			case 17:
 				$this->setVideoImage($value);
-				break;			
+				break;		
+			case 18:
+				$this->setEmailSent($value);
+				break;	
 		} // switch()
 	}
 
@@ -1681,6 +1737,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 		if (array_key_exists($keys[15], $arr)) $this->setVideoType($arr[$keys[15]]);
 		if (array_key_exists($keys[16], $arr)) $this->setVideoDate($arr[$keys[16]]);
 		if (array_key_exists($keys[17], $arr)) $this->setVideoImage($arr[$keys[17]]);
+		if (array_key_exists($keys[18], $arr)) $this->setEmailSent($arr[$keys[18]]);
 		
 	}
 
@@ -1711,6 +1768,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 		if ($this->isColumnModified(VideoPeer::VIDEO_TYPE)) $criteria->add(VideoPeer::VIDEO_TYPE, $this->video_type);
 		if ($this->isColumnModified(VideoPeer::VIDEO_DATE)) $criteria->add(VideoPeer::VIDEO_DATE, $this->video_date);
 		if ($this->isColumnModified(VideoPeer::VIDEO_IMAGE)) $criteria->add(VideoPeer::VIDEO_IMAGE, $this->video_image);
+		if ($this->isColumnModified(VideoPeer::EMAIL_SENT)) $criteria->add(VideoPeer::EMAIL_SENT, $this->email_sent);
 
 		return $criteria;
 	}
@@ -1790,6 +1848,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 		$copyObj->setVideoType($this->getVideoType());
 		$copyObj->setVideoDate($this->getVideoDate());
 		$copyObj->setVideoImage($this->getVideoImage());
+		$copyObj->setEmailSent($this->getEmailSent());
 
 		if ($deepCopy && !$this->startCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -2113,6 +2172,7 @@ abstract class BaseVideo extends BaseObject  implements Persistent
 		$this->video_type = null;
 		$this->video_date = null;
 		$this->video_image = null;
+		$this->email_sent = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();

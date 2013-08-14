@@ -185,6 +185,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 		$this->genre = '';
 		$this->label = '';
 		$this->is_single = 0;
+		$this->email_sent = 0;
 	}
 
 	/**
@@ -374,7 +375,16 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 	{
 		return $this->is_single;
 	}
-
+	
+	/**
+	 * Get the [email_sent] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getEmailSent()
+	{
+		return $this->email_sent;
+	}
 	
 	/**
 	 * Set the value of [id] column.
@@ -684,6 +694,25 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 
 		return $this;
 	} // setIsSingle()
+	/**
+	 * Set the value of [email_sent] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     MusicAlbum The current object (for fluent API support)
+	 */
+	public function setEmailSent($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->email_sent !== $v) {
+			$this->email_sent = $v;
+			$this->modifiedColumns[] = MusicAlbumPeer::EMAIL_SENT;
+		}
+
+		return $this;
+	} // setEmailSent()
 
 
 	/**
@@ -747,6 +776,10 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 			if ($this->is_single !== 0) {
 				return false;
 			}
+			
+			if ($this->email_sent !== 0) {
+				return false;
+			}			
 
 		// otherwise, everything was equal, so return TRUE
 		return true;
@@ -785,6 +818,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 			$this->genre = ($row[$startcol + 12] !== null) ? (string) $row[$startcol + 12] : null;
 			$this->label = ($row[$startcol + 13] !== null) ? (string) $row[$startcol + 13] : null;
 			$this->is_single = ($row[$startcol + 14] !== null) ? (int) $row[$startcol + 14] : null;
+			$this->email_sent = ($row[$startcol + 15] !== null) ? (int) $row[$startcol + 15] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -1081,7 +1115,9 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 		if ($this->isColumnModified(MusicAlbumPeer::IS_SINGLE)) {
 			$modifiedColumns[':p' . $index++]  = '`IS_SINGLE`';
 		}
-
+		if ($this->isColumnModified(MusicAlbumPeer::EMAIL_SENT)) {
+			$modifiedColumns[':p' . $index++]  = '`EMAIL_SENT`';
+		}
 		$sql = sprintf(
 			'INSERT INTO `music_album` (%s) VALUES (%s)',
 			implode(', ', $modifiedColumns),
@@ -1137,6 +1173,9 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 					case '`IS_SINGLE`':
 						$stmt->bindValue($identifier, $this->is_single, PDO::PARAM_INT);
 						break;
+					case '`EMAIL_SENT`':
+						$stmt->bindValue($identifier, $this->email_sent, PDO::PARAM_INT);
+						break;						
 				}
 			}
 			$stmt->execute();
@@ -1332,6 +1371,9 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 			case 14:
 				return $this->getIsSingle();
 				break;
+			case 15:
+				return $this->getEmailSent();
+				break;				
 			default:
 				return null;
 				break;
@@ -1376,6 +1418,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 			$keys[12] => $this->getGenre(),
 			$keys[13] => $this->getLabel(),
 			$keys[14] => $this->getIsSingle(),
+			$keys[15] => $this->getEmailSent(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aUser) {
@@ -1460,6 +1503,9 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 			case 14:
 				$this->setIsSingle($value);
 				break;
+			case 15:
+				$this->setEmailSent($value);
+				break;				
 		} // switch()
 	}
 
@@ -1499,6 +1545,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 		if (array_key_exists($keys[12], $arr)) $this->setGenre($arr[$keys[12]]);
 		if (array_key_exists($keys[13], $arr)) $this->setLabel($arr[$keys[13]]);
 		if (array_key_exists($keys[14], $arr)) $this->setIsSingle($arr[$keys[14]]);
+		if (array_key_exists($keys[15], $arr)) $this->setEmailSent($arr[$keys[15]]);
 	}
 
 	/**
@@ -1525,6 +1572,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 		if ($this->isColumnModified(MusicAlbumPeer::GENRE)) $criteria->add(MusicAlbumPeer::GENRE, $this->genre);
 		if ($this->isColumnModified(MusicAlbumPeer::LABEL)) $criteria->add(MusicAlbumPeer::LABEL, $this->label);
 		if ($this->isColumnModified(MusicAlbumPeer::IS_SINGLE)) $criteria->add(MusicAlbumPeer::IS_SINGLE, $this->is_single);
+		if ($this->isColumnModified(MusicAlbumPeer::EMAIL_SENT)) $criteria->add(MusicAlbumPeer::EMAIL_SENT, $this->email_sent);
 
 		return $criteria;
 	}
@@ -1601,6 +1649,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 		$copyObj->setGenre($this->getGenre());
 		$copyObj->setLabel($this->getLabel());
 		$copyObj->setIsSingle($this->getIsSingle());
+		$copyObj->setEmailSent($this->getEmailSent());
 
 
 		if ($deepCopy && !$this->startCopy) {
@@ -1947,6 +1996,7 @@ abstract class BaseMusicAlbum extends BaseObject  implements Persistent
 		$this->genre = null;
 		$this->label = null;
 		$this->is_single = null;
+		$this->email_sent = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();

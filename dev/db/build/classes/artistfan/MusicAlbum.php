@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Skeleton subclass for representing a row from the 'music_album' table.
  *
@@ -359,7 +358,7 @@ WHERE ma.deleted=0 AND ma.active =1 AND ma.pdate < '.$dstart.' AND ma.pdate >= '
      */
     public static function GetAlbumTracks( $album_id )
     {
-        $tracks = MusicQuery::create()->select(array('Id', 'UserId', 'Track', 'TrackPreview', 'TrackLength', 'TrackPreviewLength', 'Genre', 'Price', 'Title'))->filterByAlbumId($album_id) ->filterByDeleted(0)->find()->toArray();
+        $tracks = MusicQuery::create()->select(array('Id', 'UserId', 'Track', 'TrackPreview', 'TrackLength', 'TrackPreviewLength', 'Genre', 'Price', 'Title','SortOrder'))->filterByAlbumId($album_id) ->filterByDeleted(0)->orderBySortOrder('ASC')->find()->toArray();
         foreach($tracks as &$track)
         {
             if (!empty($track['Track']))
@@ -541,40 +540,48 @@ echo "<hr>";*/
 	
 	
 	public static function GetArtistAlbumList($artistUserId, $LoginUserId,  $page = 0, $items_count = 0, $trackList = 0)
-    {	
-	     $all = array();
-		 $MusicDate	=	date('Y-m-d', getEstTime());
-		 $sql = 'SELECT  DISTINCT ma.id AS Id, ma.title AS Title, ma.descr AS Descr, ma.date_release AS DateRelease, ma.image AS Image, ma.price AS Price,  ma.genre AS Genre, ma.label AS Label,  ma.is_single AS IsSingle, ma.album_pay_more AS AlbumPayMore,  user.id AS UserId, user.first_name AS FirstName, user.last_name AS LastName, user.band_name AS BandName, user.name AS Name, music_purchase.with_all_album as purchased, totalTrack 
-					 FROM music_album AS ma 
-					 LEFT JOIN music_purchase ON with_all_album = ma.id and music_purchase.user_id = '.$LoginUserId.' 
-					 LEFT JOIN (select count(music.id) AS totalTrack, album_id FROM music WHERE music.status = 0 AND music.deleted = 0 GROUP BY album_id) 
-					 music_track on music_track.album_id = ma.id 
-					 INNER JOIN user ON user.id = ma.user_id AND user.blocked=0 AND user.email_confirmed = 1 
-					 WHERE ma.user_id = '.$artistUserId.' AND ma.deleted = 0 AND ma.active = 1 AND ma.date_release <= "'.$MusicDate.'"';
-	   
-	     
-		if ($items_count)
-        {
-             $sql .= ' LIMIT ' . ($page > 0 ? ($page-1)*$items_count : '0') . ', ' . $items_count;
-        }
-        $all = Query::GetAll($sql);
-		if($trackList)
+    {
+		if(empty($LoginUserId))
 		{
-			foreach($all  as &$v)
+			return false;
+		}
+		else
+		{	
+			 $all = array();
+			 $MusicDate	=	date('Y-m-d', getEstTime());
+			 $sql = 'SELECT  DISTINCT ma.id AS Id, ma.title AS Title, ma.descr AS Descr, ma.date_release AS DateRelease, ma.image AS Image, ma.price AS Price,  ma.genre AS Genre, ma.label AS Label,  ma.is_single AS IsSingle, ma.album_pay_more AS AlbumPayMore,  user.id AS UserId, user.first_name AS FirstName, user.last_name AS LastName, user.band_name AS BandName, user.name AS Name, music_purchase.with_all_album as purchased, totalTrack 
+						 FROM music_album AS ma 
+						 LEFT JOIN music_purchase ON with_all_album = ma.id and music_purchase.user_id = '.$LoginUserId.' 
+						 LEFT JOIN (select count(music.id) AS totalTrack, album_id FROM music WHERE music.status = 0 AND music.deleted = 0 GROUP BY album_id) 
+						 music_track on music_track.album_id = ma.id 
+						 INNER JOIN user ON user.id = ma.user_id AND user.blocked=0 AND user.email_confirmed = 1 
+						 WHERE ma.user_id = '.$artistUserId.' AND ma.deleted = 0 AND ma.active = 1 AND ma.date_release <= "'.$MusicDate.'"';
+		   
+			 
+			if ($items_count)
 			{
-					$v['TrackList'] = Music::GetMusicListWithPurchase($artistUserId, $LoginUserId, $v['Id'], 1);
+				 $sql .= ' LIMIT ' . ($page > 0 ? ($page-1)*$items_count : '0') . ', ' . $items_count;
 			}
-		
+			$all = Query::GetAll($sql);
+			if($trackList)
+			{
+				foreach($all  as &$v)
+				{
+						$v['TrackList'] = Music::GetMusicListWithPurchase($artistUserId, $LoginUserId, $v['Id'], 1);
+				}
+			
+			}
+	
+			foreach($all as $key => &$val)
+			{
+				if(!$val['totalTrack'])	
+					unset($all[$key]);
+			}
+			
+			return $all;
 		}
-
-		foreach($all as $key => &$val)
-		{
-			if(!$val['totalTrack'])	
-				unset($all[$key]);
-		}
-		
-       	return $all;
 	}
+	
 	public static function GetArtistAlbumListCount($artistUserId, $LoginUserId )
     {	
 	     $all = array();
@@ -635,6 +642,28 @@ echo "<hr>";*/
 		}
 	
 	}
+	//Send email notification while add a new video after finish conversion
+
+	public static function GetMusicAlbumEmailSendList()
+	{		
+ 		 $MusicDate	=	date('Y-m-d', getEstTime());
+		 $sql = 'SELECT  DISTINCT ma.id AS Id, ma.user_id as UserId, ma.title as Title, image as Image, IFNULL(totalTrack, 0) as totalTrack  
+					 FROM music_album AS ma 
+					 LEFT JOIN (select count(music.id) AS totalTrack, album_id FROM music WHERE music.status = 0 AND music.deleted = 0 GROUP BY album_id) 
+					 music_track on music_track.album_id = ma.id
+					 WHERE ma.email_sent = 0 AND ma.deleted = 0 AND ma.active = 1 AND ma.date_release <= "'.$MusicDate.'" AND totalTrack!=0';
+	 
+	        $res = Query::GetAll( $sql );
+			return $res;
+	}
+	//if covertion is finished cron will send mail to user(fellow artist & fans),update column email_send as 1
+	public static function UpdateMusicAlbumEmailSend($music_id)
+    {
+		$sql = 'UPDATE music_album SET email_sent = 1, pdate = '.DBDATE.'  WHERE id = ' .(int)$music_id;
+		$res = Query::Execute($sql);
+		return $res;
+    }		
+	
 		
 	
 	

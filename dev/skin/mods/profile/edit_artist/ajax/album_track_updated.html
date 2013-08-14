@@ -12,12 +12,8 @@
                <p class="font12 P2">Publish Date: <strong class="black">{$dateRealse|date_format:"%B %e, %Y"}</strong></p>
                <br/>
                <p class="font12 P2" style="overflow:hidden;">{$albumInfo.Descr|wordwrap:70:"<br />\n"}</p> 
-              <td align="right" valign="top">
-              <span>
-              {if $albumInfo.Active == 0}
-             		{* <a href="/artist/musicUploadStep3?PublishId={$albumInfo.Id}" class="button Basic bGray" style="color:#000000">Publish</a>	*}
-              {/if}
-              <a href="javascript:void(0);" id="{$albumInfo.Id}" class="DeleteAlbum deleteInc button basic bGray">Delete</a>&nbsp;<a href="javascript:void(0);" onclick="oMusic.MusicAlbumEditStep3('{$albumInfo.Id}');" class="button basic bGray">Edit</a>
-              </span>
+              <td align="right" valign="top" nowrap="nowrap">
+           
+              <a href="javascript:void(0);" id="{$albumInfo.Id}" class="DeleteAlbum deleteInc button basic bGray">Delete</a>&nbsp;<a href="javascript:void(0);" onclick="oMusic.MusicAlbumEditStep3('{$albumInfo.Id}');" class="button basic bGray">Edit</a> &nbsp;
               </td>
 </tr>

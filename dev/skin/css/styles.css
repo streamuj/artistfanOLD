@@ -1933,3 +1933,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', end
 .srcResult .tbMus.tbUser li { height:auto; }
 
 #progress-value { height:4px; width:0; background-color: #b2e873; }
+
+/* Video 30/07/2013 */
+.clr{clear:both;}
+.video{ width:769px; }
+.vidblog{width:384.5px; float:left; background:#333;}
+.vidcont{width:384.5px; float:left;}
+

@@ -85,6 +85,9 @@ abstract class BaseMusicPeer {
 	/** the column name for the PAY_MORE field */
 	const PAY_MORE = 'music.PAY_MORE';
 	
+	/** the column name for the SORT_ORDER field */
+	const SORT_ORDER = 'music.SORT_ORDER';
+	
 	/** The default string format for model objects of the related table **/
 	const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -105,11 +108,11 @@ abstract class BaseMusicPeer {
 	 */
 	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Id', 'UserId', 'Title', 'AlbumId', 'Genre', 'DateRelease', 'Label', 'Price', 'Track', 'TrackPreview', 'TrackLength', 'TrackPreviewLength', 'Pdate', 'Active', 'Deleted', 'Status', 'UpcCode', 'PayMore', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'userId', 'title', 'albumId', 'genre', 'dateRelease', 'label', 'price', 'track', 'trackPreview', 'trackLength', 'trackPreviewLength', 'pdate', 'active', 'deleted', 'status', 'upcCode', 'payMore', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::USER_ID, self::TITLE, self::ALBUM_ID, self::GENRE, self::DATE_RELEASE, self::LABEL, self::PRICE, self::TRACK, self::TRACK_PREVIEW, self::TRACK_LENGTH, self::TRACK_PREVIEW_LENGTH, self::PDATE, self::ACTIVE, self::DELETED, self::STATUS, self::UPC_CODE, self::PAY_MORE, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USER_ID', 'TITLE', 'ALBUM_ID', 'GENRE', 'DATE_RELEASE', 'LABEL', 'PRICE', 'TRACK', 'TRACK_PREVIEW', 'TRACK_LENGTH', 'TRACK_PREVIEW_LENGTH', 'PDATE', 'ACTIVE', 'DELETED', 'STATUS', 'UPC_CODE', 'PAY_MORE', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'user_id', 'title', 'album_id', 'genre', 'date_release', 'label', 'price', 'track', 'track_preview', 'track_length', 'track_preview_length', 'pdate', 'active', 'deleted', 'status', 'upc_code', 'pay_more', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'userId', 'title', 'albumId', 'genre', 'dateRelease', 'label', 'price', 'track', 'trackPreview', 'trackLength', 'trackPreviewLength', 'pdate', 'active', 'deleted', 'status', 'upcCode', 'payMore', 'sortOrder', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::USER_ID, self::TITLE, self::ALBUM_ID, self::GENRE, self::DATE_RELEASE, self::LABEL, self::PRICE, self::TRACK, self::TRACK_PREVIEW, self::TRACK_LENGTH, self::TRACK_PREVIEW_LENGTH, self::PDATE, self::ACTIVE, self::DELETED, self::STATUS, self::UPC_CODE, self::PAY_MORE, self::SORT_ORDER, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USER_ID', 'TITLE', 'ALBUM_ID', 'GENRE', 'DATE_RELEASE', 'LABEL', 'PRICE', 'TRACK', 'TRACK_PREVIEW', 'TRACK_LENGTH', 'TRACK_PREVIEW_LENGTH', 'PDATE', 'ACTIVE', 'DELETED', 'STATUS', 'UPC_CODE', 'PAY_MORE', 'SORT_ORDER', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'user_id', 'title', 'album_id', 'genre', 'date_release', 'label', 'price', 'track', 'track_preview', 'track_length', 'track_preview_length', 'pdate', 'active', 'deleted', 'status', 'upc_code', 'pay_more', 'sort_order', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,)
 	);
 
 	/**
@@ -119,12 +122,12 @@ abstract class BaseMusicPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UserId' => 1, 'Title' => 2, 'AlbumId' => 3, 'Genre' => 4, 'DateRelease' => 5, 'Label' => 6, 'Price' => 7, 'Track' => 8, 'TrackPreview' => 9, 'TrackLength' => 10, 'TrackPreviewLength' => 11, 'Pdate' => 12, 'Active' => 13, 'Deleted' => 14, 'Status' => 15, 'UpcCode' => 16, 'PayMore' => 17, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'userId' => 1, 'title' => 2, 'albumId' => 3, 'genre' => 4, 'dateRelease' => 5, 'label' => 6, 'price' => 7, 'track' => 8, 'trackPreview' => 9, 'trackLength' => 10, 'trackPreviewLength' => 11, 'pdate' => 12, 'active' => 13, 'deleted' => 14, 'status' =>15, 'upcCode' => 16, 'payMore' => 17, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::USER_ID => 1, self::TITLE => 2, self::ALBUM_ID => 3, self::GENRE => 4, self::DATE_RELEASE => 5, self::LABEL => 6, self::PRICE => 7, self::TRACK => 8, self::TRACK_PREVIEW => 9, self::TRACK_LENGTH => 10, self::TRACK_PREVIEW_LENGTH => 11, self::PDATE => 12, self::ACTIVE => 13, self::DELETED => 14, self::STATUS => 15, self::UPC_CODE => 16, self::PAY_MORE => 17, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USER_ID' => 1, 'TITLE' => 2, 'ALBUM_ID' => 3, 'GENRE' => 4, 'DATE_RELEASE' => 5, 'LABEL' => 6, 'PRICE' => 7, 'TRACK' => 8, 'TRACK_PREVIEW' => 9, 'TRACK_LENGTH' => 10, 'TRACK_PREVIEW_LENGTH' => 11, 'PDATE' => 12, 'ACTIVE' => 13, 'DELETED' => 14, 'STATUS' => 15, 'UPC_CODE' => 16, 'PAY_MORE' => 17, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'user_id' => 1, 'title' => 2, 'album_id' => 3, 'genre' => 4, 'date_release' => 5, 'label' => 6, 'price' => 7, 'track' => 8, 'track_preview' => 9, 'track_length' => 10, 'track_preview_length' => 11, 'pdate' => 12, 'active' => 13, 'deleted' => 14, 'status' => 15, 'upc_code' => 16, 'pay_more' => 17, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UserId' => 1, 'Title' => 2, 'AlbumId' => 3, 'Genre' => 4, 'DateRelease' => 5, 'Label' => 6, 'Price' => 7, 'Track' => 8, 'TrackPreview' => 9, 'TrackLength' => 10, 'TrackPreviewLength' => 11, 'Pdate' => 12, 'Active' => 13, 'Deleted' => 14, 'Status' => 15, 'UpcCode' => 16, 'PayMore' => 17, 'SortOrder' => 18,),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'userId' => 1, 'title' => 2, 'albumId' => 3, 'genre' => 4, 'dateRelease' => 5, 'label' => 6, 'price' => 7, 'track' => 8, 'trackPreview' => 9, 'trackLength' => 10, 'trackPreviewLength' => 11, 'pdate' => 12, 'active' => 13, 'deleted' => 14, 'status' =>15, 'upcCode' => 16, 'payMore' => 17, 'sortOrder' => 18, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::USER_ID => 1, self::TITLE => 2, self::ALBUM_ID => 3, self::GENRE => 4, self::DATE_RELEASE => 5, self::LABEL => 6, self::PRICE => 7, self::TRACK => 8, self::TRACK_PREVIEW => 9, self::TRACK_LENGTH => 10, self::TRACK_PREVIEW_LENGTH => 11, self::PDATE => 12, self::ACTIVE => 13, self::DELETED => 14, self::STATUS => 15, self::UPC_CODE => 16, self::PAY_MORE => 17, self::SORT_ORDER => 18, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USER_ID' => 1, 'TITLE' => 2, 'ALBUM_ID' => 3, 'GENRE' => 4, 'DATE_RELEASE' => 5, 'LABEL' => 6, 'PRICE' => 7, 'TRACK' => 8, 'TRACK_PREVIEW' => 9, 'TRACK_LENGTH' => 10, 'TRACK_PREVIEW_LENGTH' => 11, 'PDATE' => 12, 'ACTIVE' => 13, 'DELETED' => 14, 'STATUS' => 15, 'UPC_CODE' => 16, 'PAY_MORE' => 17, 'SORT_ORDER' => 18, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'user_id' => 1, 'title' => 2, 'album_id' => 3, 'genre' => 4, 'date_release' => 5, 'label' => 6, 'price' => 7, 'track' => 8, 'track_preview' => 9, 'track_length' => 10, 'track_preview_length' => 11, 'pdate' => 12, 'active' => 13, 'deleted' => 14, 'status' => 15, 'upc_code' => 16, 'pay_more' => 17, 'sort_order' => 18,),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, )
 	);
 
 	/**
@@ -214,6 +217,7 @@ abstract class BaseMusicPeer {
 			$criteria->addSelectColumn(MusicPeer::STATUS);
 			$criteria->addSelectColumn(MusicPeer::UPC_CODE);
 			$criteria->addSelectColumn(MusicPeer::PAY_MORE);
+			$criteria->addSelectColumn(MusicPeer::SORT_ORDER);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.USER_ID');
@@ -233,6 +237,7 @@ abstract class BaseMusicPeer {
 			$criteria->addSelectColumn($alias . '.STATUS');
 			$criteria->addSelectColumn($alias . '.UPC_CODE');
 			$criteria->addSelectColumn($alias . '.PAY_MORE');
+			$criteria->addSelectColumn($alias . '.SORT_ORDER');
 		}
 	}
 

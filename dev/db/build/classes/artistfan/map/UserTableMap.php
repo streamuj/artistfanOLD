@@ -86,6 +86,9 @@ class UserTableMap extends TableMap
 		$this->addColumn('USER_PHONE', 'UserPhone', 'VARCHAR', false, 50, '');
 		$this->addColumn('STATE', 'State', 'VARCHAR', false, 150, null);
 		$this->addColumn('HASH_TAG', 'HashTag', 'LONGVARCHAR', false, null, null);
+		$this->addColumn('FB_ON', 'FbOn', 'TINYINT', false, 2, 1);
+		$this->addColumn('TW_ON', 'TwOn', 'TINYINT', false, 2, 1);
+		$this->addColumn('IN_ON', 'InOn', 'TINYINT', false, 2, 1);		
 		// validators
 	} // initialize()
 
